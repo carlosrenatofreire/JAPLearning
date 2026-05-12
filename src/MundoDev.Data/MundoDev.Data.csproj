@@ -6,4 +6,18 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Contexts\" />
+    <Folder Include="Mappings\Auxiliaries\" />
+    <Folder Include="Mappings\Entities\" />
+    <Folder Include="Mappings\Parameters\" />
+    <Folder Include="Mappings\Relationships\" />
+    <Folder Include="Migrations\" />
+    <Folder Include="Repositories\Auxiliaries\" />
+    <Folder Include="Repositories\Entities\" />
+    <Folder Include="Repositories\Parameters\" />
+    <Folder Include="Repositories\Relationships\" />
+    <Folder Include="Repositories\Shareds\" />
+  </ItemGroup>
+
 </Project>

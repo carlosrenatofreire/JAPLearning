@@ -20,4 +20,12 @@
     <Using Include="NUnit.Framework" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Integration\Repositories\" />
+    <Folder Include="Shared\Builders\" />
+    <Folder Include="Shared\Fixtures\" />
+    <Folder Include="Unit\Validations\" />
+    <Folder Include="Unit\Services\" />
+  </ItemGroup>
+
 </Project>
