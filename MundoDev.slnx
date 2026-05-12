@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/1 - Front-end/">
     <Project Path="src/MundoDev.Mvc/MundoDev.Mvc.csproj" />
+    <Project Path="src/MundoDev.Template.Mvc/MundoDev.Template.Mvc.csproj" />
   </Folder>
   <Folder Name="/2 - Back-end/">
     <Project Path="src/MundoDev.Business/MundoDev.Business.csproj" />
