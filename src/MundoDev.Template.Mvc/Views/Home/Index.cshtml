@@ -68,8 +68,15 @@
     .hero-proof-text { font-size: 13px; color: var(--md-text-secondary); }
     .hero-proof-text strong { color: var(--md-text-primary); }
     /* ── Hero scene (planilha + código) ──────────────────── */
-    /* padding-left + padding-bottom criam o espaço onde a
-       planilha espia: esquerda e baixo da janela de código  */
+    /*
+      Duas janelas de tamanho idêntico, planilha deslocada
+      22px para baixo e 22px para a esquerda:
+
+      scene tem padding-left:22 + padding-bottom:22
+      → código ocupa: left=22 .. right=100%, top=0 .. bottom=calc(100%-22)
+      → planilha:  top=22, left=0, right=22, bottom=0
+        (mesmas dimensões, offset oposto)
+    */
     .hero-scene {
         position: relative;
         padding-left: 22px;
@@ -77,10 +84,10 @@
     }
     .hero-sheet {
         position: absolute;
-        bottom: 0;
+        top: 22px;
         left: 0;
-        width: 100%;
-        height: 100%;
+        right: 22px;
+        bottom: 0;
         background: #141e2e;
         border: 1px solid rgba(99,102,241,0.45);
         border-radius: 10px;
