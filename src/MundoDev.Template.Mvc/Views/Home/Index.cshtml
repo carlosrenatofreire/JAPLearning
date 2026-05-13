@@ -76,47 +76,64 @@
         position: absolute;
         top: 0; left: 0;
         width: 90%;
-        background: #1a2235;
-        border: 1px solid rgba(99,102,241,0.3);
+        background: #141e2e;
+        border: 1px solid rgba(99,102,241,0.45);
         border-radius: 10px;
         overflow: hidden;
         transform: rotate(-3deg) translateY(12px);
-        opacity: 0.7;
+        opacity: 0.88;
         z-index: 0;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5);
     }
     .sheet-titlebar {
-        background: #1e2d45;
-        border-bottom: 1px solid rgba(99,102,241,0.2);
-        padding: 8px 12px;
+        background: #1a2640;
+        border-bottom: 2px solid rgba(99,102,241,0.35);
+        padding: 7px 12px;
         display: flex; align-items: center; gap: 8px;
     }
     .sheet-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .sheet-filename { font-size: 11px; color: #6b7280; font-family: sans-serif; }
+    .sheet-filename { font-size: 11px; color: #94a3b8; font-family: sans-serif; font-weight: 600; }
+    .sheet-excel-icon {
+        width: 16px; height: 16px;
+        background: #1D6F42;
+        border-radius: 3px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 9px; font-weight: 900; color: #fff; font-family: sans-serif;
+        flex-shrink: 0;
+    }
     .sheet-grid { font-family: 'Courier New', monospace; font-size: 11px; }
-    .sheet-header-row { display: flex; background: #1e2d45; }
-    .sheet-row { display: flex; border-top: 1px solid rgba(255,255,255,0.04); }
+    .sheet-header-row { display: flex; background: #1a2640; border-bottom: 2px solid rgba(99,102,241,0.3); }
+    .sheet-row { display: flex; border-top: 1px solid rgba(255,255,255,0.07); }
+    .sheet-row:nth-child(even) { background: rgba(255,255,255,0.025); }
     .sheet-cell-num {
         width: 28px; min-width: 28px;
-        padding: 4px 6px;
-        color: #4b5563;
-        border-right: 1px solid rgba(255,255,255,0.06);
+        padding: 5px 6px;
+        color: #64748b;
+        border-right: 2px solid rgba(99,102,241,0.25);
         text-align: center;
-        background: #1e2d45;
+        background: #1a2640;
+        font-weight: 600;
     }
     .sheet-cell {
         flex: 1;
-        padding: 4px 8px;
-        border-right: 1px solid rgba(255,255,255,0.04);
-        color: #6b7280;
+        padding: 5px 9px;
+        border-right: 1px solid rgba(255,255,255,0.07);
+        color: #94a3b8;
         white-space: nowrap;
         overflow: hidden;
     }
-    .sheet-cell.col-hdr { color: #4b5563; background: #1e2d45; text-align: center; font-weight: 600; }
-    .sheet-cell.accent { color: #f97316; }
-    .sheet-cell.green { color: #22c55e; }
-    .sheet-cell.red { color: #ef4444; }
-    .sheet-cell.bold { color: #e2e8f0; font-weight: 600; }
+    .sheet-cell.col-hdr {
+        color: #cbd5e1;
+        background: #1a2640;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        border-right: 1px solid rgba(99,102,241,0.2);
+    }
+    .sheet-cell.accent { color: #fb923c; font-weight: 600; }
+    .sheet-cell.green  { color: #4ade80; font-weight: 600; }
+    .sheet-cell.red    { color: #f87171; font-weight: 600; }
+    .sheet-cell.bold   { color: #e2e8f0; font-weight: 700; }
 
     .hero-visual {
         position: relative;
@@ -218,6 +235,7 @@
                             <div class="sheet-dot" style="background:#EF4444;"></div>
                             <div class="sheet-dot" style="background:#F59E0B;"></div>
                             <div class="sheet-dot" style="background:#22C55E;"></div>
+                            <div class="sheet-excel-icon">X</div>
                             <span class="sheet-filename">KPIs_2024_Q4.xlsx</span>
                         </div>
                         <div class="sheet-grid">
