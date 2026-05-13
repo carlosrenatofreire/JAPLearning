@@ -96,7 +96,21 @@
         /* ── Hamburger mobile ───────────────────────────────── */
         .md-menu-toggle { display: none; background: none; border: 1px solid var(--md-border); border-radius: var(--md-radius-sm); padding: 6px 10px; color: var(--md-text-primary); cursor: pointer; }
         @@media (max-width: 991px) {
-            .md-nav-links { display: none; }
+            .md-nav-links { display: none; flex-direction: column; gap: 4px; }
+            .md-nav-links.open {
+                display: flex;
+                position: fixed;
+                top: var(--md-navbar-height);
+                left: 0; right: 0;
+                background: rgba(10,10,22,0.98);
+                backdrop-filter: blur(12px);
+                border-bottom: 1px solid var(--md-border);
+                padding: 16px 20px;
+                z-index: 999;
+            }
+            .md-nav-links.open li { width: 100%; }
+            .md-nav-links.open a { display: block; padding: 12px 16px; font-size: 15px; border-radius: var(--md-radius-sm); }
+            .md-navbar-actions { display: none; }
             .md-menu-toggle { display: block; }
         }
     </style>
@@ -125,8 +139,8 @@
                     Começar Grátis <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
-            <button class="md-menu-toggle ms-auto">
-                <i class="bi bi-list"></i>
+            <button class="md-menu-toggle ms-auto" id="navToggle" onclick="toggleNav()">
+                <i class="bi bi-list" id="navToggleIcon"></i>
             </button>
         </div>
     </nav>
@@ -195,6 +209,23 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        function toggleNav() {
+            const nav = document.querySelector('.md-nav-links');
+            const icon = document.getElementById('navToggleIcon');
+            const isOpen = nav.classList.toggle('open');
+            icon.className = isOpen ? 'bi bi-x-lg' : 'bi bi-list';
+        }
+        // Fechar ao clicar fora
+        document.addEventListener('click', function(e) {
+            const nav = document.querySelector('.md-nav-links');
+            const btn = document.getElementById('navToggle');
+            if (nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)) {
+                nav.classList.remove('open');
+                document.getElementById('navToggleIcon').className = 'bi bi-list';
+            }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

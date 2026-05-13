@@ -163,15 +163,41 @@
         .md-breadcrumb .separator { color: var(--md-border); }
         .md-breadcrumb .current { color: var(--md-text-secondary); }
 
+        /* ── Hamburger (app) ────────────────────────────────── */
+        .topbar-hamburger {
+            display: none;
+            background: none;
+            border: 1px solid var(--md-border);
+            border-radius: var(--md-radius-sm);
+            padding: 6px 10px;
+            color: var(--md-text-primary);
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            margin-right: 4px;
+        }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+        .sidebar-overlay.show { display: block; }
+
         /* ── Responsive ─────────────────────────────────────── */
         @@media (max-width: 768px) {
             .app-sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
             .app-sidebar.open { transform: translateX(0); }
             .app-main { margin-left: 0; }
+            .topbar-hamburger { display: inline-flex; align-items: center; justify-content: center; }
+            .topbar-user-info { display: none; }
+            .topbar-user .bi-chevron-down { display: none; }
         }
     </style>
 </head>
 <body>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
     <div class="app-shell">
 
         <!-- ── Sidebar ──────────────────────────────────────── -->
@@ -226,6 +252,9 @@
         <!-- ── Main Content ──────────────────────────────────── -->
         <div class="app-main">
             <div class="app-topbar">
+                <button class="topbar-hamburger" id="sidebarToggle" onclick="toggleSidebar()">
+                    <i class="bi bi-list" id="sidebarToggleIcon"></i>
+                </button>
                 <span class="app-topbar-title">@ViewData["Title"]</span>
                 <div class="topbar-right">
                     <a asp-controller="App" asp-action="PersonalData" class="topbar-user">
@@ -251,6 +280,21 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('appSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const icon = document.getElementById('sidebarToggleIcon');
+            const isOpen = sidebar.classList.toggle('open');
+            overlay.classList.toggle('show', isOpen);
+            icon.className = isOpen ? 'bi bi-x-lg' : 'bi bi-list';
+        }
+        function closeSidebar() {
+            document.getElementById('appSidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('show');
+            document.getElementById('sidebarToggleIcon').className = 'bi bi-list';
+        }
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
