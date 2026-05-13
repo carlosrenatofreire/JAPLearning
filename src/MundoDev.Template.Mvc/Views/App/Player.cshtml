@@ -1,0 +1,175 @@
+@{
+    ViewData["Title"] = "Apresentação e Pré-Requisitos";
+    ViewData["CourseName"] = "Sistema de Gestão de Indicadores e KPIs";
+    ViewData["UserName"] = "João Silva";
+    ViewData["Progress"] = "13";
+    Layout = "~/Views/Shared/_LayoutPlayer.cshtml";
+}
+
+@section PlayerNav {
+    <!-- Introdução -->
+    <div class="player-module">
+        <div class="player-module-header">
+            <span>Introdução</span>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+        <div>
+            <a href="#" class="player-lesson active">
+                <div class="player-lesson-icon"><i class="bi bi-play-fill"></i></div>
+                <div class="player-lesson-info">
+                    <p class="player-lesson-title">Apresentação e Pré-Requisitos</p>
+                    <p class="player-lesson-duration">7:58</p>
+                </div>
+            </a>
+            <a href="#" class="player-lesson completed">
+                <div class="player-lesson-icon"><i class="bi bi-check"></i></div>
+                <div class="player-lesson-info">
+                    <p class="player-lesson-title">Ferramentas de Front-end</p>
+                    <p class="player-lesson-duration">12:20</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Módulo 1 -->
+    <div class="player-module">
+        <div class="player-module-header">
+            <span>Módulo 1: Aprofundar no Essencial</span>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+        <div>
+            <a href="#" class="player-lesson">
+                <div class="player-lesson-icon"></div>
+                <div class="player-lesson-info">
+                    <p class="player-lesson-title">Pipeline do ASP.NET</p>
+                    <p class="player-lesson-duration">8:45</p>
+                </div>
+            </a>
+            <a href="#" class="player-lesson">
+                <div class="player-lesson-icon"></div>
+                <div class="player-lesson-info">
+                    <p class="player-lesson-title">O que são Bundling e Minification?</p>
+                    <p class="player-lesson-duration">11:00</p>
+                </div>
+            </a>
+            <a href="#" class="player-lesson">
+                <div class="player-lesson-icon"></div>
+                <div class="player-lesson-info">
+                    <p class="player-lesson-title">Trabalhar com mais Layouts</p>
+                    <p class="player-lesson-duration">15:30</p>
+                </div>
+            </a>
+            <a href="#" class="player-lesson">
+                <div class="player-lesson-icon"></div>
+                <div class="player-lesson-info">
+                    <p class="player-lesson-title">Trabalhar com Tag Helper Customizado</p>
+                    <p class="player-lesson-duration">18:10</p>
+                </div>
+            </a>
+            <a href="#" class="player-lesson">
+                <div class="player-lesson-icon"></div>
+                <div class="player-lesson-info">
+                    <p class="player-lesson-title">Trabalhar com View Component</p>
+                    <p class="player-lesson-duration">14:50</p>
+                </div>
+            </a>
+            <a href="#" class="player-lesson">
+                <div class="player-lesson-icon"></div>
+                <div class="player-lesson-info">
+                    <p class="player-lesson-title">Roteamento Inteligente</p>
+                    <p class="player-lesson-duration">9:20</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Módulo 2 -->
+    <div class="player-module">
+        <div class="player-module-header">
+            <span>Módulo 2: Injeção de Dependência</span>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+        <div>
+            <a href="#" class="player-lesson">
+                <div class="player-lesson-icon"></div>
+                <div class="player-lesson-info">
+                    <p class="player-lesson-title">O Maravilhoso mundo das DIs</p>
+                    <p class="player-lesson-duration">22:00</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Módulo 3 -->
+    <div class="player-module">
+        <div class="player-module-header">
+            <span>Módulo 3: Segurança</span>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+        <div>
+            <a href="#" class="player-lesson">
+                <div class="player-lesson-icon"></div>
+                <div class="player-lesson-info">
+                    <p class="player-lesson-title">CSRF + XSS + HSTS = Segurança</p>
+                    <p class="player-lesson-duration">16:00</p>
+                </div>
+            </a>
+            <a href="#" class="player-lesson">
+                <div class="player-lesson-icon"></div>
+                <div class="player-lesson-info">
+                    <p class="player-lesson-title">Explorar ASP.NET Identity (Authentication)</p>
+                    <p class="player-lesson-duration">28:00</p>
+                </div>
+            </a>
+            <a href="#" class="player-lesson">
+                <div class="player-lesson-icon"></div>
+                <div class="player-lesson-info">
+                    <p class="player-lesson-title">Explorar ASP.NET Identity (Authorization)</p>
+                    <p class="player-lesson-duration">24:00</p>
+                </div>
+            </a>
+        </div>
+    </div>
+}
+
+<!-- Main content -->
+<div class="player-breadcrumb">
+    <a href="#">Sistema de Gestão de Indicadores e KPIs</a>
+    <span>/</span>
+    <a href="#">Introdução</a>
+    <span>/</span>
+    <span>Apresentação e Pré-Requisitos</span>
+</div>
+
+<div class="player-lesson-header">
+    <h1 class="player-lesson-title-main" style="font-size:20px; font-weight:800; margin:0; color:var(--md-text-primary);">
+        Introdução / Apresentação e Pré-Requisitos
+    </h1>
+    <button class="btn-md-success" style="font-size:13px; padding:8px 18px; flex-shrink:0;">
+        <i class="bi bi-check-lg"></i> Concluir Aula
+    </button>
+</div>
+
+<!-- Video -->
+<div class="player-video-wrap">
+    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+</div>
+
+<!-- Resources -->
+<div class="player-resources">
+    <h4 class="player-resources-title">Recursos da Aula</h4>
+    <p class="player-resources-desc">
+        Nesta aula, vamos configurar todas as ferramentas necessárias para o sucesso da formação.
+        Siga os passos detalhados no vídeo e descarregue os materiais abaixo.
+    </p>
+    <div>
+        <a href="#" class="player-resource-btn">
+            <i class="bi bi-file-earmark-pdf" style="color:#EF4444;"></i> Slides.pdf
+        </a>
+        <a href="#" class="player-resource-btn">
+            <i class="bi bi-code-slash" style="color:var(--md-accent);"></i> Código Fonte
+        </a>
+    </div>
+</div>

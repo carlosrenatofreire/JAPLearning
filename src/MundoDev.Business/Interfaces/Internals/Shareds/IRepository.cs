@@ -15,6 +15,7 @@ namespace MundoDev.Business.Interfaces.Internals.Shareds
         Task Add(TEntity entity);
         Task Update(TEntity entity);
         Task Remove(Guid id);
+        Task RemoveRange(IEnumerable<TEntity> entities);
         Task<int> SaveChanges();
     }
 }

@@ -1,0 +1,118 @@
+@{
+    ViewData["Title"] = "Arquitectura de Software .NET";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+}
+
+<div class="container">
+    <nav class="md-breadcrumb mt-4">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <span class="separator">/</span>
+        <a asp-controller="Areas" asp-action="Index">Áreas</a>
+        <span class="separator">/</span>
+        <span class="current">Arquitectura de Software .NET</span>
+    </nav>
+
+    <div class="row g-4 mt-2">
+        <!-- Main -->
+        <div class="col-lg-8">
+            <div class="md-tabs">
+                <a href="#" class="md-tab active" onclick="showTab('apresentacao', this)">Apresentação</a>
+                <a href="#" class="md-tab" onclick="showTab('faq', this)">FAQ</a>
+            </div>
+
+            <!-- Apresentação -->
+            <div id="tab-apresentacao">
+                <h2 style="font-size:26px; font-weight:800; margin-bottom:16px;">Arquitectura de Software .NET</h2>
+                <p style="color:var(--md-text-secondary); line-height:1.8; margin-bottom:16px;">
+                    Esta área é uma imersão completa no mundo da arquitectura de software com .NET.
+                    Você vai aprender a pensar como um arquitecto, tomando decisões fundamentadas em
+                    cenários reais de empresas que precisam migrar os seus processos para a web.
+                </p>
+                <p style="color:var(--md-text-secondary); line-height:1.8; margin-bottom:32px;">
+                    Do C4 Model ao código, do DER ao deploy — cada projecto desta área foi desenhado
+                    para simular o dia a dia corporativo e preparar-te para liderar tecnicamente.
+                </p>
+
+                <h5 style="font-weight:700; margin-bottom:20px; color:var(--md-text-primary);">Projectos incluídos nesta Área</h5>
+
+                @for (int i = 1; i <= 6; i++)
+                {
+                    <a asp-controller="Projects" asp-action="Detail" asp-route-id="@i"
+                       style="display:flex; align-items:center; gap:16px; padding:16px; background:var(--md-bg-card); border:1px solid var(--md-border); border-radius:var(--md-radius); margin-bottom:12px; text-decoration:none; transition:var(--md-transition);"
+                       onmouseover="this.style.borderColor='rgba(232,80,26,0.35)'"
+                       onmouseout="this.style.borderColor='var(--md-border)'">
+                        <div style="width:52px; height:52px; background:var(--md-gradient); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:#fff; flex-shrink:0;">.N</div>
+                        <div style="flex:1;">
+                            <p style="font-weight:700; font-size:14px; color:var(--md-text-primary); margin:0 0 3px;">Sistema de Gestão de Indicadores e KPIs</p>
+                            <div style="font-size:12px; color:var(--md-text-muted); display:flex; gap:14px;">
+                                <span>★★☆ Intermediário</span>
+                                <span>· Instrutor: Carlos Freire</span>
+                                <span>· 6h 00min</span>
+                                <span>· Categoria: Gestão Corporativa</span>
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-right" style="color:var(--md-text-muted);"></i>
+                    </a>
+                }
+            </div>
+
+            <!-- FAQ -->
+            <div id="tab-faq" style="display:none;">
+                <h5 style="font-weight:700; margin-bottom:20px;">Perguntas Frequentes</h5>
+                @for (int i = 1; i <= 4; i++)
+                {
+                    <div style="border:1px solid var(--md-border); border-radius:var(--md-radius); margin-bottom:8px; overflow:hidden;">
+                        <div style="padding:14px 18px; background:var(--md-bg-card); font-weight:600; font-size:14px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+                            <span>Preciso saber C# antes de começar?</span>
+                            <i class="bi bi-chevron-down" style="color:var(--md-text-muted);"></i>
+                        </div>
+                        <div style="padding:14px 18px; background:var(--md-bg-secondary); font-size:14px; color:var(--md-text-secondary); display:none;">
+                            Sim, recomendamos conhecimentos básicos de C# e .NET antes de iniciar esta área.
+                            Temos projectos de base disponíveis na plataforma.
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="md-card" style="position:sticky; top:80px;">
+                <p style="font-size:14px; font-weight:700; color:var(--md-text-primary); margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--md-border);">Informações Gerais</p>
+                <div class="md-info-row">
+                    <span class="md-info-label"><i class="bi bi-collection"></i> Projectos</span>
+                    <span class="md-info-value">6 Projectos</span>
+                </div>
+                <div class="md-info-row">
+                    <span class="md-info-label"><i class="bi bi-clock"></i> Duração</span>
+                    <span class="md-info-value">44:00 Horas</span>
+                </div>
+                <div class="md-info-row">
+                    <span class="md-info-label"><i class="bi bi-folder"></i> Módulos</span>
+                    <span class="md-info-value">57</span>
+                </div>
+                <div class="md-info-row">
+                    <span class="md-info-label"><i class="bi bi-play-circle"></i> Aulas</span>
+                    <span class="md-info-value">372</span>
+                </div>
+                <div class="mt-4">
+                    <a asp-controller="Plans" asp-action="Index" class="btn-md-primary w-100" style="justify-content:center; padding:12px;">
+                        Aceder com Plano <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function showTab(name, el) {
+        event.preventDefault();
+        document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+        document.querySelectorAll('.md-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + name).style.display = 'block';
+        el.classList.add('active');
+    }
+</script>
+}

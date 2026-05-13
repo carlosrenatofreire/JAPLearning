@@ -1,0 +1,260 @@
+@{
+    ViewData["Title"] = "Sistema de Gestão de Indicadores e KPIs";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+}
+
+<style>
+    .project-hero {
+        padding: 40px 0 32px;
+        border-bottom: 1px solid var(--md-border);
+        margin-bottom: 32px;
+    }
+    .project-meta-bar {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: var(--md-text-muted);
+    }
+    .project-meta-bar span { display: flex; align-items: center; gap: 6px; }
+    .sidebar-section-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--md-text-primary);
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--md-border);
+    }
+    .prereq-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--md-border-light);
+        text-decoration: none;
+    }
+    .prereq-card:last-child { border-bottom: none; }
+    .prereq-icon {
+        width: 42px; height: 42px;
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 18px;
+        font-weight: 900;
+        flex-shrink: 0;
+    }
+</style>
+
+<div class="container">
+    <!-- Breadcrumb -->
+    <nav class="md-breadcrumb mt-4">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <span class="separator">/</span>
+        <a asp-controller="Projects" asp-action="Index">Projectos</a>
+        <span class="separator">/</span>
+        <span class="current">Sistema de Gestão de Indicadores e KPIs</span>
+    </nav>
+
+    <!-- Meta bar -->
+    <div class="project-meta-bar">
+        <span><i class="bi bi-person"></i> <strong style="color:var(--md-text-secondary);">Instrutor:</strong> Carlos Freire</span>
+        <span><i class="bi bi-bar-chart"></i> <strong style="color:var(--md-text-secondary);">Nível:</strong> ★★☆ Intermediário</span>
+        <span><i class="bi bi-tag"></i> <strong style="color:var(--md-text-secondary);">Categoria:</strong> Gestão Corporativa</span>
+    </div>
+
+    <div class="row g-4">
+        <!-- Main content -->
+        <div class="col-lg-8">
+            <!-- Video player -->
+            <div style="position:relative; width:100%; padding-bottom:56.25%; background:#000; border-radius:var(--md-radius-lg); overflow:hidden; margin-bottom:24px;">
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                        style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+                        allowfullscreen></iframe>
+            </div>
+
+            <!-- Tabs -->
+            <div class="md-tabs">
+                <a href="#ementa" class="md-tab active" onclick="showTab('ementa', this)">Ementa</a>
+                <a href="#apresentacao" class="md-tab" onclick="showTab('apresentacao', this)">Apresentação</a>
+                <a href="#instrutor" class="md-tab" onclick="showTab('instrutor', this)">Instrutor</a>
+            </div>
+
+            <!-- Ementa -->
+            <div id="tab-ementa">
+                <h5 style="font-weight:700; margin-bottom:16px;">Sistema de Gestão de Indicadores e KPIs</h5>
+                <!-- Module 1 -->
+                <div class="md-accordion-item">
+                    <div class="md-accordion-header">
+                        <span>Módulo 1 — Introdução e Contexto</span>
+                        <span style="font-size:12px; font-weight:500;">3 aulas · 25min</span>
+                    </div>
+                    <div class="md-accordion-body">
+                        <a href="#" class="md-lesson-item">
+                            <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                            <span style="flex:1;">Apresentação do Projecto (2:00)</span>
+                            <span class="md-badge md-badge-success">Grátis</span>
+                        </a>
+                        <a href="#" class="md-lesson-item">
+                            <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                            <span style="flex:1;">O problema do Excel nas empresas (10:00)</span>
+                        </a>
+                        <a href="#" class="md-lesson-item">
+                            <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                            <span style="flex:1;">Visão geral da solução (13:00)</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Module 2 -->
+                <div class="md-accordion-item">
+                    <div class="md-accordion-header">
+                        <span>Módulo 2 — Arquitectura C4 Model</span>
+                        <span style="font-size:12px; font-weight:500;">5 aulas · 1h 10min</span>
+                    </div>
+                    <div class="md-accordion-body">
+                        <a href="#" class="md-lesson-item">
+                            <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                            <span style="flex:1;">C4 Nível 1 — Contexto do Sistema (12:00)</span>
+                        </a>
+                        <a href="#" class="md-lesson-item">
+                            <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                            <span style="flex:1;">C4 Nível 2 — Containers (15:00)</span>
+                        </a>
+                        <a href="#" class="md-lesson-item">
+                            <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                            <span style="flex:1;">C4 Nível 3 — Componentes (18:00)</span>
+                        </a>
+                        <a href="#" class="md-lesson-item">
+                            <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                            <span style="flex:1;">Modelagem do Banco de Dados (20:00)</span>
+                        </a>
+                        <a href="#" class="md-lesson-item">
+                            <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                            <span style="flex:1;">Decisões de Arquitectura e Trade-offs (5:00)</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Module 3 -->
+                <div class="md-accordion-item">
+                    <div class="md-accordion-header">
+                        <span>Módulo 3 — Implementação .NET</span>
+                        <span style="font-size:12px; font-weight:500;">8 aulas · 2h 30min</span>
+                    </div>
+                    <div class="md-accordion-body">
+                        <a href="#" class="md-lesson-item">
+                            <i class="bi bi-lock-fill" style="color:var(--md-text-muted);"></i>
+                            <span style="flex:1;">Estrutura da Solution e Camadas</span>
+                        </a>
+                        <a href="#" class="md-lesson-item">
+                            <i class="bi bi-lock-fill" style="color:var(--md-text-muted);"></i>
+                            <span style="flex:1;">Entity Framework Core — Code First</span>
+                        </a>
+                        <a href="#" class="md-lesson-item">
+                            <i class="bi bi-lock-fill" style="color:var(--md-text-muted);"></i>
+                            <span style="flex:1;">Repository Pattern e Unit of Work</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Apresentação -->
+            <div id="tab-apresentacao" style="display:none;">
+                <h5 style="font-weight:700; margin-bottom:12px;">Sobre este Projecto</h5>
+                <p style="color:var(--md-text-secondary); line-height:1.8;">
+                    O Sistema de Gestão de Indicadores e KPIs é o primeiro projecto da MundoDev.
+                    Partimos de um cenário real: uma empresa que gere os seus indicadores de performance
+                    em planilhas Excel desorganizadas.
+                </p>
+                <p style="color:var(--md-text-secondary); line-height:1.8;">
+                    O aluno vivencia todo o processo: alinhamento com o Product Owner, desenho dos diagramas
+                    C4 (níveis 1, 2 e 3), modelagem do banco de dados, e implementação completa em .NET com
+                    as melhores práticas corporativas.
+                </p>
+            </div>
+
+            <!-- Instrutor -->
+            <div id="tab-instrutor" style="display:none;">
+                <div class="d-flex align-items-start gap-3 mb-16">
+                    <div class="md-avatar md-avatar-lg">CF</div>
+                    <div>
+                        <h5 style="font-weight:700; margin-bottom:4px;">Carlos Freire</h5>
+                        <p style="color:var(--md-accent); font-size:13px; margin-bottom:12px;">MCSD — Arquitecto de Software &amp; Tech Lead</p>
+                        <p style="color:var(--md-text-secondary); font-size:14px; line-height:1.7;">
+                            Com mais de 25 anos de experiência em desenvolvimento de software e arquitectura
+                            de sistemas, Carlos já formou mais de 50 profissionais em Portugal e trabalha
+                            actualmente como consultor em empresas de referência no ecossistema Microsoft .NET.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Info Card -->
+            <div class="md-card mb-4" style="position:sticky; top:80px;">
+                <p class="sidebar-section-title">Informações Gerais</p>
+                <div class="md-info-row">
+                    <span class="md-info-label"><i class="bi bi-clock"></i> Duração</span>
+                    <span class="md-info-value">06:00 Horas</span>
+                </div>
+                <div class="md-info-row">
+                    <span class="md-info-label"><i class="bi bi-folder"></i> Módulos</span>
+                    <span class="md-info-value">8</span>
+                </div>
+                <div class="md-info-row">
+                    <span class="md-info-label"><i class="bi bi-play-circle"></i> Aulas</span>
+                    <span class="md-info-value">47</span>
+                </div>
+                <div class="md-info-row">
+                    <span class="md-info-label"><i class="bi bi-patch-question"></i> Testes</span>
+                    <span class="md-info-value">5</span>
+                </div>
+                <div class="mt-4">
+                    <a asp-controller="Plans" asp-action="Index" class="btn-md-primary w-100" style="justify-content:center; padding:12px;">
+                        Aceder com Plano <i class="bi bi-arrow-right"></i>
+                    </a>
+                    <p style="font-size:12px; color:var(--md-text-muted); text-align:center; margin-top:10px;">
+                        Incluído em todos os planos
+                    </p>
+                </div>
+
+                <!-- Instrutor -->
+                <div class="mt-4 pt-4" style="border-top:1px solid var(--md-border);">
+                    <p class="sidebar-section-title">Instrutor</p>
+                    <div class="d-flex align-items-center gap-3 mb-8">
+                        <div class="md-avatar">CF</div>
+                        <div>
+                            <p style="font-weight:700; font-size:14px; margin:0; color:var(--md-text-primary);">Carlos Freire</p>
+                            <p style="font-size:12px; color:var(--md-text-muted); margin:0;">MCSD · Arquitecto de Software</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pré-requisitos -->
+                <div class="mt-4 pt-4" style="border-top:1px solid var(--md-border);">
+                    <p class="sidebar-section-title">Pré-requisitos</p>
+                    <a asp-controller="Projects" asp-action="Detail" asp-route-id="0" class="prereq-card">
+                        <div class="prereq-icon" style="background:linear-gradient(135deg,#6366F1,#8B5CF6); color:#fff;">C#</div>
+                        <div>
+                            <p style="font-weight:600; font-size:13px; margin:0; color:var(--md-text-primary);">Fundamentos do C#</p>
+                            <p style="font-size:12px; color:var(--md-text-muted); margin:0;">Básico · 10h</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function showTab(name, el) {
+        event.preventDefault();
+        document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+        document.querySelectorAll('.md-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + name).style.display = 'block';
+        el.classList.add('active');
+    }
+</script>
+}

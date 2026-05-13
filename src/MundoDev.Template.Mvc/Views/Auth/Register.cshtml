@@ -1,0 +1,84 @@
+@{
+    ViewData["Title"] = "Criar Conta";
+    Layout = "~/Views/Shared/_LayoutAuth.cshtml";
+}
+
+<h2 class="auth-form-title">Criar conta grátis</h2>
+<p class="auth-form-subtitle">
+    Já tens conta?
+    <a asp-controller="Auth" asp-action="Login">Entrar</a>
+</p>
+
+<form method="post" asp-controller="Auth" asp-action="Register">
+    @Html.AntiForgeryToken()
+
+    <div class="row g-3 mb-0">
+        <div class="col-6">
+            <div class="md-form-group">
+                <label class="md-label">Nome</label>
+                <input type="text" name="firstName" class="md-input" placeholder="João" required />
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="md-form-group">
+                <label class="md-label">Sobrenome</label>
+                <input type="text" name="lastName" class="md-input" placeholder="Silva" required />
+            </div>
+        </div>
+    </div>
+
+    <div class="md-form-group">
+        <label class="md-label">E-mail</label>
+        <input type="email" name="email" class="md-input" placeholder="seuemail@exemplo.com" autocomplete="email" required />
+    </div>
+
+    <div class="md-form-group">
+        <label class="md-label">Senha</label>
+        <div style="position:relative;">
+            <input type="password" name="password" id="regPassword" class="md-input" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required style="padding-right:44px;" />
+            <button type="button" onclick="togglePassword('regPassword', this)"
+                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--md-text-muted); cursor:pointer; font-size:16px;">
+                <i class="bi bi-eye"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="md-form-group">
+        <label class="md-label">Confirmar Senha</label>
+        <div style="position:relative;">
+            <input type="password" name="confirmPassword" id="regConfirm" class="md-input" placeholder="Repita a senha" required style="padding-right:44px;" />
+            <button type="button" onclick="togglePassword('regConfirm', this)"
+                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--md-text-muted); cursor:pointer; font-size:16px;">
+                <i class="bi bi-eye"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="d-flex align-items-flex-start gap-2 mb-4">
+        <input type="checkbox" name="acceptTerms" id="acceptTerms" style="width:16px; height:16px; accent-color:var(--md-accent); cursor:pointer; margin-top:2px; flex-shrink:0;" required />
+        <label for="acceptTerms" style="font-size:13px; color:var(--md-text-secondary); cursor:pointer; margin:0; line-height:1.5;">
+            Concordo com os <a asp-controller="Home" asp-action="Terms">Termos de Uso</a>
+            e a <a asp-controller="Home" asp-action="Privacy">Política de Privacidade</a>
+        </label>
+    </div>
+
+    <button type="submit" class="btn-md-primary w-100" style="justify-content:center; padding:13px;">
+        Criar conta <i class="bi bi-arrow-right"></i>
+    </button>
+</form>
+
+@section Scripts {
+<script>
+    function togglePassword(id, btn) {
+        const input = document.getElementById(id);
+        const icon = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'bi bi-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'bi bi-eye';
+        }
+    }
+</script>
+}

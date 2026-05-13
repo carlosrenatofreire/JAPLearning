@@ -1,0 +1,193 @@
+@{
+    ViewData["Title"] = "Planos";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+}
+
+<style>
+    .plans-hero { padding: 60px 0 48px; text-align: center; }
+    .toggle-billing {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--md-bg-secondary);
+        border: 1px solid var(--md-border);
+        border-radius: 30px;
+        padding: 6px 20px;
+        font-size: 14px;
+        color: var(--md-text-secondary);
+        margin-bottom: 48px;
+    }
+    .toggle-billing .toggle-switch {
+        width: 40px; height: 22px;
+        background: var(--md-gradient);
+        border-radius: 11px;
+        position: relative;
+        cursor: pointer;
+    }
+    .toggle-billing .toggle-switch::after {
+        content: '';
+        position: absolute;
+        width: 16px; height: 16px;
+        background: #fff;
+        border-radius: 50%;
+        top: 3px; right: 3px;
+        transition: left 0.2s;
+    }
+    .faq-item {
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius);
+        margin-bottom: 8px;
+        overflow: hidden;
+    }
+    .faq-question {
+        padding: 16px 20px;
+        background: var(--md-bg-card);
+        font-weight: 600;
+        font-size: 15px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: var(--md-transition);
+    }
+    .faq-question:hover { background: var(--md-bg-card-hover); }
+    .faq-answer {
+        padding: 16px 20px;
+        background: var(--md-bg-secondary);
+        font-size: 14px;
+        color: var(--md-text-secondary);
+        line-height: 1.7;
+        display: none;
+    }
+</style>
+
+<div class="container">
+    <div class="plans-hero">
+        <span class="md-badge md-badge-accent mb-3">Escolha o seu plano</span>
+        <h1 style="font-size:42px; font-weight:900; margin-bottom:12px;">
+            Invista na sua <span class="md-gradient-text">carreira</span>
+        </h1>
+        <p style="color:var(--md-text-secondary); font-size:17px; max-width:500px; margin:0 auto 32px;">
+            Acesso completo a todos os projectos, aulas e suporte. Cancele quando quiser.
+        </p>
+        <div class="toggle-billing">
+            <span>Mensal</span>
+            <div class="toggle-switch"></div>
+            <span style="color:var(--md-text-primary); font-weight:600;">Anual</span>
+            <span class="md-badge md-badge-success" style="font-size:11px;">-20%</span>
+        </div>
+    </div>
+
+    <!-- Plans Grid -->
+    <div class="row g-4 justify-content-center mb-5">
+        <!-- Mensal -->
+        <div class="col-md-4">
+            <div class="md-plan-card">
+                <p style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--md-text-muted); margin-bottom:8px;">Plano Mensal</p>
+                <div class="md-plan-price">R$97 <span>/mês</span></div>
+                <p style="font-size:13px; color:var(--md-text-muted); margin:8px 0 24px;">Sem compromisso · Cancele quando quiser</p>
+                <a asp-controller="Auth" asp-action="Register" class="btn-md-outline w-100" style="justify-content:center; margin-bottom:24px;">
+                    Começar Agora
+                </a>
+                <div>
+                    <div class="md-plan-feature"><i class="bi bi-check-circle-fill"></i> Acesso a todos os projectos</div>
+                    <div class="md-plan-feature"><i class="bi bi-check-circle-fill"></i> Todas as áreas de formação</div>
+                    <div class="md-plan-feature"><i class="bi bi-check-circle-fill"></i> Suporte via comunidade</div>
+                    <div class="md-plan-feature"><i class="bi bi-check-circle-fill"></i> Certificados de conclusão</div>
+                    <div class="md-plan-feature" style="color:var(--md-text-muted);"><i class="bi bi-x-circle" style="color:var(--md-border);"></i> Sessões de mentoria</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Anual (featured) -->
+        <div class="col-md-4">
+            <div class="md-plan-card featured">
+                <div class="featured-badge">Mais Popular</div>
+                <p style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--md-accent); margin-bottom:8px;">Plano Anual</p>
+                <div class="md-plan-price">R$77 <span>/mês</span></div>
+                <p style="font-size:13px; color:var(--md-text-muted); margin:8px 0 4px;">R$924/ano · Poupa R$240</p>
+                <p style="font-size:12px; color:var(--md-success); margin:0 0 24px; font-weight:600;">✓ 2 meses grátis vs. mensal</p>
+                <a asp-controller="Auth" asp-action="Register" class="btn-md-primary w-100" style="justify-content:center; margin-bottom:24px;">
+                    Assinar Anual <i class="bi bi-arrow-right"></i>
+                </a>
+                <div>
+                    <div class="md-plan-feature"><i class="bi bi-check-circle-fill"></i> Acesso a todos os projectos</div>
+                    <div class="md-plan-feature"><i class="bi bi-check-circle-fill"></i> Todas as áreas de formação</div>
+                    <div class="md-plan-feature"><i class="bi bi-check-circle-fill"></i> Suporte prioritário</div>
+                    <div class="md-plan-feature"><i class="bi bi-check-circle-fill"></i> Certificados de conclusão</div>
+                    <div class="md-plan-feature"><i class="bi bi-check-circle-fill"></i> 1 sessão de mentoria/mês</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="col-md-4">
+            <div class="md-plan-card">
+                <p style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--md-text-muted); margin-bottom:8px;">Empresas</p>
+                <div class="md-plan-price" style="font-size:32px;">Sob<br/>Consulta</div>
+                <p style="font-size:13px; color:var(--md-text-muted); margin:8px 0 24px;">Para equipas e empresas</p>
+                <a href="mailto:contato@mundodev.app.br" class="btn-md-outline w-100" style="justify-content:center; margin-bottom:24px;">
+                    Falar Connosco
+                </a>
+                <div>
+                    <div class="md-plan-feature"><i class="bi bi-check-circle-fill"></i> Tudo do plano anual</div>
+                    <div class="md-plan-feature"><i class="bi bi-check-circle-fill"></i> Licenças por equipa</div>
+                    <div class="md-plan-feature"><i class="bi bi-check-circle-fill"></i> Relatórios de progresso</div>
+                    <div class="md-plan-feature"><i class="bi bi-check-circle-fill"></i> Mentorias dedicadas</div>
+                    <div class="md-plan-feature"><i class="bi bi-check-circle-fill"></i> Formação on-site</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Garantia -->
+    <div class="text-center my-5">
+        <div class="d-inline-flex align-items-center gap-12 md-card" style="padding:20px 32px;">
+            <i class="bi bi-shield-check" style="font-size:32px; color:var(--md-success);"></i>
+            <div style="text-align:left;">
+                <p style="font-weight:700; font-size:15px; color:var(--md-text-primary); margin:0;">Garantia de 7 dias</p>
+                <p style="font-size:13px; color:var(--md-text-secondary); margin:0;">Não ficou satisfeito? Devolvemos o valor integralmente.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-7">
+            <h3 style="font-weight:800; text-align:center; margin-bottom:32px;">Perguntas Frequentes</h3>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Posso cancelar a qualquer momento?</span>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+                <div class="faq-answer">Sim. Podes cancelar a tua subscrição a qualquer momento sem penalizações. O acesso mantém-se até ao final do período pago.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Os certificados são reconhecidos?</span>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+                <div class="faq-answer">Os certificados MundoDev atestam a conclusão dos projectos e são emitidos em PDF com validação digital. São ideais para portfólio e LinkedIn.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Como funcionam as sessões de mentoria?</span>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+                <div class="faq-answer">No plano anual, tens direito a 1 sessão mensal de 45 minutos com o Carlos Freire. As sessões são agendadas pela plataforma.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function toggleFaq(el) {
+        const answer = el.nextElementSibling;
+        const icon = el.querySelector('i');
+        const isOpen = answer.style.display === 'block';
+        answer.style.display = isOpen ? 'none' : 'block';
+        icon.className = isOpen ? 'bi bi-chevron-down' : 'bi bi-chevron-up';
+    }
+</script>
+}
