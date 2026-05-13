@@ -1,8 +1,277 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Home";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<style>
+    .hero {
+        min-height: 92vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        padding: 80px 0 60px;
+    }
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: -200px; right: -200px;
+        width: 700px; height: 700px;
+        background: radial-gradient(circle, rgba(232,80,26,0.12) 0%, transparent 65%);
+        pointer-events: none;
+    }
+    .hero::after {
+        content: '';
+        position: absolute;
+        bottom: -150px; left: -150px;
+        width: 500px; height: 500px;
+        background: radial-gradient(circle, rgba(160,31,58,0.08) 0%, transparent 65%);
+        pointer-events: none;
+    }
+    .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(232,80,26,0.1);
+        border: 1px solid rgba(232,80,26,0.25);
+        border-radius: 20px;
+        padding: 6px 14px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--md-accent);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 24px;
+    }
+    .hero h1 {
+        font-size: clamp(36px, 5vw, 58px);
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: 24px;
+        letter-spacing: -0.02em;
+    }
+    .hero-sub {
+        font-size: 18px;
+        color: var(--md-text-secondary);
+        line-height: 1.7;
+        margin-bottom: 36px;
+        max-width: 520px;
+    }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 48px; }
+    .hero-social-proof { display: flex; align-items: center; gap: 16px; }
+    .hero-avatars { display: flex; }
+    .hero-avatars .md-avatar {
+        width: 34px; height: 34px; font-size: 12px;
+        margin-right: -8px;
+        border: 2px solid var(--md-bg-primary);
+    }
+    .hero-proof-text { font-size: 13px; color: var(--md-text-secondary); }
+    .hero-proof-text strong { color: var(--md-text-primary); }
+    .hero-visual {
+        background: var(--md-bg-card);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--md-shadow-lg);
+    }
+    .code-topbar {
+        background: var(--md-bg-secondary);
+        border-bottom: 1px solid var(--md-border);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .code-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .code-body { padding: 20px; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.8; }
+    .code-comment { color: #4a5568; }
+    .code-keyword { color: #818CF8; }
+    .code-class { color: #F59E0B; }
+    .code-string { color: #86EFAC; }
+    .code-method { color: #67E8F9; }
+    .stat-card {
+        background: var(--md-bg-card);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius);
+        padding: 20px;
+        text-align: center;
+    }
+    .stat-number {
+        font-size: 32px;
+        font-weight: 900;
+        background: var(--md-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: block;
+    }
+    .stat-label { font-size: 13px; color: var(--md-text-muted); margin-top: 4px; }
+    .feature-icon {
+        width: 48px; height: 48px;
+        background: rgba(232,80,26,0.1);
+        border: 1px solid rgba(232,80,26,0.2);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px;
+        color: var(--md-accent);
+        margin-bottom: 16px;
+    }
+    .md-section { padding: 80px 0; }
+    .md-section-alt { background: var(--md-bg-secondary); }
+</style>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="container position-relative" style="z-index:1;">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="hero-eyebrow">
+                    <i class="bi bi-stars"></i> Plataforma de Elite em .NET
+                </div>
+                <h1>
+                    Da planilha ao<br />
+                    <span class="md-gradient-text">sistema corporativo.</span>
+                </h1>
+                <p class="hero-sub">
+                    Aprenda a desenhar arquitecturas reais, tomar decisões estratégicas
+                    e transformar processos caóticos em sistemas robustos com .NET e C4 Model.
+                </p>
+                <div class="hero-actions">
+                    <a asp-controller="Plans" asp-action="Index" class="btn-md-primary" style="font-size:16px; padding:14px 28px;">
+                        Ver Planos <i class="bi bi-arrow-right"></i>
+                    </a>
+                    <a asp-controller="Projects" asp-action="Index" class="btn-md-outline" style="font-size:16px; padding:14px 28px;">
+                        Explorar Projectos
+                    </a>
+                </div>
+                <div class="hero-social-proof">
+                    <div class="hero-avatars">
+                        <div class="md-avatar">AB</div>
+                        <div class="md-avatar" style="background:linear-gradient(135deg,#6366F1,#8B5CF6);">CF</div>
+                        <div class="md-avatar" style="background:linear-gradient(135deg,#22C55E,#16A34A);">MR</div>
+                        <div class="md-avatar" style="background:linear-gradient(135deg,#F59E0B,#D97706);">LS</div>
+                    </div>
+                    <p class="hero-proof-text">
+                        <strong>+50 profissionais</strong> já formados.<br />
+                        Junte-se a quem quer liderar tecnicamente.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-visual">
+                    <div class="code-topbar">
+                        <div class="code-dot" style="background:#EF4444;"></div>
+                        <div class="code-dot" style="background:#F59E0B;"></div>
+                        <div class="code-dot" style="background:#22C55E;"></div>
+                        <span style="font-size:12px; color:var(--md-text-muted); margin-left:8px;">IndicatorService.cs</span>
+                    </div>
+                    <div class="code-body">
+                        <div><span class="code-comment">// Negócio → Arquitectura → Código</span></div>
+                        <div><span class="code-keyword">public class</span> <span class="code-class">IndicatorService</span></div>
+                        <div>&nbsp;&nbsp;&nbsp;&nbsp;: <span class="code-class">IIndicatorService</span></div>
+                        <div>{</div>
+                        <div>&nbsp;&nbsp;<span class="code-keyword">private readonly</span> <span class="code-class">IUnitOfWork</span> _uow;</div>
+                        <div>&nbsp;&nbsp;<span class="code-keyword">private readonly</span> <span class="code-class">INotifierService</span> _notifier;</div>
+                        <br />
+                        <div>&nbsp;&nbsp;<span class="code-keyword">public async</span> <span class="code-class">Task</span> <span class="code-method">AddAsync</span>(<span class="code-class">IndicatorDto</span> dto)</div>
+                        <div>&nbsp;&nbsp;{</div>
+                        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">if</span> (!dto.<span class="code-method">IsValid</span>()) {</div>
+                        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_notifier.<span class="code-method">Handle</span>(<span class="code-string">"Dados inválidos"</span>);</div>
+                        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return</span>;</div>
+                        <div>&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">await</span> _uow.<span class="code-method">Commit</span>();</div>
+                        <div>&nbsp;&nbsp;}</div>
+                        <div>}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats -->
+<section class="md-section md-section-alt">
+    <div class="container">
+        <div class="row g-3 justify-content-center">
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <span class="stat-number">+50</span>
+                    <p class="stat-label">Profissionais Formados</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <span class="stat-number">25+</span>
+                    <p class="stat-label">Anos de Experiência</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <span class="stat-number">100%</span>
+                    <p class="stat-label">Foco em .NET</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <span class="stat-number">C4</span>
+                    <p class="stat-label">Model desde o Dia 1</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Metodologia -->
+<section class="md-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <p style="text-transform:uppercase; letter-spacing:.1em; font-size:13px; font-weight:700; color:var(--md-accent); margin-bottom:12px;">Metodologia</p>
+            <h2 class="md-section-title">Como aprendemos aqui</h2>
+            <p style="color:var(--md-text-secondary); max-width:520px; margin:0 auto;">
+                Não ensinamos sintaxe. Ensinamos o raciocínio de quem resolve problemas reais em empresas reais.
+            </p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="md-card h-100">
+                    <div class="feature-icon"><i class="bi bi-table"></i></div>
+                    <h5 style="font-weight:700; margin-bottom:10px;">1. Ponto de Partida Real</h5>
+                    <p style="font-size:14px; color:var(--md-text-secondary); margin:0;">
+                        Começamos com planilhas e processos reais. O aluno entende o caos antes de desenhar a solução.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="md-card h-100">
+                    <div class="feature-icon"><i class="bi bi-diagram-3"></i></div>
+                    <h5 style="font-weight:700; margin-bottom:10px;">2. Arquitectura Primeiro</h5>
+                    <p style="font-size:14px; color:var(--md-text-secondary); margin:0;">
+                        Diagramas C4 (Níveis 1, 2 e 3) e modelo de dados antes de uma linha de código.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="md-card h-100">
+                    <div class="feature-icon"><i class="bi bi-code-slash"></i></div>
+                    <h5 style="font-weight:700; margin-bottom:10px;">3. Código com Propósito</h5>
+                    <p style="font-size:14px; color:var(--md-text-secondary); margin:0;">
+                        Cada decisão técnica é justificada. Trade-offs, custos e padrões corporativos em .NET.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="md-section md-section-alt">
+    <div class="container text-center">
+        <h2 class="md-section-title">Pronto para dar o próximo passo?</h2>
+        <p style="color:var(--md-text-secondary); font-size:17px; max-width:480px; margin:12px auto 32px;">
+            Deixa de ser apenas mais um dev. Torna-te o profissional que as empresas procuram.
+        </p>
+        <a asp-controller="Plans" asp-action="Index" class="btn-md-primary" style="font-size:16px; padding:14px 32px;">
+            Ver Planos e Preços <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+</section>

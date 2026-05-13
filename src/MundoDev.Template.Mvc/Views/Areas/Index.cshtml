@@ -1,0 +1,44 @@
+@{
+    ViewData["Title"] = "Áreas";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+}
+
+<div class="container">
+    <div style="padding: 60px 0 40px; border-bottom: 1px solid var(--md-border); margin-bottom: 48px;">
+        <p style="color:var(--md-accent); font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px;">Formações</p>
+        <h1 style="font-size:38px; font-weight:900; margin-bottom:12px;">Áreas de Formação</h1>
+        <p style="color:var(--md-text-secondary); font-size:16px; max-width:560px; margin:0;">
+            Percursos completos que agrupam projectos relacionados. Cada área é uma jornada de especialização.
+        </p>
+    </div>
+
+    <div class="row g-4 mb-5">
+        @for (int i = 1; i <= 4; i++)
+        {
+            <div class="col-md-6">
+                <a asp-controller="Areas" asp-action="Detail" asp-route-id="@i" class="md-course-card d-block">
+                    <div style="padding:28px;">
+                        <div style="display:flex; align-items:flex-start; gap:16px;">
+                            <div style="width:56px; height:56px; background:var(--md-gradient); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; color:#fff; flex-shrink:0;">.N</div>
+                            <div style="flex:1;">
+                                <h5 style="font-weight:800; margin-bottom:6px; color:var(--md-text-primary);">Arquitectura de Software .NET</h5>
+                                <p style="font-size:14px; color:var(--md-text-secondary); margin-bottom:16px; line-height:1.6;">
+                                    Domina os conceitos de arquitectura corporativa, padrões de design e boas práticas
+                                    para construir sistemas escaláveis e manuteníveis em .NET.
+                                </p>
+                                <div style="display:flex; gap:20px; font-size:13px; color:var(--md-text-muted);">
+                                    <span><i class="bi bi-collection"></i> 6 Projectos</span>
+                                    <span><i class="bi bi-clock"></i> 44:00 Horas</span>
+                                    <span><i class="bi bi-play-circle"></i> 372 Aulas</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--md-border-light);">
+                            <span class="md-badge md-badge-accent">Mais Popular</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>
