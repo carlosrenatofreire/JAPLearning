@@ -8,14 +8,13 @@
 
 	<ItemGroup>
 		<PackageReference Include="FluentValidation" Version="11.11.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.10" />
-		
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.9" />
 		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.14.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="10.0.8" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="10.0.1" />
 		<PackageReference Include="IdentityModel" Version="7.0.0" />
 		<PackageReference Include="automapper" Version="16.1.1" />
 		<PackageReference Include="StackExchange.Redis" Version="2.8.41" />
-		<PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.4" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
 	</ItemGroup>
 
@@ -39,10 +38,6 @@
     <Folder Include="Validations\Internals\Auxiliaries\" />
     <Folder Include="Validations\Internals\Entities\" />
     <Folder Include="Validations\Internals\Parameters\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\MundoDev.Helper\MundoDev.Helper.csproj" />
   </ItemGroup>
 
 </Project>

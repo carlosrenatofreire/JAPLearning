@@ -1,4 +1,19 @@
+using Doppler.Extensions.Configuration;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Adiciona o Doppler como fonte de configuração
+builder.Configuration.AddDoppler(options =>
+{
+    options.ServiceToken = "dp.st.dev_carlos.VJxtuLmTSW0akkPfes2Wc95GceAk4Z5iDvS9yejGVWE";
+    options.Project = "mundodev"; 
+    options.Config = "dev_carlos";
+});
+
+var root = (IConfigurationRoot)builder.Configuration;
+root.Reload();
+
+var myConn = builder.Configuration["CONNECTIONSTRINGS"];
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
