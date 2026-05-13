@@ -62,5 +62,9 @@ namespace MundoDev.Template.Mvc.Controllers
         public IActionResult MyOrders() => View();
         public IActionResult MyCertificates() => View();
         public IActionResult Player(int projectId, int lessonId) => View();
+        public IActionResult Projects() => View();
+        public IActionResult ProjectDetail(int id) => View();
+        public IActionResult Areas() => View();
+        public IActionResult AreaDetail(int id) => View();
     }
 }

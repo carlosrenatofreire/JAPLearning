@@ -1,0 +1,51 @@
+@{
+    ViewData["Title"] = "Áreas";
+    ViewData["ActiveMenu"] = "";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+        <h4 style="font-weight:800; margin-bottom:4px;">Áreas de Formação</h4>
+        <p style="color:var(--md-text-muted); font-size:14px; margin:0;">Percursos completos incluídos no seu plano</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    @for (int i = 1; i <= 4; i++)
+    {
+        <div class="col-md-6">
+            <a asp-controller="App" asp-action="AreaDetail" asp-route-id="@i"
+               style="display:block; background:var(--md-bg-card); border:1px solid var(--md-border); border-radius:var(--md-radius-lg); overflow:hidden; text-decoration:none; transition:var(--md-transition);"
+               onmouseover="this.style.borderColor='rgba(232,80,26,0.35)'"
+               onmouseout="this.style.borderColor='var(--md-border)'">
+                <div style="padding:24px;">
+                    <div style="display:flex; align-items:flex-start; gap:16px;">
+                        <div style="width:52px; height:52px; background:var(--md-gradient); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:#fff; flex-shrink:0;">.N</div>
+                        <div style="flex:1;">
+                            <h5 style="font-weight:800; margin-bottom:6px; color:var(--md-text-primary);">Arquitectura de Software .NET</h5>
+                            <p style="font-size:14px; color:var(--md-text-secondary); margin-bottom:14px; line-height:1.6;">
+                                Domina os conceitos de arquitectura corporativa, padrões de design e boas práticas em .NET.
+                            </p>
+                            <div style="font-size:13px; color:var(--md-text-muted); display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px;">
+                                <span><i class="bi bi-collection"></i> 6 Projectos</span>
+                                <span><i class="bi bi-clock"></i> 44:00 Horas</span>
+                                <span><i class="bi bi-play-circle"></i> 372 Aulas</span>
+                            </div>
+                            <!-- Progress -->
+                            <div>
+                                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--md-text-muted); margin-bottom:5px;">
+                                    <span>Progresso</span>
+                                    <span style="color:var(--md-accent); font-weight:700;">20%</span>
+                                </div>
+                                <div class="md-progress">
+                                    <div class="md-progress-bar" style="width:20%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+</div>

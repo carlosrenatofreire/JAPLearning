@@ -1,0 +1,133 @@
+@{
+    ViewData["Title"] = "Arquitectura de Software .NET";
+    ViewData["ActiveMenu"] = "";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+}
+
+<!-- Breadcrumb -->
+<nav class="md-breadcrumb mb-4">
+    <a asp-controller="App" asp-action="Dashboard">Dashboard</a>
+    <span class="separator">/</span>
+    <a asp-controller="App" asp-action="Areas">Áreas</a>
+    <span class="separator">/</span>
+    <span class="current">Arquitectura de Software .NET</span>
+</nav>
+
+<div class="row g-4">
+    <!-- Main -->
+    <div class="col-lg-8">
+        <!-- Progress -->
+        <div class="md-card mb-4">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span style="font-size:14px; font-weight:600; color:var(--md-text-secondary);">Progresso na Área</span>
+                <span style="font-size:16px; font-weight:800; color:var(--md-accent);">20%</span>
+            </div>
+            <div class="md-progress" style="height:8px;">
+                <div class="md-progress-bar" style="width:20%;"></div>
+            </div>
+            <p style="font-size:13px; color:var(--md-text-muted); margin:8px 0 0;">1 de 6 projectos concluídos</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="md-tabs">
+            <a href="#" class="md-tab active" onclick="showTab('projectos', this)">Projectos</a>
+            <a href="#" class="md-tab" onclick="showTab('apresentacao', this)">Apresentação</a>
+        </div>
+
+        <!-- Projectos -->
+        <div id="tab-projectos">
+            @for (int i = 1; i <= 6; i++)
+            {
+                <a asp-controller="App" asp-action="ProjectDetail" asp-route-id="@i"
+                   style="display:flex; align-items:center; gap:16px; padding:16px; background:var(--md-bg-card); border:1px solid var(--md-border); border-radius:var(--md-radius); margin-bottom:10px; text-decoration:none; transition:var(--md-transition);"
+                   onmouseover="this.style.borderColor='rgba(232,80,26,0.35)'"
+                   onmouseout="this.style.borderColor='var(--md-border)'">
+                    <div style="width:48px; height:48px; background:var(--md-gradient); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:900; color:#fff; flex-shrink:0;">.N</div>
+                    <div style="flex:1; min-width:0;">
+                        <p style="font-weight:700; font-size:14px; color:var(--md-text-primary); margin:0 0 4px;">Sistema de Gestão de Indicadores e KPIs</p>
+                        <div style="font-size:12px; color:var(--md-text-muted); display:flex; gap:12px; margin-bottom:6px;">
+                            <span>★★☆ Intermediário</span>
+                            <span>· 6h 00min</span>
+                            <span>· 47 aulas</span>
+                        </div>
+                        <div class="md-progress" style="height:3px;">
+                            <div class="md-progress-bar" style="width:@(i == 1 ? "100" : i == 2 ? "35" : "0")%;"></div>
+                        </div>
+                    </div>
+                    <div style="flex-shrink:0; text-align:right;">
+                        @if (i == 1)
+                        {
+                            <span class="md-badge md-badge-success">Concluído</span>
+                        }
+                        else if (i == 2)
+                        {
+                            <span style="font-size:12px; color:var(--md-accent); font-weight:700;">35%</span>
+                        }
+                        else
+                        {
+                            <span style="font-size:12px; color:var(--md-text-muted);">Por iniciar</span>
+                        }
+                    </div>
+                </a>
+            }
+        </div>
+
+        <!-- Apresentação -->
+        <div id="tab-apresentacao" style="display:none;">
+            <p style="color:var(--md-text-secondary); line-height:1.8; margin-bottom:16px;">
+                Esta área é uma imersão completa no mundo da arquitectura de software com .NET.
+                Você vai aprender a pensar como um arquitecto, tomando decisões fundamentadas em
+                cenários reais de empresas que precisam migrar os seus processos para a web.
+            </p>
+            <p style="color:var(--md-text-secondary); line-height:1.8;">
+                Do C4 Model ao código, do DER ao deploy — cada projecto desta área foi desenhado
+                para simular o dia a dia corporativo.
+            </p>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <div class="md-card" style="position:sticky; top:80px;">
+            <p style="font-size:14px; font-weight:700; color:var(--md-text-primary); margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--md-border);">Informações Gerais</p>
+            <div class="md-info-row">
+                <span class="md-info-label"><i class="bi bi-collection"></i> Projectos</span>
+                <span class="md-info-value">6</span>
+            </div>
+            <div class="md-info-row">
+                <span class="md-info-label"><i class="bi bi-clock"></i> Duração</span>
+                <span class="md-info-value">44:00 Horas</span>
+            </div>
+            <div class="md-info-row">
+                <span class="md-info-label"><i class="bi bi-folder"></i> Módulos</span>
+                <span class="md-info-value">57</span>
+            </div>
+            <div class="md-info-row">
+                <span class="md-info-label"><i class="bi bi-play-circle"></i> Aulas</span>
+                <span class="md-info-value">372</span>
+            </div>
+            <div class="md-info-row">
+                <span class="md-info-label"><i class="bi bi-check-circle"></i> Concluídos</span>
+                <span class="md-info-value" style="color:var(--md-success);">1 de 6</span>
+            </div>
+            <div class="mt-4">
+                <a asp-controller="App" asp-action="ProjectDetail" asp-route-id="2"
+                   class="btn-md-primary w-100" style="justify-content:center; padding:12px;">
+                    <i class="bi bi-play-fill"></i> Continuar Área
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function showTab(name, el) {
+        event.preventDefault();
+        document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+        document.querySelectorAll('.md-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + name).style.display = 'block';
+        el.classList.add('active');
+    }
+</script>
+}
