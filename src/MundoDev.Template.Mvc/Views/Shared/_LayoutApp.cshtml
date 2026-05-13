@@ -86,19 +86,22 @@
             padding: 16px 12px;
             border-top: 1px solid var(--md-border);
         }
-        .sidebar-user {
+
+        /* ── Topbar user ────────────────────────────────────── */
+        .topbar-user {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 10px 12px;
-            border-radius: var(--md-radius-sm);
             cursor: pointer;
+            padding: 6px 10px;
+            border-radius: var(--md-radius-sm);
             transition: var(--md-transition);
+            text-decoration: none;
         }
-        .sidebar-user:hover { background: rgba(255,255,255,0.04); }
-        .sidebar-user-info { flex: 1; min-width: 0; }
-        .sidebar-user-name { font-size: 13px; font-weight: 600; color: var(--md-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .sidebar-user-plan { font-size: 11px; color: var(--md-text-muted); }
+        .topbar-user:hover { background: rgba(255,255,255,0.05); }
+        .topbar-user-info { line-height: 1.2; }
+        .topbar-user-name { font-size: 13px; font-weight: 600; color: var(--md-text-primary); white-space: nowrap; }
+        .topbar-user-plan { font-size: 11px; color: var(--md-text-muted); }
 
         /* ── Main ───────────────────────────────────────────── */
         .app-main {
@@ -204,15 +207,7 @@
             </nav>
 
             <div class="sidebar-footer">
-                <div class="sidebar-user">
-                    <div class="md-avatar">JS</div>
-                    <div class="sidebar-user-info">
-                        <p class="sidebar-user-name">João Silva</p>
-                        <p class="sidebar-user-plan">Plano Pro</p>
-                    </div>
-                    <i class="bi bi-three-dots-vertical text-muted-md"></i>
-                </div>
-                <a href="#" class="sidebar-item mt-2" style="color: var(--md-danger);">
+                <a href="#" class="sidebar-item" style="color: var(--md-danger);">
                     <i class="bi bi-box-arrow-left"></i> Sair
                 </a>
             </div>
@@ -222,8 +217,13 @@
         <div class="app-main">
             <div class="app-topbar">
                 <span class="app-topbar-title">@ViewData["Title"]</span>
-                <a asp-controller="Plans" asp-action="Index" class="btn-md-primary" style="font-size:13px; padding:7px 16px;">
-                    <i class="bi bi-arrow-up-circle"></i> Upgrade
+                <a asp-controller="App" asp-action="PersonalData" class="topbar-user">
+                    <div class="md-avatar" style="width:32px;height:32px;font-size:12px;flex-shrink:0;">JS</div>
+                    <div class="topbar-user-info">
+                        <p class="topbar-user-name">João Silva</p>
+                        <p class="topbar-user-plan">Plano Pro</p>
+                    </div>
+                    <i class="bi bi-chevron-down" style="font-size:11px; color:var(--md-text-muted);"></i>
                 </a>
             </div>
             <div class="app-content">
