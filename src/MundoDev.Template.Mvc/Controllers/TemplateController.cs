@@ -9,7 +9,17 @@ namespace MundoDev.Template.Mvc.Controllers
     public class AuthController : Controller
     {
         public IActionResult Login() => View();
+
+        [HttpPost]
+        public IActionResult Login(string email, string password, bool rememberMe)
+            => RedirectToAction("Dashboard", "App");
+
         public IActionResult Register() => View();
+
+        [HttpPost]
+        public IActionResult Register(string firstName, string lastName, string email, string password)
+            => RedirectToAction("Dashboard", "App");
+
         public IActionResult ForgotPassword() => View();
     }
 
