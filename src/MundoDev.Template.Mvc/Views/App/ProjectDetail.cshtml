@@ -1,0 +1,157 @@
+@{
+    ViewData["Title"] = "Sistema de Gestão de Indicadores e KPIs";
+    ViewData["ActiveMenu"] = "";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+}
+
+<!-- Breadcrumb -->
+<nav class="md-breadcrumb mb-4">
+    <a asp-controller="App" asp-action="Dashboard">Dashboard</a>
+    <span class="separator">/</span>
+    <a asp-controller="App" asp-action="Projects">Projectos</a>
+    <span class="separator">/</span>
+    <span class="current">Sistema de Gestão de Indicadores e KPIs</span>
+</nav>
+
+<div class="row g-4">
+    <!-- Main -->
+    <div class="col-lg-8">
+        <!-- Meta -->
+        <div style="display:flex; gap:20px; flex-wrap:wrap; font-size:13px; color:var(--md-text-muted); margin-bottom:16px;">
+            <span><i class="bi bi-person"></i> Carlos Freire</span>
+            <span><i class="bi bi-bar-chart"></i> ★★☆ Intermediário</span>
+            <span><i class="bi bi-tag"></i> Gestão Corporativa</span>
+        </div>
+
+        <!-- Video -->
+        <div style="position:relative; width:100%; padding-bottom:56.25%; background:#000; border-radius:var(--md-radius-lg); overflow:hidden; margin-bottom:24px;">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                    style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+                    allowfullscreen></iframe>
+        </div>
+
+        <!-- Progress bar -->
+        <div style="margin-bottom:24px;">
+            <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--md-text-muted); margin-bottom:6px;">
+                <span>O teu progresso</span>
+                <span style="color:var(--md-accent); font-weight:700;">35%</span>
+            </div>
+            <div class="md-progress">
+                <div class="md-progress-bar" style="width:35%;"></div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="md-tabs">
+            <a href="#" class="md-tab active" onclick="showTab('ementa', this)">Ementa</a>
+            <a href="#" class="md-tab" onclick="showTab('apresentacao', this)">Apresentação</a>
+            <a href="#" class="md-tab" onclick="showTab('instrutor', this)">Instrutor</a>
+        </div>
+
+        <!-- Ementa -->
+        <div id="tab-ementa">
+            <div class="md-accordion-item">
+                <div class="md-accordion-header">
+                    <span>Módulo 1 — Introdução e Contexto</span>
+                    <span style="font-size:12px; font-weight:500;">3 aulas · 25min</span>
+                </div>
+                <div class="md-accordion-body">
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="1" class="md-lesson-item completed">
+                        <i class="bi bi-check-circle-fill" style="color:var(--md-success);"></i>
+                        <span style="flex:1;">Apresentação do Projecto (2:00)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="2" class="md-lesson-item active">
+                        <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                        <span style="flex:1;">O problema do Excel nas empresas (10:00)</span>
+                        <span class="md-badge md-badge-accent" style="font-size:11px;">A assistir</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="3" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Visão geral da solução (13:00)</span>
+                    </a>
+                </div>
+            </div>
+            <div class="md-accordion-item">
+                <div class="md-accordion-header">
+                    <span>Módulo 2 — Arquitectura C4 Model</span>
+                    <span style="font-size:12px; font-weight:500;">5 aulas · 1h 10min</span>
+                </div>
+                <div class="md-accordion-body">
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="4" class="md-lesson-item">
+                        <i class="bi bi-lock-fill" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">C4 Nível 1 — Contexto do Sistema (12:00)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="5" class="md-lesson-item">
+                        <i class="bi bi-lock-fill" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">C4 Nível 2 — Containers (15:00)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Apresentação -->
+        <div id="tab-apresentacao" style="display:none;">
+            <p style="color:var(--md-text-secondary); line-height:1.8;">
+                O Sistema de Gestão de Indicadores e KPIs é o primeiro projecto da MundoDev.
+                Partimos de um cenário real: uma empresa que gere os seus indicadores de performance
+                em planilhas Excel desorganizadas, e transformamos isso num sistema corporativo completo em .NET.
+            </p>
+        </div>
+
+        <!-- Instrutor -->
+        <div id="tab-instrutor" style="display:none;">
+            <div class="d-flex align-items-start gap-3">
+                <div class="md-avatar md-avatar-lg">CF</div>
+                <div>
+                    <h5 style="font-weight:700; margin-bottom:4px;">Carlos Freire</h5>
+                    <p style="color:var(--md-accent); font-size:13px; margin-bottom:10px;">MCSD — Arquitecto de Software &amp; Tech Lead</p>
+                    <p style="color:var(--md-text-secondary); font-size:14px; line-height:1.7; margin:0;">
+                        Com mais de 25 anos de experiência, Carlos já formou mais de 50 profissionais
+                        no ecossistema Microsoft .NET.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <div class="md-card" style="position:sticky; top:80px;">
+            <p style="font-size:14px; font-weight:700; color:var(--md-text-primary); margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--md-border);">Informações Gerais</p>
+            <div class="md-info-row">
+                <span class="md-info-label"><i class="bi bi-clock"></i> Duração</span>
+                <span class="md-info-value">06:00 Horas</span>
+            </div>
+            <div class="md-info-row">
+                <span class="md-info-label"><i class="bi bi-folder"></i> Módulos</span>
+                <span class="md-info-value">8</span>
+            </div>
+            <div class="md-info-row">
+                <span class="md-info-label"><i class="bi bi-play-circle"></i> Aulas</span>
+                <span class="md-info-value">47</span>
+            </div>
+            <div class="md-info-row">
+                <span class="md-info-label"><i class="bi bi-check-circle"></i> Concluídas</span>
+                <span class="md-info-value" style="color:var(--md-success);">1 de 47</span>
+            </div>
+            <div class="mt-4">
+                <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="2"
+                   class="btn-md-primary w-100" style="justify-content:center; padding:12px;">
+                    <i class="bi bi-play-fill"></i> Continuar a Assistir
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function showTab(name, el) {
+        event.preventDefault();
+        document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+        document.querySelectorAll('.md-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + name).style.display = 'block';
+        el.classList.add('active');
+    }
+</script>
+}
