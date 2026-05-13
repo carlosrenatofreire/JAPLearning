@@ -1,0 +1,115 @@
+@{
+    ViewData["Title"] = "Pagamento";
+    ViewData["ActiveMenu"] = "payment";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+}
+
+<div class="row g-4">
+    <!-- Subscrição actual -->
+    <div class="col-lg-8">
+        <div class="md-card mb-4">
+            <h5 style="font-weight:700; margin-bottom:24px;">Subscrição Actual</h5>
+            <div style="background:linear-gradient(135deg, rgba(232,80,26,0.08), rgba(160,31,58,0.04)); border:1px solid rgba(232,80,26,0.2); border-radius:var(--md-radius); padding:20px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+                <div>
+                    <p class="md-badge md-badge-accent mb-2">Plano Anual</p>
+                    <p style="font-size:24px; font-weight:800; color:var(--md-text-primary); margin:0;">R$ 77<span style="font-size:14px; font-weight:400; color:var(--md-text-muted);">/mês</span></p>
+                    <p style="font-size:13px; color:var(--md-text-muted); margin:4px 0 0;">Próxima renovação: <strong style="color:var(--md-text-secondary);">13/05/2027</strong></p>
+                </div>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a asp-controller="Plans" asp-action="Index" class="btn-md-outline" style="font-size:13px; padding:8px 18px;">
+                        <i class="bi bi-arrow-up-circle"></i> Mudar Plano
+                    </a>
+                    <button class="btn-md-ghost" style="font-size:13px; padding:8px 18px; border:1px solid rgba(239,68,68,0.25); color:var(--md-danger);">
+                        <i class="bi bi-x-circle"></i> Cancelar Subscrição
+                    </button>
+                </div>
+            </div>
+
+            <!-- Método de pagamento -->
+            <h6 style="font-weight:700; margin-bottom:16px; color:var(--md-text-secondary); font-size:13px; text-transform:uppercase; letter-spacing:.06em;">Método de Pagamento</h6>
+            <div style="display:flex; align-items:center; justify-content:space-between; background:var(--md-bg-secondary); border:1px solid var(--md-border); border-radius:var(--md-radius); padding:16px 20px; margin-bottom:12px;">
+                <div style="display:flex; align-items:center; gap:14px;">
+                    <div style="width:44px; height:28px; background:#1A1F71; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:900; color:#fff; letter-spacing:.05em;">VISA</div>
+                    <div>
+                        <p style="font-weight:600; font-size:14px; color:var(--md-text-primary); margin:0;">•••• •••• •••• 4242</p>
+                        <p style="font-size:12px; color:var(--md-text-muted); margin:0;">Expira 12/2028</p>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="md-badge md-badge-success" style="font-size:11px;">Principal</span>
+                    <button class="btn-md-ghost" style="font-size:12px; padding:6px 12px; border:1px solid var(--md-border);">
+                        <i class="bi bi-pencil"></i> Editar
+                    </button>
+                </div>
+            </div>
+            <button class="btn-md-ghost mt-2" style="font-size:13px; padding:8px 14px; border:1px solid var(--md-border);">
+                <i class="bi bi-plus-lg"></i> Adicionar método de pagamento
+            </button>
+        </div>
+
+        <!-- Histórico de faturas -->
+        <div class="md-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h5 style="font-weight:700; margin:0;">Histórico de Faturas</h5>
+            </div>
+            <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                    <thead>
+                        <tr style="border-bottom:1px solid var(--md-border);">
+                            <th style="padding:10px 12px; text-align:left; color:var(--md-text-muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.06em;">Data</th>
+                            <th style="padding:10px 12px; text-align:left; color:var(--md-text-muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.06em;">Descrição</th>
+                            <th style="padding:10px 12px; text-align:left; color:var(--md-text-muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.06em;">Valor</th>
+                            <th style="padding:10px 12px; text-align:left; color:var(--md-text-muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.06em;">Estado</th>
+                            <th style="padding:10px 12px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < 3; i++)
+                        {
+                            <tr style="border-bottom:1px solid var(--md-border-light);">
+                                <td style="padding:14px 12px; color:var(--md-text-secondary);">13/05/2026</td>
+                                <td style="padding:14px 12px; color:var(--md-text-primary); font-weight:500;">Plano Anual MundoDev</td>
+                                <td style="padding:14px 12px; font-weight:700; color:var(--md-text-primary);">R$ 924,00</td>
+                                <td style="padding:14px 12px;"><span class="md-badge md-badge-success">Pago</span></td>
+                                <td style="padding:14px 12px; text-align:right;">
+                                    <a href="#" class="btn-md-ghost" style="font-size:12px; padding:6px 12px; border:1px solid var(--md-border);">
+                                        <i class="bi bi-download"></i> PDF
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar resumo -->
+    <div class="col-lg-4">
+        <div class="md-card" style="position:sticky; top:80px;">
+            <h6 style="font-weight:700; margin-bottom:16px; font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--md-text-secondary);">Resumo</h6>
+            <div class="md-info-row">
+                <span class="md-info-label"><i class="bi bi-calendar-check"></i> Plano</span>
+                <span class="md-info-value">Anual</span>
+            </div>
+            <div class="md-info-row">
+                <span class="md-info-label"><i class="bi bi-clock"></i> Estado</span>
+                <span class="md-info-value" style="color:var(--md-success);">Activo</span>
+            </div>
+            <div class="md-info-row">
+                <span class="md-info-label"><i class="bi bi-calendar"></i> Membro desde</span>
+                <span class="md-info-value">Mai 2026</span>
+            </div>
+            <div class="md-info-row">
+                <span class="md-info-label"><i class="bi bi-arrow-repeat"></i> Renovação</span>
+                <span class="md-info-value">13/05/2027</span>
+            </div>
+            <div style="margin-top:20px; padding:14px; background:rgba(34,197,94,0.07); border:1px solid rgba(34,197,94,0.2); border-radius:var(--md-radius);">
+                <p style="font-size:13px; color:var(--md-success); font-weight:600; margin:0 0 4px;">
+                    <i class="bi bi-shield-check"></i> Garantia activa
+                </p>
+                <p style="font-size:12px; color:var(--md-text-muted); margin:0;">7 dias de reembolso total</p>
+            </div>
+        </div>
+    </div>
+</div>
