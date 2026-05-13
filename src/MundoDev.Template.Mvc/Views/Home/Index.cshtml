@@ -5,12 +5,12 @@
 
 <style>
     .hero {
-        min-height: 92vh;
+        min-height: 60vh;
         display: flex;
         align-items: center;
         position: relative;
         overflow: hidden;
-        padding: 80px 0 60px;
+        padding: 40px 0 30px;
     }
     .hero::before {
         content: '';
@@ -67,7 +67,60 @@
     }
     .hero-proof-text { font-size: 13px; color: var(--md-text-secondary); }
     .hero-proof-text strong { color: var(--md-text-primary); }
+    /* ── Hero scene (planilha + código) ──────────────────── */
+    .hero-scene {
+        position: relative;
+        padding: 24px 0 24px 24px;
+    }
+    .hero-sheet {
+        position: absolute;
+        top: 0; left: 0;
+        width: 90%;
+        background: #1a2235;
+        border: 1px solid rgba(99,102,241,0.3);
+        border-radius: 10px;
+        overflow: hidden;
+        transform: rotate(-3deg) translateY(12px);
+        opacity: 0.7;
+        z-index: 0;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .sheet-titlebar {
+        background: #1e2d45;
+        border-bottom: 1px solid rgba(99,102,241,0.2);
+        padding: 8px 12px;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .sheet-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .sheet-filename { font-size: 11px; color: #6b7280; font-family: sans-serif; }
+    .sheet-grid { font-family: 'Courier New', monospace; font-size: 11px; }
+    .sheet-header-row { display: flex; background: #1e2d45; }
+    .sheet-row { display: flex; border-top: 1px solid rgba(255,255,255,0.04); }
+    .sheet-cell-num {
+        width: 28px; min-width: 28px;
+        padding: 4px 6px;
+        color: #4b5563;
+        border-right: 1px solid rgba(255,255,255,0.06);
+        text-align: center;
+        background: #1e2d45;
+    }
+    .sheet-cell {
+        flex: 1;
+        padding: 4px 8px;
+        border-right: 1px solid rgba(255,255,255,0.04);
+        color: #6b7280;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    .sheet-cell.col-hdr { color: #4b5563; background: #1e2d45; text-align: center; font-weight: 600; }
+    .sheet-cell.accent { color: #f97316; }
+    .sheet-cell.green { color: #22c55e; }
+    .sheet-cell.red { color: #ef4444; }
+    .sheet-cell.bold { color: #e2e8f0; font-weight: 600; }
+
     .hero-visual {
+        position: relative;
+        z-index: 1;
         background: var(--md-bg-card);
         border: 1px solid var(--md-border);
         border-radius: var(--md-radius-lg);
@@ -147,7 +200,7 @@
                 <div class="hero-social-proof">
                     <div class="hero-avatars">
                         <div class="md-avatar">AB</div>
-                        <img src="~/images/carlos-freire.jpg" alt="Carlos Freire" style="width:34px;height:34px;border-radius:50%;object-fit:cover;margin-right:-8px;border:2px solid var(--md-bg-primary);" />
+                        <img src="/images/carlos-freire.jpg" alt="Carlos Freire" style="width:34px;height:34px;border-radius:50%;object-fit:cover;margin-right:-8px;border:2px solid var(--md-bg-primary);" />
                         <div class="md-avatar" style="background:linear-gradient(135deg,#22C55E,#16A34A);">MR</div>
                         <div class="md-avatar" style="background:linear-gradient(135deg,#F59E0B,#D97706);">LS</div>
                     </div>
@@ -158,30 +211,94 @@
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="hero-visual">
-                    <div class="code-topbar">
-                        <div class="code-dot" style="background:#EF4444;"></div>
-                        <div class="code-dot" style="background:#F59E0B;"></div>
-                        <div class="code-dot" style="background:#22C55E;"></div>
-                        <span style="font-size:12px; color:var(--md-text-muted); margin-left:8px;">IndicatorService.cs</span>
+                <div class="hero-scene">
+                    <!-- Planilha atrás -->
+                    <div class="hero-sheet">
+                        <div class="sheet-titlebar">
+                            <div class="sheet-dot" style="background:#EF4444;"></div>
+                            <div class="sheet-dot" style="background:#F59E0B;"></div>
+                            <div class="sheet-dot" style="background:#22C55E;"></div>
+                            <span class="sheet-filename">KPIs_2024_Q4.xlsx</span>
+                        </div>
+                        <div class="sheet-grid">
+                            <div class="sheet-header-row">
+                                <div class="sheet-cell-num"></div>
+                                <div class="sheet-cell col-hdr">A</div>
+                                <div class="sheet-cell col-hdr">B</div>
+                                <div class="sheet-cell col-hdr">C</div>
+                                <div class="sheet-cell col-hdr">D</div>
+                            </div>
+                            <div class="sheet-row">
+                                <div class="sheet-cell-num">1</div>
+                                <div class="sheet-cell bold">Indicador</div>
+                                <div class="sheet-cell bold">Meta</div>
+                                <div class="sheet-cell bold">Real</div>
+                                <div class="sheet-cell bold">Status</div>
+                            </div>
+                            <div class="sheet-row">
+                                <div class="sheet-cell-num">2</div>
+                                <div class="sheet-cell">Vendas</div>
+                                <div class="sheet-cell">R$ 50.000</div>
+                                <div class="sheet-cell green">R$ 62.400</div>
+                                <div class="sheet-cell green">✓ OK</div>
+                            </div>
+                            <div class="sheet-row">
+                                <div class="sheet-cell-num">3</div>
+                                <div class="sheet-cell">Churn</div>
+                                <div class="sheet-cell">3%</div>
+                                <div class="sheet-cell red">7,2%</div>
+                                <div class="sheet-cell red">✗ Alto</div>
+                            </div>
+                            <div class="sheet-row">
+                                <div class="sheet-cell-num">4</div>
+                                <div class="sheet-cell">NPS</div>
+                                <div class="sheet-cell">70</div>
+                                <div class="sheet-cell accent">68</div>
+                                <div class="sheet-cell accent">~ Perto</div>
+                            </div>
+                            <div class="sheet-row">
+                                <div class="sheet-cell-num">5</div>
+                                <div class="sheet-cell">Conversão</div>
+                                <div class="sheet-cell">12%</div>
+                                <div class="sheet-cell green">14,8%</div>
+                                <div class="sheet-cell green">✓ OK</div>
+                            </div>
+                            <div class="sheet-row">
+                                <div class="sheet-cell-num">6</div>
+                                <div class="sheet-cell">CAC</div>
+                                <div class="sheet-cell">R$ 120</div>
+                                <div class="sheet-cell red">R$ 189</div>
+                                <div class="sheet-cell red">✗ Alto</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="code-body">
-                        <div><span class="code-comment">// Negócio → Arquitectura → Código</span></div>
-                        <div><span class="code-keyword">public class</span> <span class="code-class">IndicatorService</span></div>
-                        <div>&nbsp;&nbsp;&nbsp;&nbsp;: <span class="code-class">IIndicatorService</span></div>
-                        <div>{</div>
-                        <div>&nbsp;&nbsp;<span class="code-keyword">private readonly</span> <span class="code-class">IUnitOfWork</span> _uow;</div>
-                        <div>&nbsp;&nbsp;<span class="code-keyword">private readonly</span> <span class="code-class">INotifierService</span> _notifier;</div>
-                        <br />
-                        <div>&nbsp;&nbsp;<span class="code-keyword">public async</span> <span class="code-class">Task</span> <span class="code-method">AddAsync</span>(<span class="code-class">IndicatorDto</span> dto)</div>
-                        <div>&nbsp;&nbsp;{</div>
-                        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">if</span> (!dto.<span class="code-method">IsValid</span>()) {</div>
-                        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_notifier.<span class="code-method">Handle</span>(<span class="code-string">"Dados inválidos"</span>);</div>
-                        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return</span>;</div>
-                        <div>&nbsp;&nbsp;&nbsp;&nbsp;}</div>
-                        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">await</span> _uow.<span class="code-method">Commit</span>();</div>
-                        <div>&nbsp;&nbsp;}</div>
-                        <div>}</div>
+
+                    <!-- Janela de código (frente) -->
+                    <div class="hero-visual">
+                        <div class="code-topbar">
+                            <div class="code-dot" style="background:#EF4444;"></div>
+                            <div class="code-dot" style="background:#F59E0B;"></div>
+                            <div class="code-dot" style="background:#22C55E;"></div>
+                            <span style="font-size:12px; color:var(--md-text-muted); margin-left:8px;">IndicatorService.cs</span>
+                        </div>
+                        <div class="code-body">
+                            <div><span class="code-comment">// Negócio → Arquitetura → Código</span></div>
+                            <div><span class="code-keyword">public class</span> <span class="code-class">IndicatorService</span></div>
+                            <div>&nbsp;&nbsp;&nbsp;&nbsp;: <span class="code-class">IIndicatorService</span></div>
+                            <div>{</div>
+                            <div>&nbsp;&nbsp;<span class="code-keyword">private readonly</span> <span class="code-class">IUnitOfWork</span> _uow;</div>
+                            <div>&nbsp;&nbsp;<span class="code-keyword">private readonly</span> <span class="code-class">INotifierService</span> _notifier;</div>
+                            <br />
+                            <div>&nbsp;&nbsp;<span class="code-keyword">public async</span> <span class="code-class">Task</span> <span class="code-method">AddAsync</span>(<span class="code-class">IndicatorDto</span> dto)</div>
+                            <div>&nbsp;&nbsp;{</div>
+                            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">if</span> (!dto.<span class="code-method">IsValid</span>()) {</div>
+                            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_notifier.<span class="code-method">Handle</span>(<span class="code-string">"Dados inválidos"</span>);</div>
+                            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return</span>;</div>
+                            <div>&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">await</span> _uow.<span class="code-method">Commit</span>();</div>
+                            <div>&nbsp;&nbsp;}</div>
+                            <div>}</div>
+                        </div>
                     </div>
                 </div>
             </div>
