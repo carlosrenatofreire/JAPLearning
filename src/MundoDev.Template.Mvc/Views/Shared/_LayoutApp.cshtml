@@ -88,6 +88,7 @@
         }
 
         /* ── Topbar user ────────────────────────────────────── */
+        .topbar-right { display: flex; align-items: center; gap: 4px; }
         .topbar-user {
             display: flex;
             align-items: center;
@@ -97,11 +98,24 @@
             border-radius: var(--md-radius-sm);
             transition: var(--md-transition);
             text-decoration: none;
+            height: 56px;
         }
         .topbar-user:hover { background: rgba(255,255,255,0.05); }
-        .topbar-user-info { line-height: 1.2; }
+        .topbar-user-info { display: flex; flex-direction: column; justify-content: center; line-height: 1.25; }
         .topbar-user-name { font-size: 13px; font-weight: 600; color: var(--md-text-primary); white-space: nowrap; }
         .topbar-user-plan { font-size: 11px; color: var(--md-text-muted); }
+        .topbar-logout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px; height: 36px;
+            border-radius: var(--md-radius-sm);
+            color: var(--md-danger);
+            text-decoration: none;
+            transition: var(--md-transition);
+            font-size: 16px;
+        }
+        .topbar-logout:hover { background: rgba(220,53,69,0.12); color: var(--md-danger); }
 
         /* ── Main ───────────────────────────────────────────── */
         .app-main {
@@ -206,25 +220,26 @@
                 </div>
             </nav>
 
-            <div class="sidebar-footer">
-                <a href="#" class="sidebar-item" style="color: var(--md-danger);">
-                    <i class="bi bi-box-arrow-left"></i> Sair
-                </a>
-            </div>
+            <div class="sidebar-footer" style="padding:16px 12px; border-top:1px solid var(--md-border);"></div>
         </aside>
 
         <!-- ── Main Content ──────────────────────────────────── -->
         <div class="app-main">
             <div class="app-topbar">
                 <span class="app-topbar-title">@ViewData["Title"]</span>
-                <a asp-controller="App" asp-action="PersonalData" class="topbar-user">
-                    <div class="md-avatar" style="width:32px;height:32px;font-size:12px;flex-shrink:0;">JS</div>
-                    <div class="topbar-user-info">
-                        <p class="topbar-user-name">João Silva</p>
-                        <p class="topbar-user-plan">Plano Pro</p>
-                    </div>
-                    <i class="bi bi-chevron-down" style="font-size:11px; color:var(--md-text-muted);"></i>
-                </a>
+                <div class="topbar-right">
+                    <a asp-controller="App" asp-action="PersonalData" class="topbar-user">
+                        <div class="md-avatar" style="width:32px;height:32px;font-size:12px;flex-shrink:0;">JS</div>
+                        <div class="topbar-user-info">
+                            <p class="topbar-user-name" style="margin:0;">João Silva</p>
+                            <p class="topbar-user-plan" style="margin:0;">Plano Pro</p>
+                        </div>
+                        <i class="bi bi-chevron-down" style="font-size:11px; color:var(--md-text-muted);"></i>
+                    </a>
+                    <a href="#" class="topbar-logout" title="Sair">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                </div>
             </div>
             <div class="app-content">
                 @RenderBody()
