@@ -18,18 +18,18 @@
     </div>
 
     <div class="md-form-group">
-        <label class="md-label" style="display:flex; justify-content:space-between;">
-            <span>Senha</span>
-            <a asp-controller="Auth" asp-action="ForgotPassword" style="font-size:12px; font-weight:500; color:var(--md-accent); text-transform:none; letter-spacing:0;">
-                Esqueci a senha
-            </a>
-        </label>
+        <label class="md-label">Senha</label>
         <div style="position:relative;">
             <input type="password" name="password" id="loginPassword" class="md-input" placeholder="••••••••" autocomplete="current-password" required style="padding-right:44px;" />
             <button type="button" onclick="togglePassword('loginPassword', this)"
                     style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--md-text-muted); cursor:pointer; font-size:16px;">
                 <i class="bi bi-eye"></i>
             </button>
+        </div>
+        <div style="text-align:right; margin-top:6px;">
+            <a asp-controller="Auth" asp-action="ForgotPassword" style="font-size:12px; font-weight:500; color:var(--md-accent); text-transform:none; letter-spacing:0;">
+                Esqueci a senha
+            </a>
         </div>
     </div>
 
