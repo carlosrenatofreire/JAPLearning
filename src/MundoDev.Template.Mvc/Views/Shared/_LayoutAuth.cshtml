@@ -66,102 +66,98 @@
         }
         .auth-brand .brand-name span { color: var(--md-accent); }
 
-        /* ── Hero scene (two windows) ──────────────────────── */
-        .auth-hero-scene {
-            position: relative;
-            padding-left: 28px;
-            padding-bottom: 28px;
-            margin-bottom: 28px;
-        }
-        .auth-hero-sheet {
-            position: absolute;
-            top: 28px; left: 0; right: 28px; bottom: 0;
-            background: #141e2e;
-            border: 1px solid rgba(99,102,241,0.45);
-            border-radius: 10px;
-            overflow: hidden;
-            opacity: 0.88;
-            z-index: 0;
-        }
-        .auth-hero-sheet .sheet-titlebar {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 7px 12px;
-            background: #0e1624;
-            border-bottom: 1px solid rgba(99,102,241,0.3);
-            font-size: 11px;
-            color: #94a3b8;
-        }
-        .auth-hero-sheet .sheet-body {
-            padding: 6px 0;
-            font-size: 10px;
-        }
-        .auth-hero-sheet .sheet-row {
-            display: grid;
-            grid-template-columns: 28px 1fr 60px 60px;
-            padding: 3px 12px;
-            color: #64748b;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-        }
-        .auth-hero-sheet .sheet-row.header {
-            color: #94a3b8;
-            font-weight: 600;
-            background: rgba(255,255,255,0.03);
-        }
-        .auth-hero-sheet .sheet-row.zebra { background: rgba(255,255,255,0.025); }
-        .auth-hero-sheet .sheet-row .val { text-align: right; }
-        .auth-hero-sheet .sheet-row .green { color: #4ade80; }
-        .auth-hero-sheet .sheet-row .red { color: #f87171; }
-
-        .auth-hero-visual {
-            position: relative;
-            z-index: 1;
-            background: #0d1117;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            overflow: hidden;
-            font-family: 'Fira Code', 'Cascadia Code', monospace;
-            font-size: 11px;
-        }
-        .auth-hero-visual .code-titlebar {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 14px;
-            background: rgba(255,255,255,0.04);
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            font-size: 11px;
-            color: #94a3b8;
-        }
-        .auth-hero-visual pre {
-            margin: 0;
-            padding: 14px;
-            font-size: 11px;
-            line-height: 1.6;
-            color: #94a3b8;
-            overflow: hidden;
-        }
-        .auth-hero-visual .kw { color: #c792ea; }
-        .auth-hero-visual .cl { color: #82aaff; }
-        .auth-hero-visual .fn { color: #82aaff; }
-        .auth-hero-visual .st { color: #c3e88d; }
-        .auth-hero-visual .cm { color: #546e7a; font-style: italic; }
-        .auth-hero-visual .nm { color: #f78c6c; }
-
+        /* ── 5-window cascade (login panel, ~82% do hero) ──── */
         .auth-panel-tagline {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center;
             position: relative; z-index: 1;
         }
         .auth-panel-tagline h2 {
-            font-size: 32px; font-weight: 800;
-            line-height: 1.25;
-            margin-bottom: 16px;
+            font-size: 26px; font-weight: 800;
+            line-height: 1.25; margin-bottom: 10px;
         }
         .auth-panel-tagline p {
-            font-size: 15px;
-            color: var(--md-text-secondary);
-            line-height: 1.7;
+            font-size: 14px; color: var(--md-text-secondary); line-height: 1.7; margin: 0;
         }
+        /* Cascade wrapper — centra horizontalmente */
+        .auth-cascade-wrap {
+            display: flex; justify-content: center;
+            margin-bottom: 22px;
+        }
+        .auth-cascade {
+            position: relative;
+            width: 393px; height: 348px;
+            flex-shrink: 0;
+        }
+        /* Base de cada janela (205×280px, offset 47px/17px) */
+        .ahw {
+            position: absolute; width: 205px; height: 280px;
+            border-radius: 8px; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+        .ahw-bar {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 10px; font-size: 9px; color: #94a3b8; flex-shrink: 0;
+        }
+        .ahw-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+        .ahw-body { flex: 1; overflow: hidden; }
+
+        .ahw-excel { top:0;   right:188px; z-index:1; background:#141e2e; border:1px solid rgba(99,102,241,0.45); box-shadow:0 6px 28px rgba(0,0,0,0.55); }
+        .ahw-excel .ahw-bar  { background:#1a2640; border-bottom:2px solid rgba(99,102,241,0.35); }
+        .ahw-c4    { top:17px; right:141px; z-index:2; background:#0c1322; border:1px solid rgba(232,80,26,0.3);  box-shadow:0 6px 28px rgba(0,0,0,0.5);  }
+        .ahw-c4    .ahw-bar  { background:#111827; border-bottom:1px solid rgba(232,80,26,0.25); }
+        .ahw-er    { top:34px; right:94px;  z-index:3; background:#0d1a14; border:1px solid rgba(34,197,94,0.35); box-shadow:0 6px 28px rgba(0,0,0,0.48); }
+        .ahw-er    .ahw-bar  { background:#0a1510; border-bottom:1px solid rgba(34,197,94,0.25); }
+        .ahw-code  { top:51px; right:47px;  z-index:4; background:#1e1e2e; border:1px solid rgba(255,255,255,0.12); box-shadow:0 6px 28px rgba(0,0,0,0.45); }
+        .ahw-code  .ahw-bar  { background:#252535; border-bottom:1px solid rgba(255,255,255,0.1); }
+        .ahw-dash  { top:68px; right:0;     z-index:5; background:#0f1824; border:1px solid rgba(232,80,26,0.38); box-shadow:0 6px 28px rgba(0,0,0,0.4); }
+        .ahw-dash  .ahw-bar  { background:#141e2e; border-bottom:1px solid rgba(232,80,26,0.3); }
+
+        /* Excel */
+        .asg { font-family:'Courier New',monospace; font-size:8px; }
+        .ashr { display:flex; background:#1a2640; border-bottom:2px solid rgba(99,102,241,0.3); }
+        .asr  { display:flex; border-top:1px solid rgba(255,255,255,0.07); }
+        .asr:nth-child(even) { background:rgba(255,255,255,0.025); }
+        .asn  { width:16px; min-width:16px; padding:3px; color:#64748b; border-right:2px solid rgba(99,102,241,0.25); text-align:center; background:#1a2640; font-weight:600; }
+        .asc  { flex:1; padding:3px 5px; border-right:1px solid rgba(255,255,255,0.07); color:#94a3b8; white-space:nowrap; overflow:hidden; }
+        .asc.h { color:#cbd5e1; background:#1a2640; text-align:center; font-weight:700; }
+        .asc.g { color:#4ade80; font-weight:600; }
+        .asc.r { color:#f87171; font-weight:600; }
+        .asc.o { color:#fb923c; font-weight:600; }
+        .asc.b { color:#e2e8f0; font-weight:700; }
+
+        /* C4 */
+        .ac4b { padding:8px 8px 0; }
+        .ac4x { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:4px; padding:4px 6px; text-align:center; color:#cbd5e1; font-size:8px; line-height:1.3; }
+        .ac4x.hi { border-color:rgba(232,80,26,0.55); background:rgba(232,80,26,0.08); }
+        .ac4l { font-size:7px; color:#475569; margin-top:1px; }
+        .ac4a { text-align:center; color:#475569; font-size:11px; line-height:1.3; }
+
+        /* ER */
+        .aerb { padding:8px; }
+        .aere { background:rgba(34,197,94,0.07); border:1px solid rgba(34,197,94,0.35); border-radius:4px; overflow:hidden; margin-bottom:4px; }
+        .aerh { background:rgba(34,197,94,0.15); padding:3px 6px; font-size:8px; font-weight:700; color:#4ade80; text-align:center; }
+        .aerf { display:flex; gap:4px; padding:2px 6px; border-top:1px solid rgba(34,197,94,0.1); color:#94a3b8; font-size:8px; }
+        .aerpk { color:#fbbf24; font-size:7px; font-weight:700; width:14px; flex-shrink:0; }
+        .aerfk { color:#818cf8; font-size:7px; font-weight:700; width:14px; flex-shrink:0; }
+
+        /* Code */
+        .acodeb { padding:9px 10px; font-family:'Courier New',monospace; font-size:9px; line-height:1.6; }
+        .acc { color:#546e7a; font-style:italic; }
+        .ack { color:#c792ea; }
+        .acl { color:#82aaff; }
+        .acm { color:#82aaff; }
+        .acs { color:#c3e88d; }
+
+        /* Dashboard */
+        .adashb { padding:8px; }
+        .akpim  { display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; margin-bottom:6px; }
+        .akpic  { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:4px; padding:4px 5px; text-align:center; }
+        .akpiv  { font-size:11px; font-weight:800; color:#e2e8f0; display:block; }
+        .akpil  { font-size:7px; color:#64748b; }
+        .achart { background:rgba(255,255,255,0.03); border-radius:4px; padding:6px; border:1px solid rgba(255,255,255,0.06); margin-bottom:5px; }
+        .achtt  { font-size:7px; color:#64748b; margin-bottom:4px; }
+        .adrow  { display:flex; justify-content:space-between; font-size:7px; color:#64748b; padding:2px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
 
         .auth-social-proof {
             display: flex;
@@ -300,50 +296,153 @@
             {
             <div class="auth-panel-tagline">
 
-                <!-- Hero scene: spreadsheet behind, code in front -->
-                <div class="auth-hero-scene">
-                    <!-- Spreadsheet window (behind) -->
-                    <div class="auth-hero-sheet">
-                        <div class="sheet-titlebar">
-                            <i class="bi bi-file-earmark-excel-fill" style="color:#4ade80; font-size:13px;"></i>
-                            <span>KPI_Dashboard_2024.xlsx</span>
-                        </div>
-                        <div class="sheet-body">
-                            <div class="sheet-row header"><span>#</span><span>Indicador</span><span class="val">Meta</span><span class="val">Real</span></div>
-                            <div class="sheet-row"><span>1</span><span>Receita</span><span class="val">500k</span><span class="val green">512k</span></div>
-                            <div class="sheet-row zebra"><span>2</span><span>Churn</span><span class="val">5%</span><span class="val red">7,2%</span></div>
-                            <div class="sheet-row"><span>3</span><span>NPS</span><span class="val">70</span><span class="val green">74</span></div>
-                            <div class="sheet-row zebra"><span>4</span><span>CAC</span><span class="val">120</span><span class="val green">98</span></div>
-                            <div class="sheet-row"><span>5</span><span>LTV</span><span class="val">1.2k</span><span class="val red">1.1k</span></div>
-                            <div class="sheet-row zebra"><span>6</span><span>MRR</span><span class="val">80k</span><span class="val green">83k</span></div>
-                        </div>
-                    </div>
-                    <!-- Code window (front) -->
-                    <div class="auth-hero-visual">
-                        <div class="code-titlebar">
-                            <i class="bi bi-circle-fill" style="color:#ff5f57; font-size:8px;"></i>
-                            <i class="bi bi-circle-fill" style="color:#ffbd2e; font-size:8px;"></i>
-                            <i class="bi bi-circle-fill" style="color:#28ca41; font-size:8px;"></i>
-                            <span style="margin-left:6px;">IndicatorService.cs</span>
-                        </div>
-                        <pre><span class="kw">public class</span> <span class="cl">IndicatorService</span>
-{
-  <span class="kw">private readonly</span> <span class="cl">IRepository</span> _repo;
+                <!-- 5-window cascade -->
+                <div class="auth-cascade-wrap">
+                    <div class="auth-cascade">
 
-  <span class="kw">public async</span> <span class="cl">Task</span>&lt;<span class="cl">KpiResult</span>&gt;
-    <span class="fn">CalculateAsync</span>(<span class="cl">Guid</span> id)
-  {
-    <span class="kw">var</span> kpi = <span class="kw">await</span> _repo
-      .<span class="fn">GetByIdAsync</span>(id);
+                        <!-- Window 1: Excel -->
+                        <div class="ahw ahw-excel">
+                            <div class="ahw-bar">
+                                <span class="ahw-dot" style="background:#ff5f57;"></span>
+                                <span class="ahw-dot" style="background:#ffbd2e;"></span>
+                                <span class="ahw-dot" style="background:#28ca41;"></span>
+                                <span style="margin-left:6px; font-size:10px; opacity:.7;"><i class="bi bi-file-earmark-excel-fill" style="color:#4ade80;"></i> KPI_2024.xlsx</span>
+                            </div>
+                            <div class="ahw-body">
+                                <div class="asg"><span>Indicador</span><span>Meta</span><span>Real</span></div>
+                                <div class="ashr"><span>Receita</span><span>500k</span><span class="asc">512k</span></div>
+                                <div class="asr"><span>Churn</span><span>5%</span><span class="asn">7,2%</span></div>
+                                <div class="ashr"><span>NPS</span><span>70</span><span class="asc">74</span></div>
+                                <div class="asr"><span>CAC</span><span>120</span><span class="asc">98</span></div>
+                                <div class="ashr"><span>LTV</span><span>1.2k</span><span class="asn">1.1k</span></div>
+                                <div class="asr"><span>MRR</span><span>80k</span><span class="asc">83k</span></div>
+                            </div>
+                        </div>
 
-    <span class="cm">// business rule</span>
-    <span class="kw">return new</span> <span class="cl">KpiResult</span>
-    {
-      Value = kpi.<span class="fn">Calculate</span>(),
-      Status = <span class="cl">KpiStatus</span>.Ok
-    };
-  }
-}</pre>
+                        <!-- Window 2: C4 Diagram -->
+                        <div class="ahw ahw-c4">
+                            <div class="ahw-bar">
+                                <span class="ahw-dot" style="background:#ff5f57;"></span>
+                                <span class="ahw-dot" style="background:#ffbd2e;"></span>
+                                <span class="ahw-dot" style="background:#28ca41;"></span>
+                                <span style="margin-left:6px; font-size:10px; opacity:.7;">C4 — Context</span>
+                            </div>
+                            <div class="ahw-body" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:10px;">
+                                <div class="ac4b">User</div>
+                                <div class="ac4x">↓</div>
+                                <div class="ac4l">KPI System</div>
+                                <div class="ac4x">↓ ↓</div>
+                                <div style="display:flex; gap:6px;">
+                                    <div class="ac4a">API</div>
+                                    <div class="ac4a">DB</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Window 3: ER Diagram -->
+                        <div class="ahw ahw-er">
+                            <div class="ahw-bar">
+                                <span class="ahw-dot" style="background:#ff5f57;"></span>
+                                <span class="ahw-dot" style="background:#ffbd2e;"></span>
+                                <span class="ahw-dot" style="background:#28ca41;"></span>
+                                <span style="margin-left:6px; font-size:10px; opacity:.7;">ER Diagram</span>
+                            </div>
+                            <div class="ahw-body" style="padding:8px; display:flex; flex-direction:column; gap:7px;">
+                                <div class="aerb">
+                                    <div class="aerh">INDICATOR</div>
+                                    <div class="aerf"><span class="aerpk">PK</span> Id</div>
+                                    <div class="aerf">Name</div>
+                                    <div class="aerf"><span class="aerfk">FK</span> CategoryId</div>
+                                    <div class="aerf">GoalValue</div>
+                                </div>
+                                <div class="aerb">
+                                    <div class="aerh">CATEGORY</div>
+                                    <div class="aerf"><span class="aerpk">PK</span> Id</div>
+                                    <div class="aerf">Name</div>
+                                </div>
+                                <div class="aerb">
+                                    <div class="aerh">IND_LOG</div>
+                                    <div class="aerf"><span class="aerpk">PK</span> Id</div>
+                                    <div class="aerf"><span class="aerfk">FK</span> IndicatorId</div>
+                                    <div class="aerf">CreatedAt</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Window 4: Code -->
+                        <div class="ahw ahw-code">
+                            <div class="ahw-bar">
+                                <span class="ahw-dot" style="background:#ff5f57;"></span>
+                                <span class="ahw-dot" style="background:#ffbd2e;"></span>
+                                <span class="ahw-dot" style="background:#28ca41;"></span>
+                                <span style="margin-left:6px; font-size:10px; opacity:.7;">IndicatorService.cs</span>
+                            </div>
+                            <div class="ahw-body acodeb">
+                                <div><span class="ack">public class</span> <span class="acm">IndicatorService</span></div>
+                                <div>{</div>
+                                <div>&nbsp;&nbsp;<span class="ack">private readonly</span> <span class="acm">IRepository</span> _repo;</div>
+                                <div>&nbsp;</div>
+                                <div>&nbsp;&nbsp;<span class="ack">public async</span> <span class="acm">Task</span>&lt;<span class="acm">KpiResult</span>&gt;</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="acc">CalculateAsync</span>(<span class="acm">Guid</span> id)</div>
+                                <div>&nbsp;&nbsp;{</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ack">var</span> kpi = <span class="ack">await</span> _repo</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<span class="acc">GetByIdAsync</span>(id);</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="acl">// business rule</span></div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ack">return new</span> <span class="acm">KpiResult</span></div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;{</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Value = kpi.<span class="acc">Calculate</span>(),</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Status = <span class="acs">KpiStatus</span>.Ok</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;};</div>
+                                <div>&nbsp;&nbsp;}</div>
+                                <div>}</div>
+                            </div>
+                        </div>
+
+                        <!-- Window 5: Dashboard -->
+                        <div class="ahw ahw-dash">
+                            <div class="ahw-bar">
+                                <span class="ahw-dot" style="background:#ff5f57;"></span>
+                                <span class="ahw-dot" style="background:#ffbd2e;"></span>
+                                <span class="ahw-dot" style="background:#28ca41;"></span>
+                                <span style="margin-left:6px; font-size:10px; opacity:.7;">KPI Dashboard</span>
+                            </div>
+                            <div class="ahw-body adashb">
+                                <div class="akpim">
+                                    <div class="akpic" style="background:rgba(99,102,241,.15); color:#818cf8;">
+                                        <div class="akpiv">512k</div>
+                                        <div class="akpil">Receita</div>
+                                    </div>
+                                    <div class="akpic" style="background:rgba(239,68,68,.12); color:#f87171;">
+                                        <div class="akpiv">7,2%</div>
+                                        <div class="akpil">Churn</div>
+                                    </div>
+                                    <div class="akpic" style="background:rgba(34,197,94,.12); color:#4ade80;">
+                                        <div class="akpiv">74</div>
+                                        <div class="akpil">NPS</div>
+                                    </div>
+                                </div>
+                                <div class="achart">
+                                    <div class="achtt">Receita Mensal</div>
+                                    <div class="adrow">
+                                        <span>Jan</span>
+                                        <div style="height:5px; width:55%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px;"></div>
+                                    </div>
+                                    <div class="adrow">
+                                        <span>Fev</span>
+                                        <div style="height:5px; width:68%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px;"></div>
+                                    </div>
+                                    <div class="adrow">
+                                        <span>Mar</span>
+                                        <div style="height:5px; width:82%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px;"></div>
+                                    </div>
+                                    <div class="adrow">
+                                        <span>Abr</span>
+                                        <div style="height:5px; width:75%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
