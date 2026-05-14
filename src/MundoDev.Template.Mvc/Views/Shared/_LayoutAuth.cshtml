@@ -113,51 +113,52 @@
         .ahw-dash  { top:68px; right:0;     z-index:5; background:#0f1824; border:1px solid rgba(232,80,26,0.38); box-shadow:0 6px 28px rgba(0,0,0,0.4); }
         .ahw-dash  .ahw-bar  { background:#141e2e; border-bottom:1px solid rgba(232,80,26,0.3); }
 
-        /* Excel */
-        .asg { font-family:'Courier New',monospace; font-size:8px; }
-        .ashr { display:flex; background:#1a2640; border-bottom:2px solid rgba(99,102,241,0.3); }
-        .asr  { display:flex; border-top:1px solid rgba(255,255,255,0.07); }
-        .asr:nth-child(even) { background:rgba(255,255,255,0.025); }
-        .asn  { width:16px; min-width:16px; padding:3px; color:#64748b; border-right:2px solid rgba(99,102,241,0.25); text-align:center; background:#1a2640; font-weight:600; }
-        .asc  { flex:1; padding:3px 5px; border-right:1px solid rgba(255,255,255,0.07); color:#94a3b8; white-space:nowrap; overflow:hidden; }
-        .asc.h { color:#cbd5e1; background:#1a2640; text-align:center; font-weight:700; }
-        .asc.g { color:#4ade80; font-weight:600; }
-        .asc.r { color:#f87171; font-weight:600; }
-        .asc.o { color:#fb923c; font-weight:600; }
-        .asc.b { color:#e2e8f0; font-weight:700; }
+        /* ── Conteúdo: Planilha Excel ── */
+        .sheet-grid { font-family: 'Courier New', monospace; font-size: 10px; }
+        .sheet-header-row { display: flex; background: #1a2640; border-bottom: 2px solid rgba(99,102,241,0.3); }
+        .sheet-row { display: flex; border-top: 1px solid rgba(255,255,255,0.07); }
+        .sheet-row:nth-child(even) { background: rgba(255,255,255,0.025); }
+        .sheet-cell-num { width: 20px; min-width: 20px; padding: 4px 4px; color: #64748b; border-right: 2px solid rgba(99,102,241,0.25); text-align: center; background: #1a2640; font-weight: 600; }
+        .sheet-cell { flex: 1; padding: 4px 7px; border-right: 1px solid rgba(255,255,255,0.07); color: #94a3b8; white-space: nowrap; overflow: hidden; }
+        .sheet-cell.col-hdr { color: #cbd5e1; background: #1a2640; text-align: center; font-weight: 700; border-right: 1px solid rgba(99,102,241,0.2); }
+        .sheet-cell.accent { color: #fb923c; font-weight: 600; }
+        .sheet-cell.green  { color: #4ade80; font-weight: 600; }
+        .sheet-cell.red    { color: #f87171; font-weight: 600; }
+        .sheet-cell.bold   { color: #e2e8f0; font-weight: 700; }
 
-        /* C4 */
-        .ac4b { padding:8px 8px 0; }
-        .ac4x { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:4px; padding:4px 6px; text-align:center; color:#cbd5e1; font-size:8px; line-height:1.3; }
-        .ac4x.hi { border-color:rgba(232,80,26,0.55); background:rgba(232,80,26,0.08); }
-        .ac4l { font-size:7px; color:#475569; margin-top:1px; }
-        .ac4a { text-align:center; color:#475569; font-size:11px; line-height:1.3; }
+        /* ── Conteúdo: ER Diagram ── */
+        .er-body { padding: 10px; font-size: 9px; }
+        .er-entity { background: rgba(34,197,94,0.07); border: 1px solid rgba(34,197,94,0.35); border-radius: 5px; overflow: hidden; margin-bottom: 6px; }
+        .er-entity-header { background: rgba(34,197,94,0.15); padding: 4px 8px; font-size: 9px; font-weight: 700; color: #4ade80; text-align: center; letter-spacing: .04em; }
+        .er-field { display: flex; align-items: center; gap: 5px; padding: 3px 8px; border-top: 1px solid rgba(34,197,94,0.1); color: #94a3b8; font-size: 9px; }
+        .er-pk  { color: #fbbf24; font-size: 8px; font-weight: 700; width: 16px; flex-shrink: 0; }
+        .er-fk  { color: #818cf8; font-size: 8px; font-weight: 700; width: 16px; flex-shrink: 0; }
+        .er-rel { text-align: center; color: #34d399; font-size: 11px; line-height: 1.2; margin: 2px 0; }
 
-        /* ER */
-        .aerb { padding:8px; }
-        .aere { background:rgba(34,197,94,0.07); border:1px solid rgba(34,197,94,0.35); border-radius:4px; overflow:hidden; margin-bottom:4px; }
-        .aerh { background:rgba(34,197,94,0.15); padding:3px 6px; font-size:8px; font-weight:700; color:#4ade80; text-align:center; }
-        .aerf { display:flex; gap:4px; padding:2px 6px; border-top:1px solid rgba(34,197,94,0.1); color:#94a3b8; font-size:8px; }
-        .aerpk { color:#fbbf24; font-size:7px; font-weight:700; width:14px; flex-shrink:0; }
-        .aerfk { color:#818cf8; font-size:7px; font-weight:700; width:14px; flex-shrink:0; }
+        /* ── Conteúdo: C4 Diagram ── */
+        .c4-body { padding: 10px 10px 0; }
+        .c4-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 5px; padding: 5px 7px; text-align: center; color: #cbd5e1; font-size: 9px; line-height: 1.3; }
+        .c4-box.hi { border-color: rgba(232,80,26,0.55); background: rgba(232,80,26,0.08); }
+        .c4-lbl { font-size: 8px; color: #475569; margin-top: 2px; }
+        .c4-arrow { text-align: center; color: #475569; font-size: 13px; line-height: 1.4; }
 
-        /* Code */
-        .acodeb { padding:9px 10px; font-family:'Courier New',monospace; font-size:9px; line-height:1.6; }
-        .acc { color:#546e7a; font-style:italic; }
-        .ack { color:#c792ea; }
-        .acl { color:#82aaff; }
-        .acm { color:#82aaff; }
-        .acs { color:#c3e88d; }
+        /* ── Conteúdo: Code Editor ── */
+        .hw-code-body { padding: 12px 14px; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.7; }
+        .cc  { color: #546e7a; font-style: italic; }
+        .ck  { color: #c792ea; }
+        .ccl { color: #82aaff; }
+        .cm  { color: #82aaff; }
+        .cs  { color: #c3e88d; }
 
-        /* Dashboard */
-        .adashb { padding:8px; }
-        .akpim  { display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; margin-bottom:6px; }
-        .akpic  { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:4px; padding:4px 5px; text-align:center; }
-        .akpiv  { font-size:11px; font-weight:800; color:#e2e8f0; display:block; }
-        .akpil  { font-size:7px; color:#64748b; }
-        .achart { background:rgba(255,255,255,0.03); border-radius:4px; padding:6px; border:1px solid rgba(255,255,255,0.06); margin-bottom:5px; }
-        .achtt  { font-size:7px; color:#64748b; margin-bottom:4px; }
-        .adrow  { display:flex; justify-content:space-between; font-size:7px; color:#64748b; padding:2px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+        /* ── Conteúdo: Dashboard ── */
+        .hw-dash-body { padding: 10px; }
+        .kpi-mini { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 8px; }
+        .kpi-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 5px; padding: 5px 6px; text-align: center; }
+        .kpi-val  { font-size: 13px; font-weight: 800; color: #e2e8f0; display: block; }
+        .kpi-lbl  { font-size: 8px; color: #64748b; }
+        .dash-chart { background: rgba(255,255,255,0.03); border-radius: 5px; padding: 7px 8px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 8px; }
+        .dash-chart-title { font-size: 8px; color: #64748b; margin-bottom: 5px; }
+        .dash-row { display: flex; justify-content: space-between; font-size: 9px; color: #64748b; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
 
         .auth-social-proof {
             display: flex;
@@ -300,145 +301,183 @@
                 <div class="auth-cascade-wrap">
                     <div class="auth-cascade">
 
-                        <!-- Window 1: Excel -->
+                        <!-- Janela 1: Excel (fundo) -->
                         <div class="ahw ahw-excel">
                             <div class="ahw-bar">
-                                <span class="ahw-dot" style="background:#ff5f57;"></span>
-                                <span class="ahw-dot" style="background:#ffbd2e;"></span>
-                                <span class="ahw-dot" style="background:#28ca41;"></span>
-                                <span style="margin-left:6px; font-size:10px; opacity:.7;"><i class="bi bi-file-earmark-excel-fill" style="color:#4ade80;"></i> KPI_2024.xlsx</span>
+                                <i class="bi bi-file-earmark-excel-fill" style="color:#4ade80;font-size:10px;"></i>
+                                <span>KPIs_2024_Q4.xlsx</span>
                             </div>
                             <div class="ahw-body">
-                                <div class="asg"><span>Indicador</span><span>Meta</span><span>Real</span></div>
-                                <div class="ashr"><span>Receita</span><span>500k</span><span class="asc">512k</span></div>
-                                <div class="asr"><span>Churn</span><span>5%</span><span class="asn">7,2%</span></div>
-                                <div class="ashr"><span>NPS</span><span>70</span><span class="asc">74</span></div>
-                                <div class="asr"><span>CAC</span><span>120</span><span class="asc">98</span></div>
-                                <div class="ashr"><span>LTV</span><span>1.2k</span><span class="asn">1.1k</span></div>
-                                <div class="asr"><span>MRR</span><span>80k</span><span class="asc">83k</span></div>
+                                <div class="sheet-grid">
+                                    <div class="sheet-header-row">
+                                        <div class="sheet-cell-num"></div>
+                                        <div class="sheet-cell col-hdr">A</div>
+                                        <div class="sheet-cell col-hdr">B</div>
+                                        <div class="sheet-cell col-hdr">C</div>
+                                    </div>
+                                    <div class="sheet-row"><div class="sheet-cell-num">1</div><div class="sheet-cell bold">Indicador</div><div class="sheet-cell bold">Meta</div><div class="sheet-cell bold">Real</div></div>
+                                    <div class="sheet-row"><div class="sheet-cell-num">2</div><div class="sheet-cell">Vendas</div><div class="sheet-cell">R$ 50k</div><div class="sheet-cell green">R$ 62k</div></div>
+                                    <div class="sheet-row"><div class="sheet-cell-num">3</div><div class="sheet-cell">Churn</div><div class="sheet-cell">3%</div><div class="sheet-cell red">7,2%</div></div>
+                                    <div class="sheet-row"><div class="sheet-cell-num">4</div><div class="sheet-cell">NPS</div><div class="sheet-cell">70</div><div class="sheet-cell accent">68</div></div>
+                                    <div class="sheet-row"><div class="sheet-cell-num">5</div><div class="sheet-cell">Conversão</div><div class="sheet-cell">12%</div><div class="sheet-cell green">14,8%</div></div>
+                                    <div class="sheet-row"><div class="sheet-cell-num">6</div><div class="sheet-cell">CAC</div><div class="sheet-cell">R$ 120</div><div class="sheet-cell red">R$ 189</div></div>
+                                    <div class="sheet-row"><div class="sheet-cell-num">7</div><div class="sheet-cell">LTV</div><div class="sheet-cell">R$ 800</div><div class="sheet-cell green">R$ 1.040</div></div>
+                                    <div class="sheet-row"><div class="sheet-cell-num">8</div><div class="sheet-cell">Ticket Médio</div><div class="sheet-cell">R$ 97</div><div class="sheet-cell accent">R$ 91</div></div>
+                                    <div class="sheet-row"><div class="sheet-cell-num">9</div><div class="sheet-cell">Retenção</div><div class="sheet-cell">90%</div><div class="sheet-cell green">93%</div></div>
+                                    <div class="sheet-row"><div class="sheet-cell-num">10</div><div class="sheet-cell">MRR</div><div class="sheet-cell">R$ 20k</div><div class="sheet-cell red">R$ 16k</div></div>
+                                    <div class="sheet-row"><div class="sheet-cell-num">11</div><div class="sheet-cell accent">TOTAL</div><div class="sheet-cell"></div><div class="sheet-cell bold">R$ 79k</div></div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Window 2: C4 Diagram -->
+                        <!-- Janela 2: C4 Container Diagram -->
                         <div class="ahw ahw-c4">
                             <div class="ahw-bar">
-                                <span class="ahw-dot" style="background:#ff5f57;"></span>
-                                <span class="ahw-dot" style="background:#ffbd2e;"></span>
-                                <span class="ahw-dot" style="background:#28ca41;"></span>
-                                <span style="margin-left:6px; font-size:10px; opacity:.7;">C4 — Context</span>
+                                <i class="bi bi-diagram-3" style="color:var(--md-accent);font-size:10px;"></i>
+                                <span>C4 Container Diagram</span>
                             </div>
-                            <div class="ahw-body" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:10px;">
-                                <div class="ac4b">User</div>
-                                <div class="ac4x">↓</div>
-                                <div class="ac4l">KPI System</div>
-                                <div class="ac4x">↓ ↓</div>
-                                <div style="display:flex; gap:6px;">
-                                    <div class="ac4a">API</div>
-                                    <div class="ac4a">DB</div>
+                            <div class="ahw-body">
+                                <div class="c4-body">
+                                    <div style="text-align:center; margin-bottom:4px;">
+                                        <div class="c4-box" style="display:inline-block; min-width:68px;">
+                                            <i class="bi bi-person-fill" style="font-size:14px; color:#94a3b8; display:block;"></i>
+                                            <span style="font-size:9px; font-weight:700; color:#cbd5e1;">Usuário</span>
+                                            <div class="c4-lbl">[Person]</div>
+                                        </div>
+                                    </div>
+                                    <div class="c4-arrow">↓</div>
+                                    <div style="border:1px dashed rgba(232,80,26,0.45); border-radius:7px; padding:6px 6px 6px; margin-bottom:4px;">
+                                        <div style="font-size:8px; font-weight:700; color:var(--md-accent); text-align:center; margin-bottom:5px; letter-spacing:.04em;">API APPLICATION</div>
+                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-bottom:5px;">
+                                            <div class="c4-box hi">Interface<br/>Web<div class="c4-lbl">[MVC]</div></div>
+                                            <div class="c4-box hi">API<br/>.NET Core<div class="c4-lbl">[REST]</div></div>
+                                        </div>
+                                        <div class="c4-arrow" style="font-size:11px; margin-bottom:4px;">↓</div>
+                                        <div class="c4-box" style="font-size:9px; text-align:center;">
+                                            <i class="bi bi-database" style="font-size:11px; margin-right:3px;"></i>Banco de Dados
+                                            <div class="c4-lbl">[SQL Server]</div>
+                                        </div>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+                                        <div class="c4-box" style="font-size:9px;">Database<br/>Service<div class="c4-lbl">[EF Core]</div></div>
+                                        <div class="c4-box" style="font-size:9px;">Serviço de<br/>Notificação<div class="c4-lbl">[Events]</div></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Window 3: ER Diagram -->
+                        <!-- Janela 3: ER Diagram -->
                         <div class="ahw ahw-er">
                             <div class="ahw-bar">
-                                <span class="ahw-dot" style="background:#ff5f57;"></span>
-                                <span class="ahw-dot" style="background:#ffbd2e;"></span>
-                                <span class="ahw-dot" style="background:#28ca41;"></span>
-                                <span style="margin-left:6px; font-size:10px; opacity:.7;">ER Diagram</span>
+                                <i class="bi bi-diagram-2" style="color:#4ade80;font-size:10px;"></i>
+                                <span>KpiSystem.dbdiagram</span>
                             </div>
-                            <div class="ahw-body" style="padding:8px; display:flex; flex-direction:column; gap:7px;">
-                                <div class="aerb">
-                                    <div class="aerh">INDICATOR</div>
-                                    <div class="aerf"><span class="aerpk">PK</span> Id</div>
-                                    <div class="aerf">Name</div>
-                                    <div class="aerf"><span class="aerfk">FK</span> CategoryId</div>
-                                    <div class="aerf">GoalValue</div>
-                                </div>
-                                <div class="aerb">
-                                    <div class="aerh">CATEGORY</div>
-                                    <div class="aerf"><span class="aerpk">PK</span> Id</div>
-                                    <div class="aerf">Name</div>
-                                </div>
-                                <div class="aerb">
-                                    <div class="aerh">IND_LOG</div>
-                                    <div class="aerf"><span class="aerpk">PK</span> Id</div>
-                                    <div class="aerf"><span class="aerfk">FK</span> IndicatorId</div>
-                                    <div class="aerf">CreatedAt</div>
+                            <div class="ahw-body">
+                                <div class="er-body">
+                                    <div class="er-entity">
+                                        <div class="er-entity-header">INDICATOR</div>
+                                        <div class="er-field"><span class="er-pk">PK</span><span>Id</span><span style="margin-left:auto;color:#475569;">uuid</span></div>
+                                        <div class="er-field"><span class="er-pk" style="color:transparent;">·</span><span>Name</span><span style="margin-left:auto;color:#475569;">varchar</span></div>
+                                        <div class="er-field"><span class="er-fk">FK</span><span>CategoryId</span><span style="margin-left:auto;color:#475569;">uuid</span></div>
+                                        <div class="er-field"><span class="er-pk" style="color:transparent;">·</span><span>GoalValue</span><span style="margin-left:auto;color:#475569;">decimal</span></div>
+                                        <div class="er-field"><span class="er-pk" style="color:transparent;">·</span><span>CreatedAt</span><span style="margin-left:auto;color:#475569;">datetime</span></div>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:1fr 14px 1fr; align-items:start; gap:4px;">
+                                        <div class="er-entity">
+                                            <div class="er-entity-header">CATEGORY</div>
+                                            <div class="er-field"><span class="er-pk">PK</span><span>Id</span></div>
+                                            <div class="er-field"><span class="er-pk" style="color:transparent;">·</span><span>Name</span></div>
+                                            <div class="er-field"><span class="er-pk" style="color:transparent;">·</span><span>Color</span></div>
+                                        </div>
+                                        <div style="display:flex; flex-direction:column; align-items:center; padding-top:20px; gap:18px;">
+                                            <span style="color:#34d399; font-size:11px;">⟷</span>
+                                            <span style="color:#34d399; font-size:11px;">⟷</span>
+                                        </div>
+                                        <div class="er-entity">
+                                            <div class="er-entity-header">IND_LOG</div>
+                                            <div class="er-field"><span class="er-pk">PK</span><span>Id</span></div>
+                                            <div class="er-field"><span class="er-fk">FK</span><span>IndId</span></div>
+                                            <div class="er-field"><span class="er-pk" style="color:transparent;">·</span><span>Value</span></div>
+                                            <div class="er-field"><span class="er-pk" style="color:transparent;">·</span><span>Date</span></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Window 4: Code -->
+                        <!-- Janela 4: Code Editor -->
                         <div class="ahw ahw-code">
                             <div class="ahw-bar">
                                 <span class="ahw-dot" style="background:#ff5f57;"></span>
                                 <span class="ahw-dot" style="background:#ffbd2e;"></span>
                                 <span class="ahw-dot" style="background:#28ca41;"></span>
-                                <span style="margin-left:6px; font-size:10px; opacity:.7;">IndicatorService.cs</span>
+                                <span style="margin-left:4px;">IndicatorService.cs</span>
                             </div>
-                            <div class="ahw-body acodeb">
-                                <div><span class="ack">public class</span> <span class="acm">IndicatorService</span></div>
-                                <div>{</div>
-                                <div>&nbsp;&nbsp;<span class="ack">private readonly</span> <span class="acm">IRepository</span> _repo;</div>
-                                <div>&nbsp;</div>
-                                <div>&nbsp;&nbsp;<span class="ack">public async</span> <span class="acm">Task</span>&lt;<span class="acm">KpiResult</span>&gt;</div>
-                                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="acc">CalculateAsync</span>(<span class="acm">Guid</span> id)</div>
-                                <div>&nbsp;&nbsp;{</div>
-                                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ack">var</span> kpi = <span class="ack">await</span> _repo</div>
-                                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<span class="acc">GetByIdAsync</span>(id);</div>
-                                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="acl">// business rule</span></div>
-                                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ack">return new</span> <span class="acm">KpiResult</span></div>
-                                <div>&nbsp;&nbsp;&nbsp;&nbsp;{</div>
-                                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Value = kpi.<span class="acc">Calculate</span>(),</div>
-                                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Status = <span class="acs">KpiStatus</span>.Ok</div>
-                                <div>&nbsp;&nbsp;&nbsp;&nbsp;};</div>
-                                <div>&nbsp;&nbsp;}</div>
-                                <div>}</div>
+                            <div class="ahw-body">
+                                <div class="hw-code-body">
+                                    <div><span class="cc">// Negócio → Arquitetura → Código</span></div>
+                                    <div><span class="ck">public class</span> <span class="ccl">IndicatorService</span></div>
+                                    <div>&nbsp;&nbsp;: <span class="ccl">IIndicatorService</span></div>
+                                    <div>{</div>
+                                    <div>&nbsp;&nbsp;<span class="ck">private readonly</span> <span class="ccl">IUnitOfWork</span> _uow;</div>
+                                    <div>&nbsp;&nbsp;<span class="ck">private readonly</span> <span class="ccl">INotifierService</span> _notifier;</div>
+                                    <div>&nbsp;</div>
+                                    <div>&nbsp;&nbsp;<span class="ck">public async</span> <span class="ccl">Task</span> <span class="cm">AddAsync</span>(<span class="ccl">IndicatorDto</span> dto)</div>
+                                    <div>&nbsp;&nbsp;{</div>
+                                    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">if</span> (!dto.<span class="cm">IsValid</span>()) {</div>
+                                    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_notifier.<span class="cm">Handle</span>(<span class="cs">"Dados inválidos"</span>);</div>
+                                    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">return</span>;</div>
+                                    <div>&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                                    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">await</span> _uow.<span class="cm">Commit</span>();</div>
+                                    <div>&nbsp;&nbsp;}</div>
+                                    <div>}</div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Window 5: Dashboard -->
+                        <!-- Janela 5: KPI Dashboard (frente) -->
                         <div class="ahw ahw-dash">
                             <div class="ahw-bar">
                                 <span class="ahw-dot" style="background:#ff5f57;"></span>
                                 <span class="ahw-dot" style="background:#ffbd2e;"></span>
                                 <span class="ahw-dot" style="background:#28ca41;"></span>
-                                <span style="margin-left:6px; font-size:10px; opacity:.7;">KPI Dashboard</span>
+                                <span style="margin-left:4px;">Painel de Gestão</span>
                             </div>
-                            <div class="ahw-body adashb">
-                                <div class="akpim">
-                                    <div class="akpic" style="background:rgba(99,102,241,.15); color:#818cf8;">
-                                        <div class="akpiv">512k</div>
-                                        <div class="akpil">Receita</div>
+                            <div class="ahw-body">
+                                <div class="hw-dash-body">
+                                    <div class="kpi-mini">
+                                        <div class="kpi-card">
+                                            <span class="kpi-val" style="color:#4ade80;">74</span>
+                                            <span class="kpi-lbl">NPS</span>
+                                        </div>
+                                        <div class="kpi-card">
+                                            <span class="kpi-val">83k</span>
+                                            <span class="kpi-lbl">MRR</span>
+                                        </div>
+                                        <div class="kpi-card">
+                                            <span class="kpi-val" style="color:#f87171;">7.2%</span>
+                                            <span class="kpi-lbl">Churn</span>
+                                        </div>
                                     </div>
-                                    <div class="akpic" style="background:rgba(239,68,68,.12); color:#f87171;">
-                                        <div class="akpiv">7,2%</div>
-                                        <div class="akpil">Churn</div>
+                                    <div class="dash-chart">
+                                        <div class="dash-chart-title">Evolução dos Indicadores</div>
+                                        <svg viewBox="0 0 228 56" style="width:100%; height:50px; display:block;">
+                                            <defs>
+                                                <linearGradient id="dg1" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0%" stop-color="#e8501a" stop-opacity="0.35"/>
+                                                    <stop offset="100%" stop-color="#e8501a" stop-opacity="0"/>
+                                                </linearGradient>
+                                            </defs>
+                                            <polygon points="0,56 0,44 38,36 76,40 114,24 152,28 190,16 228,10 228,56" fill="url(#dg1)"/>
+                                            <polyline points="0,44 38,36 76,40 114,24 152,28 190,16 228,10" fill="none" stroke="#e8501a" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                                            <circle cx="114" cy="24" r="2.5" fill="#e8501a"/>
+                                            <circle cx="228" cy="10" r="2.5" fill="#4ade80"/>
+                                        </svg>
                                     </div>
-                                    <div class="akpic" style="background:rgba(34,197,94,.12); color:#4ade80;">
-                                        <div class="akpiv">74</div>
-                                        <div class="akpil">NPS</div>
-                                    </div>
-                                </div>
-                                <div class="achart">
-                                    <div class="achtt">Receita Mensal</div>
-                                    <div class="adrow">
-                                        <span>Jan</span>
-                                        <div style="height:5px; width:55%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px;"></div>
-                                    </div>
-                                    <div class="adrow">
-                                        <span>Fev</span>
-                                        <div style="height:5px; width:68%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px;"></div>
-                                    </div>
-                                    <div class="adrow">
-                                        <span>Mar</span>
-                                        <div style="height:5px; width:82%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px;"></div>
-                                    </div>
-                                    <div class="adrow">
-                                        <span>Abr</span>
-                                        <div style="height:5px; width:75%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:3px;"></div>
-                                    </div>
+                                    <div class="dash-row"><span>Receita Total</span><span style="color:#4ade80;">R$ 62.4k</span></div>
+                                    <div class="dash-row"><span>Ticket Médio</span><span style="color:#fb923c;">R$ 91</span></div>
+                                    <div class="dash-row"><span>Retenção</span><span style="color:#4ade80;">93%</span></div>
+                                    <div class="dash-row"><span>CAC</span><span style="color:#f87171;">R$ 189</span></div>
                                 </div>
                             </div>
                         </div>
