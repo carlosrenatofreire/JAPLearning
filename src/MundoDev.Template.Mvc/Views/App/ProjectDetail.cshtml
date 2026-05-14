@@ -50,43 +50,204 @@
 
         <!-- Ementa -->
         <div id="tab-ementa">
+
+            <!-- Introdução -->
             <div class="md-accordion-item">
                 <div class="md-accordion-header">
-                    <span>Módulo 1 — Introdução e Contexto</span>
-                    <span style="font-size:12px; font-weight:500;">3 aulas · 25min</span>
+                    <span>Introdução: O Mindset do Arquiteto</span>
+                    <span style="font-size:12px; font-weight:500;">4 aulas · 38min</span>
                 </div>
                 <div class="md-accordion-body">
-                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="1" class="md-lesson-item completed">
-                        <i class="bi bi-check-circle-fill" style="color:var(--md-success);"></i>
-                        <span style="flex:1;">Apresentação do Projecto (2:00)</span>
-                    </a>
-                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="2" class="md-lesson-item active">
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="1" class="md-lesson-item active">
                         <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
-                        <span style="flex:1;">O problema do Excel nas empresas (10:00)</span>
+                        <span style="flex:1;">Apresentação (4:10)</span>
                         <span class="md-badge md-badge-accent" style="font-size:11px;">Assistindo</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="2" class="md-lesson-item completed">
+                        <i class="bi bi-check-circle-fill" style="color:var(--md-success);"></i>
+                        <span style="flex:1;">O Papel do Arquiteto no Mundo Real (11:35)</span>
                     </a>
                     <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="3" class="md-lesson-item">
                         <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
-                        <span style="flex:1;">Visão geral da solução (13:00)</span>
+                        <span style="flex:1;">Ferramentas de Combate (8:50)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="4" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">O Mindset "Pragmático" (14:20)</span>
                     </a>
                 </div>
             </div>
+
+            <!-- Módulo 1 -->
             <div class="md-accordion-item">
                 <div class="md-accordion-header">
-                    <span>Módulo 2 — Arquitetura C4 Model</span>
-                    <span style="font-size:12px; font-weight:500;">5 aulas · 1h 10min</span>
+                    <span>Módulo 1: O Legado e a Dor do Negócio</span>
+                    <span style="font-size:12px; font-weight:500;">5 aulas · 1h 06min</span>
                 </div>
                 <div class="md-accordion-body">
-                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="4" class="md-lesson-item">
-                        <i class="bi bi-lock-fill" style="color:var(--md-text-muted);"></i>
-                        <span style="flex:1;">C4 Nível 1 — Contexto do Sistema (12:00)</span>
-                    </a>
                     <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="5" class="md-lesson-item">
-                        <i class="bi bi-lock-fill" style="color:var(--md-text-muted);"></i>
-                        <span style="flex:1;">C4 Nível 2 — Containers (15:00)</span>
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">O Inimigo: Anatomia de um Excel (12:00)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="6" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Brainstorming com o PO (A Reunião Inicial) (18:45)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="7" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Extração de Regras de Negócio (15:30)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="8" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Definindo os Atributos de Qualidade (13:10)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="9" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Encerramento: O "OK" do Negócio (7:00)</span>
                     </a>
                 </div>
             </div>
+
+            <!-- Módulo 2 -->
+            <div class="md-accordion-item">
+                <div class="md-accordion-header">
+                    <span>Módulo 2: O Desenho da Estratégia</span>
+                    <span style="font-size:12px; font-weight:500;">4 aulas · 49min</span>
+                </div>
+                <div class="md-accordion-body">
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="10" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Contexto de Negócio (C4 Nível 1) (12:00)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="11" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Definindo os Containers (C4 Nível 2) (16:20)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="12" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">A Escolha da Infraestrutura (11:40)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="13" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Apresentando a Arquitetura ao PO (9:15)</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Módulo 3 -->
+            <div class="md-accordion-item">
+                <div class="md-accordion-header">
+                    <span>Módulo 3: A Base da Verdade</span>
+                    <span style="font-size:12px; font-weight:500;">4 aulas · 1h 01min</span>
+                </div>
+                <div class="md-accordion-body">
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="14" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Normalização Sem Perda de Sentido (14:00)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="15" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Modelagem Dimensional (17:30)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="16" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Integridade e Auditoria (10:50)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="17" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Desenhando o DER (dbdiagram.io) (19:00)</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Módulo 4 -->
+            <div class="md-accordion-item">
+                <div class="md-accordion-header">
+                    <span>Módulo 4: Design de Componentes</span>
+                    <span style="font-size:12px; font-weight:500;">4 aulas · 1h 08min</span>
+                </div>
+                <div class="md-accordion-body">
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="18" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Organização em Camadas (16:00)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="19" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">O Motor de Cálculo (Componentes) (22:10)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="20" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Decisões de Bibliotecas (12:30)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="21" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Estratégia de Cache e Performance (18:00)</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Módulo 5 -->
+            <div class="md-accordion-item">
+                <div class="md-accordion-header">
+                    <span>Módulo 5: A Realidade no .NET</span>
+                    <span style="font-size:12px; font-weight:500;">3 aulas · 1h 02min</span>
+                </div>
+                <div class="md-accordion-body">
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="22" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Do Diagrama ao Projeto (20:00)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="23" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">O Motor em Ação (24:40)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="24" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">O Resultado Final (UI) (17:55)</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Módulo 6 -->
+            <div class="md-accordion-item">
+                <div class="md-accordion-header">
+                    <span>Módulo 6: Evolução e Sustentabilidade</span>
+                    <span style="font-size:12px; font-weight:500;">3 aulas · 37min</span>
+                </div>
+                <div class="md-accordion-body">
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="25" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">O Pedido de Mudança do PO (15:20)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="26" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Logs e Observabilidade (13:45)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="27" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Conclusão e Próximos Passos (8:30)</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Encerramento -->
+            <div class="md-accordion-item">
+                <div class="md-accordion-header">
+                    <span>Encerramento</span>
+                    <span style="font-size:12px; font-weight:500;">2 aulas · 6min</span>
+                </div>
+                <div class="md-accordion-body">
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="28" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Testes de Conhecimento (—)</span>
+                    </a>
+                    <a asp-controller="App" asp-action="Player" asp-route-projectId="1" asp-route-lessonId="29" class="md-lesson-item">
+                        <i class="bi bi-play-circle" style="color:var(--md-text-muted);"></i>
+                        <span style="flex:1;">Considerações Finais (6:00)</span>
+                    </a>
+                </div>
+            </div>
+
         </div>
 
         <!-- Apresentação -->
@@ -101,7 +262,7 @@
         <!-- Instrutor -->
         <div id="tab-instrutor" style="display:none;">
             <div class="d-flex align-items-start gap-3">
-                <div class="md-avatar md-avatar-lg">CF</div>
+                <img src="/images/carlos-freire.jpg" alt="Carlos Freire" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
                 <div>
                     <h5 style="font-weight:700; margin-bottom:4px;">Carlos Freire</h5>
                     <p style="color:var(--md-accent); font-size:13px; margin-bottom:10px;">MCSD — Arquiteto de Software &amp; Tech Lead</p>
