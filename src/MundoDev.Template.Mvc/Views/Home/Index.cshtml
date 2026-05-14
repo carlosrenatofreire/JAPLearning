@@ -5,12 +5,12 @@
 
 <style>
     .hero {
-        min-height: 60vh;
+        min-height: 65vh;
         display: flex;
         align-items: center;
         position: relative;
-        overflow: hidden;
-        padding: 40px 0 30px;
+        overflow: visible;
+        padding: 48px 0 40px;
     }
     .hero::before {
         content: '';
@@ -67,114 +67,103 @@
     }
     .hero-proof-text { font-size: 13px; color: var(--md-text-secondary); }
     .hero-proof-text strong { color: var(--md-text-primary); }
-    /* ── Hero scene (planilha + código) ──────────────────── */
-    /*
-      Duas janelas de tamanho idêntico, planilha deslocada
-      22px para baixo e 22px para a esquerda:
-
-      scene tem padding-left:22 + padding-bottom:22
-      → código ocupa: left=22 .. right=100%, top=0 .. bottom=calc(100%-22)
-      → planilha:  top=22, left=0, right=22, bottom=0
-        (mesmas dimensões, offset oposto)
-    */
+    /* ── Hero scene — 4 janelas em cascata ──────────────── */
     .hero-scene {
         position: relative;
-        padding-left: 34px;
-        padding-bottom: 34px;
+        height: 432px;
     }
-    .hero-sheet {
+    /* Base de todas as janelas */
+    .hw {
         position: absolute;
-        top: 34px;
-        left: 0;
-        right: 34px;
-        bottom: 0;
-        background: #141e2e;
-        border: 1px solid rgba(99,102,241,0.45);
+        width: 260px;
+        height: 350px;
         border-radius: 10px;
         overflow: hidden;
-        transform: none;
-        opacity: 0.88;
-        z-index: 0;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        display: flex;
+        flex-direction: column;
     }
-    .sheet-titlebar {
-        background: #1a2640;
-        border-bottom: 2px solid rgba(99,102,241,0.35);
-        padding: 7px 12px;
-        display: flex; align-items: center; gap: 8px;
-    }
-    .sheet-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .sheet-filename { font-size: 11px; color: #94a3b8; font-family: sans-serif; font-weight: 600; }
-    .sheet-excel-icon {
-        width: 16px; height: 16px;
-        background: #1D6F42;
-        border-radius: 3px;
-        font-size: 10px;
-        font-weight: 900;
-        color: #fff;
-        font-family: sans-serif;
-        text-align: center;
-        line-height: 16px;
+    .hw-titlebar {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 12px;
+        font-size: 11px;
+        color: #94a3b8;
         flex-shrink: 0;
     }
-    .sheet-grid { font-family: 'Courier New', monospace; font-size: 11px; }
+    .hw-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .hw-body { flex: 1; overflow: hidden; }
+
+    /* Posições em cascata: +70px direita, +26px baixo por camada */
+    .hw-excel {
+        top: 0; right: 210px; z-index: 1;
+        background: #141e2e;
+        border: 1px solid rgba(99,102,241,0.45);
+        box-shadow: 0 8px 40px rgba(0,0,0,0.55);
+    }
+    .hw-excel .hw-titlebar { background: #1a2640; border-bottom: 2px solid rgba(99,102,241,0.35); }
+
+    .hw-c4 {
+        top: 26px; right: 140px; z-index: 2;
+        background: #0c1322;
+        border: 1px solid rgba(232,80,26,0.3);
+        box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    }
+    .hw-c4 .hw-titlebar { background: #111827; border-bottom: 1px solid rgba(232,80,26,0.25); }
+
+    .hw-code {
+        top: 52px; right: 70px; z-index: 3;
+        background: #1e1e2e;
+        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow: 0 8px 40px rgba(0,0,0,0.45);
+    }
+    .hw-code .hw-titlebar { background: #252535; border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+    .hw-dash {
+        top: 78px; right: 0; z-index: 4;
+        background: #0f1824;
+        border: 1px solid rgba(232,80,26,0.38);
+        box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    }
+    .hw-dash .hw-titlebar { background: #141e2e; border-bottom: 1px solid rgba(232,80,26,0.3); }
+
+    /* ── Conteúdo: Planilha Excel ── */
+    .sheet-grid { font-family: 'Courier New', monospace; font-size: 10px; }
     .sheet-header-row { display: flex; background: #1a2640; border-bottom: 2px solid rgba(99,102,241,0.3); }
     .sheet-row { display: flex; border-top: 1px solid rgba(255,255,255,0.07); }
     .sheet-row:nth-child(even) { background: rgba(255,255,255,0.025); }
-    .sheet-cell-num {
-        width: 28px; min-width: 28px;
-        padding: 5px 6px;
-        color: #64748b;
-        border-right: 2px solid rgba(99,102,241,0.25);
-        text-align: center;
-        background: #1a2640;
-        font-weight: 600;
-    }
-    .sheet-cell {
-        flex: 1;
-        padding: 5px 9px;
-        border-right: 1px solid rgba(255,255,255,0.07);
-        color: #94a3b8;
-        white-space: nowrap;
-        overflow: hidden;
-    }
-    .sheet-cell.col-hdr {
-        color: #cbd5e1;
-        background: #1a2640;
-        text-align: center;
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        border-right: 1px solid rgba(99,102,241,0.2);
-    }
+    .sheet-cell-num { width: 20px; min-width: 20px; padding: 4px 4px; color: #64748b; border-right: 2px solid rgba(99,102,241,0.25); text-align: center; background: #1a2640; font-weight: 600; }
+    .sheet-cell { flex: 1; padding: 4px 7px; border-right: 1px solid rgba(255,255,255,0.07); color: #94a3b8; white-space: nowrap; overflow: hidden; }
+    .sheet-cell.col-hdr { color: #cbd5e1; background: #1a2640; text-align: center; font-weight: 700; border-right: 1px solid rgba(99,102,241,0.2); }
     .sheet-cell.accent { color: #fb923c; font-weight: 600; }
     .sheet-cell.green  { color: #4ade80; font-weight: 600; }
     .sheet-cell.red    { color: #f87171; font-weight: 600; }
     .sheet-cell.bold   { color: #e2e8f0; font-weight: 700; }
 
-    .hero-visual {
-        position: relative;
-        z-index: 1;
-        background: var(--md-bg-card);
-        border: 1px solid var(--md-border);
-        border-radius: var(--md-radius-lg);
-        overflow: hidden;
-        box-shadow: var(--md-shadow-lg);
-    }
-    .code-topbar {
-        background: var(--md-bg-secondary);
-        border-bottom: 1px solid var(--md-border);
-        padding: 12px 16px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .code-dot { width: 12px; height: 12px; border-radius: 50%; }
-    .code-body { padding: 20px; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.8; }
-    .code-comment { color: #4a5568; }
-    .code-keyword { color: #818CF8; }
-    .code-class { color: #F59E0B; }
-    .code-string { color: #86EFAC; }
-    .code-method { color: #67E8F9; }
+    /* ── Conteúdo: C4 Diagram ── */
+    .c4-body { padding: 10px 10px 0; }
+    .c4-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 5px; padding: 5px 7px; text-align: center; color: #cbd5e1; font-size: 9px; line-height: 1.3; }
+    .c4-box.hi { border-color: rgba(232,80,26,0.55); background: rgba(232,80,26,0.08); }
+    .c4-lbl { font-size: 8px; color: #475569; margin-top: 2px; }
+    .c4-arrow { text-align: center; color: #475569; font-size: 13px; line-height: 1.4; }
+
+    /* ── Conteúdo: Code Editor ── */
+    .hw-code-body { padding: 12px 14px; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.7; }
+    .cc  { color: #546e7a; font-style: italic; }
+    .ck  { color: #c792ea; }
+    .ccl { color: #82aaff; }
+    .cm  { color: #82aaff; }
+    .cs  { color: #c3e88d; }
+
+    /* ── Conteúdo: Dashboard ── */
+    .hw-dash-body { padding: 10px; }
+    .kpi-mini { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 8px; }
+    .kpi-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 5px; padding: 5px 6px; text-align: center; }
+    .kpi-val  { font-size: 13px; font-weight: 800; color: #e2e8f0; display: block; }
+    .kpi-lbl  { font-size: 8px; color: #64748b; }
+    .dash-chart { background: rgba(255,255,255,0.03); border-radius: 5px; padding: 7px 8px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 8px; }
+    .dash-chart-title { font-size: 8px; color: #64748b; margin-bottom: 5px; }
+    .dash-row { display: flex; justify-content: space-between; font-size: 9px; color: #64748b; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
     .stat-card {
         background: var(--md-bg-card);
         border: 1px solid var(--md-border);
@@ -243,150 +232,160 @@
                     </p>
                 </div>
             </div>
-            <div class="col-lg-6">
+            <div class="col-lg-6" style="overflow:visible;">
                 <div class="hero-scene">
-                    <!-- Planilha atrás -->
-                    <div class="hero-sheet">
-                        <div class="sheet-titlebar">
-                            <i class="bi bi-file-earmark-excel-fill" style="color:#4ade80; font-size:16px; flex-shrink:0;"></i>
-                            <span class="sheet-filename">KPIs_2024_Q4.xlsx</span>
+
+                    <!-- Janela 1: Excel (fundo) -->
+                    <div class="hw hw-excel">
+                        <div class="hw-titlebar">
+                            <i class="bi bi-file-earmark-excel-fill" style="color:#4ade80;font-size:12px;"></i>
+                            <span>KPIs_2024_Q4.xlsx</span>
                         </div>
-                        <div class="sheet-grid">
-                            <div class="sheet-header-row">
-                                <div class="sheet-cell-num"></div>
-                                <div class="sheet-cell col-hdr">A</div>
-                                <div class="sheet-cell col-hdr">B</div>
-                                <div class="sheet-cell col-hdr">C</div>
-                                <div class="sheet-cell col-hdr">D</div>
-                            </div>
-                            <div class="sheet-row">
-                                <div class="sheet-cell-num">1</div>
-                                <div class="sheet-cell bold">Indicador</div>
-                                <div class="sheet-cell bold">Meta</div>
-                                <div class="sheet-cell bold">Real</div>
-                                <div class="sheet-cell bold">Status</div>
-                            </div>
-                            <div class="sheet-row">
-                                <div class="sheet-cell-num">2</div>
-                                <div class="sheet-cell">Vendas</div>
-                                <div class="sheet-cell">R$ 50.000</div>
-                                <div class="sheet-cell green">R$ 62.400</div>
-                                <div class="sheet-cell green">✓ OK</div>
-                            </div>
-                            <div class="sheet-row">
-                                <div class="sheet-cell-num">3</div>
-                                <div class="sheet-cell">Churn</div>
-                                <div class="sheet-cell">3%</div>
-                                <div class="sheet-cell red">7,2%</div>
-                                <div class="sheet-cell red">✗ Alto</div>
-                            </div>
-                            <div class="sheet-row">
-                                <div class="sheet-cell-num">4</div>
-                                <div class="sheet-cell">NPS</div>
-                                <div class="sheet-cell">70</div>
-                                <div class="sheet-cell accent">68</div>
-                                <div class="sheet-cell accent">~ Perto</div>
-                            </div>
-                            <div class="sheet-row">
-                                <div class="sheet-cell-num">5</div>
-                                <div class="sheet-cell">Conversão</div>
-                                <div class="sheet-cell">12%</div>
-                                <div class="sheet-cell green">14,8%</div>
-                                <div class="sheet-cell green">✓ OK</div>
-                            </div>
-                            <div class="sheet-row">
-                                <div class="sheet-cell-num">6</div>
-                                <div class="sheet-cell">CAC</div>
-                                <div class="sheet-cell">R$ 120</div>
-                                <div class="sheet-cell red">R$ 189</div>
-                                <div class="sheet-cell red">✗ Alto</div>
-                            </div>
-                            <div class="sheet-row">
-                                <div class="sheet-cell-num">7</div>
-                                <div class="sheet-cell">LTV</div>
-                                <div class="sheet-cell">R$ 800</div>
-                                <div class="sheet-cell green">R$ 1.040</div>
-                                <div class="sheet-cell green">✓ OK</div>
-                            </div>
-                            <div class="sheet-row">
-                                <div class="sheet-cell-num">8</div>
-                                <div class="sheet-cell">Ticket Médio</div>
-                                <div class="sheet-cell">R$ 97</div>
-                                <div class="sheet-cell accent">R$ 91</div>
-                                <div class="sheet-cell accent">~ Perto</div>
-                            </div>
-                            <div class="sheet-row">
-                                <div class="sheet-cell-num">9</div>
-                                <div class="sheet-cell">Retenção</div>
-                                <div class="sheet-cell">90%</div>
-                                <div class="sheet-cell green">93%</div>
-                                <div class="sheet-cell green">✓ OK</div>
-                            </div>
-                            <div class="sheet-row">
-                                <div class="sheet-cell-num">10</div>
-                                <div class="sheet-cell">MRR</div>
-                                <div class="sheet-cell">R$ 20k</div>
-                                <div class="sheet-cell red">R$ 16k</div>
-                                <div class="sheet-cell red">✗ Baixo</div>
-                            </div>
-                            <div class="sheet-row">
-                                <div class="sheet-cell-num">11</div>
-                                <div class="sheet-cell accent">TOTAL</div>
-                                <div class="sheet-cell"></div>
-                                <div class="sheet-cell bold">R$ 79k</div>
-                                <div class="sheet-cell"></div>
-                            </div>
-                            <div class="sheet-row">
-                                <div class="sheet-cell-num">12</div>
-                                <div class="sheet-cell"></div>
-                                <div class="sheet-cell"></div>
-                                <div class="sheet-cell"></div>
-                                <div class="sheet-cell"></div>
-                            </div>
-                            <div class="sheet-row">
-                                <div class="sheet-cell-num">13</div>
-                                <div class="sheet-cell"></div>
-                                <div class="sheet-cell"></div>
-                                <div class="sheet-cell"></div>
-                                <div class="sheet-cell"></div>
-                            </div>
-                            <div class="sheet-row">
-                                <div class="sheet-cell-num">14</div>
-                                <div class="sheet-cell"></div>
-                                <div class="sheet-cell"></div>
-                                <div class="sheet-cell"></div>
-                                <div class="sheet-cell"></div>
+                        <div class="hw-body">
+                            <div class="sheet-grid">
+                                <div class="sheet-header-row">
+                                    <div class="sheet-cell-num"></div>
+                                    <div class="sheet-cell col-hdr">A</div>
+                                    <div class="sheet-cell col-hdr">B</div>
+                                    <div class="sheet-cell col-hdr">C</div>
+                                </div>
+                                <div class="sheet-row"><div class="sheet-cell-num">1</div><div class="sheet-cell bold">Indicador</div><div class="sheet-cell bold">Meta</div><div class="sheet-cell bold">Real</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">2</div><div class="sheet-cell">Vendas</div><div class="sheet-cell">R$ 50k</div><div class="sheet-cell green">R$ 62k</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">3</div><div class="sheet-cell">Churn</div><div class="sheet-cell">3%</div><div class="sheet-cell red">7,2%</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">4</div><div class="sheet-cell">NPS</div><div class="sheet-cell">70</div><div class="sheet-cell accent">68</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">5</div><div class="sheet-cell">Conversão</div><div class="sheet-cell">12%</div><div class="sheet-cell green">14,8%</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">6</div><div class="sheet-cell">CAC</div><div class="sheet-cell">R$ 120</div><div class="sheet-cell red">R$ 189</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">7</div><div class="sheet-cell">LTV</div><div class="sheet-cell">R$ 800</div><div class="sheet-cell green">R$ 1.040</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">8</div><div class="sheet-cell">Ticket Médio</div><div class="sheet-cell">R$ 97</div><div class="sheet-cell accent">R$ 91</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">9</div><div class="sheet-cell">Retenção</div><div class="sheet-cell">90%</div><div class="sheet-cell green">93%</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">10</div><div class="sheet-cell">MRR</div><div class="sheet-cell">R$ 20k</div><div class="sheet-cell red">R$ 16k</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">11</div><div class="sheet-cell accent">TOTAL</div><div class="sheet-cell"></div><div class="sheet-cell bold">R$ 79k</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">12</div><div class="sheet-cell"></div><div class="sheet-cell"></div><div class="sheet-cell"></div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">13</div><div class="sheet-cell"></div><div class="sheet-cell"></div><div class="sheet-cell"></div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">14</div><div class="sheet-cell"></div><div class="sheet-cell"></div><div class="sheet-cell"></div></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Janela de código (frente) -->
-                    <div class="hero-visual">
-                        <div class="code-topbar">
-                            <div class="code-dot" style="background:#EF4444;"></div>
-                            <div class="code-dot" style="background:#F59E0B;"></div>
-                            <div class="code-dot" style="background:#22C55E;"></div>
-                            <span style="font-size:12px; color:var(--md-text-muted); margin-left:8px;">IndicatorService.cs</span>
+                    <!-- Janela 2: C4 Container Diagram -->
+                    <div class="hw hw-c4">
+                        <div class="hw-titlebar">
+                            <i class="bi bi-diagram-3" style="color:var(--md-accent);font-size:12px;"></i>
+                            <span>C4 Container Diagram</span>
                         </div>
-                        <div class="code-body">
-                            <div><span class="code-comment">// Negócio → Arquitetura → Código</span></div>
-                            <div><span class="code-keyword">public class</span> <span class="code-class">IndicatorService</span></div>
-                            <div>&nbsp;&nbsp;&nbsp;&nbsp;: <span class="code-class">IIndicatorService</span></div>
-                            <div>{</div>
-                            <div>&nbsp;&nbsp;<span class="code-keyword">private readonly</span> <span class="code-class">IUnitOfWork</span> _uow;</div>
-                            <div>&nbsp;&nbsp;<span class="code-keyword">private readonly</span> <span class="code-class">INotifierService</span> _notifier;</div>
-                            <br />
-                            <div>&nbsp;&nbsp;<span class="code-keyword">public async</span> <span class="code-class">Task</span> <span class="code-method">AddAsync</span>(<span class="code-class">IndicatorDto</span> dto)</div>
-                            <div>&nbsp;&nbsp;{</div>
-                            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">if</span> (!dto.<span class="code-method">IsValid</span>()) {</div>
-                            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_notifier.<span class="code-method">Handle</span>(<span class="code-string">"Dados inválidos"</span>);</div>
-                            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return</span>;</div>
-                            <div>&nbsp;&nbsp;&nbsp;&nbsp;}</div>
-                            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">await</span> _uow.<span class="code-method">Commit</span>();</div>
-                            <div>&nbsp;&nbsp;}</div>
-                            <div>}</div>
+                        <div class="hw-body">
+                            <div class="c4-body">
+                                <!-- Usuário -->
+                                <div style="text-align:center; margin-bottom:4px;">
+                                    <div class="c4-box" style="display:inline-block; min-width:68px;">
+                                        <i class="bi bi-person-fill" style="font-size:14px; color:#94a3b8; display:block;"></i>
+                                        <span style="font-size:9px; font-weight:700; color:#cbd5e1;">Usuário</span>
+                                        <div class="c4-lbl">[Person]</div>
+                                    </div>
+                                </div>
+                                <div class="c4-arrow">↓</div>
+                                <!-- API Application -->
+                                <div style="border:1px dashed rgba(232,80,26,0.45); border-radius:7px; padding:6px 6px 6px; margin-bottom:4px;">
+                                    <div style="font-size:8px; font-weight:700; color:var(--md-accent); text-align:center; margin-bottom:5px; letter-spacing:.04em;">API APPLICATION</div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-bottom:5px;">
+                                        <div class="c4-box hi">Interface<br/>Web<div class="c4-lbl">[MVC]</div></div>
+                                        <div class="c4-box hi">API<br/>.NET Core<div class="c4-lbl">[REST]</div></div>
+                                    </div>
+                                    <div class="c4-arrow" style="font-size:11px; margin-bottom:4px;">↓</div>
+                                    <div class="c4-box" style="font-size:9px; text-align:center;">
+                                        <i class="bi bi-database" style="font-size:11px; margin-right:3px;"></i>Banco de Dados
+                                        <div class="c4-lbl">[SQL Server]</div>
+                                    </div>
+                                </div>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+                                    <div class="c4-box" style="font-size:9px;">Database<br/>Service<div class="c4-lbl">[EF Core]</div></div>
+                                    <div class="c4-box" style="font-size:9px;">Serviço de<br/>Notificação<div class="c4-lbl">[Events]</div></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Janela 3: Code Editor -->
+                    <div class="hw hw-code">
+                        <div class="hw-titlebar">
+                            <div class="hw-dot" style="background:#ff5f57;"></div>
+                            <div class="hw-dot" style="background:#ffbd2e;"></div>
+                            <div class="hw-dot" style="background:#28ca41;"></div>
+                            <span style="margin-left:4px;">IndicatorService.cs</span>
+                        </div>
+                        <div class="hw-body">
+                            <div class="hw-code-body">
+                                <div><span class="cc">// Negócio → Arquitetura → Código</span></div>
+                                <div><span class="ck">public class</span> <span class="ccl">IndicatorService</span></div>
+                                <div>&nbsp;&nbsp;: <span class="ccl">IIndicatorService</span></div>
+                                <div>{</div>
+                                <div>&nbsp;&nbsp;<span class="ck">private readonly</span> <span class="ccl">IUnitOfWork</span> _uow;</div>
+                                <div>&nbsp;&nbsp;<span class="ck">private readonly</span> <span class="ccl">INotifierService</span> _notifier;</div>
+                                <div>&nbsp;</div>
+                                <div>&nbsp;&nbsp;<span class="ck">public async</span> <span class="ccl">Task</span> <span class="cm">AddAsync</span>(<span class="ccl">IndicatorDto</span> dto)</div>
+                                <div>&nbsp;&nbsp;{</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">if</span> (!dto.<span class="cm">IsValid</span>()) {</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_notifier.<span class="cm">Handle</span>(<span class="cs">"Dados inválidos"</span>);</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">return</span>;</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">await</span> _uow.<span class="cm">Commit</span>();</div>
+                                <div>&nbsp;&nbsp;}</div>
+                                <div>}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Janela 4: KPI Dashboard (frente) -->
+                    <div class="hw hw-dash">
+                        <div class="hw-titlebar">
+                            <div class="hw-dot" style="background:#ff5f57;"></div>
+                            <div class="hw-dot" style="background:#ffbd2e;"></div>
+                            <div class="hw-dot" style="background:#28ca41;"></div>
+                            <span style="margin-left:4px;">Painel de Gestão</span>
+                        </div>
+                        <div class="hw-body">
+                            <div class="hw-dash-body">
+                                <!-- KPI Cards -->
+                                <div class="kpi-mini">
+                                    <div class="kpi-card">
+                                        <span class="kpi-val" style="color:#4ade80;">74</span>
+                                        <span class="kpi-lbl">NPS</span>
+                                    </div>
+                                    <div class="kpi-card">
+                                        <span class="kpi-val">83k</span>
+                                        <span class="kpi-lbl">MRR</span>
+                                    </div>
+                                    <div class="kpi-card">
+                                        <span class="kpi-val" style="color:#f87171;">7.2%</span>
+                                        <span class="kpi-lbl">Churn</span>
+                                    </div>
+                                </div>
+                                <!-- Mini chart -->
+                                <div class="dash-chart">
+                                    <div class="dash-chart-title">Evolução dos Indicadores</div>
+                                    <svg viewBox="0 0 228 56" style="width:100%; height:50px; display:block;">
+                                        <defs>
+                                            <linearGradient id="dg1" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stop-color="#e8501a" stop-opacity="0.35"/>
+                                                <stop offset="100%" stop-color="#e8501a" stop-opacity="0"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <polygon points="0,56 0,44 38,36 76,40 114,24 152,28 190,16 228,10 228,56" fill="url(#dg1)"/>
+                                        <polyline points="0,44 38,36 76,40 114,24 152,28 190,16 228,10" fill="none" stroke="#e8501a" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                                        <!-- Dots -->
+                                        <circle cx="114" cy="24" r="2.5" fill="#e8501a"/>
+                                        <circle cx="228" cy="10" r="2.5" fill="#4ade80"/>
+                                    </svg>
+                                </div>
+                                <!-- Mini list -->
+                                <div class="dash-row"><span>Receita Total</span><span style="color:#4ade80;">R$ 62.4k</span></div>
+                                <div class="dash-row"><span>Ticket Médio</span><span style="color:#fb923c;">R$ 91</span></div>
+                                <div class="dash-row"><span>Retenção</span><span style="color:#4ade80;">93%</span></div>
+                                <div class="dash-row"><span>CAC</span><span style="color:#f87171;">R$ 189</span></div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
