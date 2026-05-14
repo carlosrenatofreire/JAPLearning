@@ -1,0 +1,347 @@
+@{
+    var id = (int)(ViewData["FormationId"] ?? 1);
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+
+    // Formation data
+    var isArch = id == 1;
+    var title      = isArch ? "Fundamentos de Arquitetura de Software" : "Fundamentos do C4 Model";
+    var category   = isArch ? "Fundamentos · Arquitetura" : "Fundamentos · C4 Model";
+    var iconText   = isArch ? "AS" : "C4";
+    var iconGrad   = isArch ? "linear-gradient(135deg,#6366F1,#8B5CF6)" : "linear-gradient(135deg,#0ea5e9,#06b6d4)";
+    var accentClr  = isArch ? "#a5b4fc" : "#7dd3fc";
+    var duration   = isArch ? "3h 00min" : "2h 00min";
+    var lessons    = isArch ? "12" : "8";
+    var modules    = isArch ? "4" : "4";
+    var about      = isArch
+        ? "Nesta formação gratuita aprenderás os pilares da Arquitetura de Software: princípios SOLID, padrões arquiteturais (Layered, Clean, Hexagonal), como tomar e documentar decisões técnicas, e o que realmente separa um developer de um arquiteto de software."
+        : "O C4 Model é a forma mais pragmática de comunicar arquiteturas. Nesta formação gratuita dominarás os quatro níveis — Contexto, Containers, Componentes e Código — e aprenderás a criar diagramas que qualquer stakeholder consegue entender.";
+
+    ViewData["Title"] = title;
+}
+
+<style>
+    .formation-hero {
+        padding: 40px 0 32px;
+        border-bottom: 1px solid var(--md-border);
+        margin-bottom: 32px;
+    }
+</style>
+
+<div class="container">
+    <!-- Breadcrumb -->
+    <nav class="md-breadcrumb mt-4">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <span class="separator">/</span>
+        <a asp-controller="Formations" asp-action="Index">Formações Gratuitas</a>
+        <span class="separator">/</span>
+        <span class="current">@title</span>
+    </nav>
+
+    <!-- Meta bar -->
+    <div style="display:flex; align-items:center; gap:24px; flex-wrap:wrap; margin-bottom:20px; font-size:13px; color:var(--md-text-muted);">
+        <span><i class="bi bi-person"></i> <strong style="color:var(--md-text-secondary);">Instrutor:</strong> Carlos Freire</span>
+        <span><i class="bi bi-bar-chart"></i> <strong style="color:var(--md-text-secondary);">Nível:</strong> ★☆☆ Iniciante</span>
+        <span><i class="bi bi-tag"></i> <strong style="color:var(--md-text-secondary);">Categoria:</strong> @category</span>
+        <span class="md-badge md-badge-success"><i class="bi bi-unlock-fill"></i> Acesso Gratuito</span>
+    </div>
+
+    <div class="row g-4">
+        <!-- Main -->
+        <div class="col-lg-8">
+            <!-- Video placeholder -->
+            <div style="position:relative; width:100%; padding-bottom:56.25%; border-radius:var(--md-radius-lg); overflow:hidden; margin-bottom:24px; background:var(--md-bg-secondary); border:1px solid var(--md-border); display:flex; align-items:center; justify-content:center;">
+                <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;">
+                    <div style="width:72px;height:72px;border-radius:20px;background:@iconGrad;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#fff;">@iconText</div>
+                    <p style="color:var(--md-text-muted); font-size:14px; margin:0;">Vídeo disponível após registo</p>
+                    <a asp-controller="Auth" asp-action="Register" class="btn-md-primary" style="font-size:13px; padding:8px 20px;">
+                        Criar conta grátis <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="md-tabs">
+                <a href="#" class="md-tab active" onclick="showTab('ementa', this)">Ementa</a>
+                <a href="#" class="md-tab" onclick="showTab('apresentacao', this)">Apresentação</a>
+                <a href="#" class="md-tab" onclick="showTab('instrutor', this)">Instrutor</a>
+            </div>
+
+            <!-- Ementa -->
+            <div id="tab-ementa">
+                @if (isArch)
+                {
+                    <div class="md-accordion-item">
+                        <div class="md-accordion-header">
+                            <span>Módulo 1 — O que é Arquitetura de Software</span>
+                            <span style="font-size:12px;font-weight:500;">3 aulas · 40min</span>
+                        </div>
+                        <div class="md-accordion-body">
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">Apresentação da Formação (5:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">O que faz (de facto) um arquiteto (15:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">Atributos de Qualidade (20:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="md-accordion-item">
+                        <div class="md-accordion-header">
+                            <span>Módulo 2 — Princípios SOLID na Prática</span>
+                            <span style="font-size:12px;font-weight:500;">4 aulas · 55min</span>
+                        </div>
+                        <div class="md-accordion-body">
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">SRP e OCP com exemplos reais (14:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">LSP, ISP e DIP (15:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">SOLID no contexto .NET (16:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">Exercício Prático (10:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="md-accordion-item">
+                        <div class="md-accordion-header">
+                            <span>Módulo 3 — Padrões Arquiteturais</span>
+                            <span style="font-size:12px;font-weight:500;">3 aulas · 55min</span>
+                        </div>
+                        <div class="md-accordion-body">
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">Layered Architecture (18:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">Clean Architecture (20:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">Hexagonal / Ports &amp; Adapters (17:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="md-accordion-item">
+                        <div class="md-accordion-header">
+                            <span>Módulo 4 — Documentação e Decisões</span>
+                            <span style="font-size:12px;font-weight:500;">2 aulas · 30min</span>
+                        </div>
+                        <div class="md-accordion-body">
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">Architecture Decision Records (ADR) (15:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">Próximos Passos (15:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="md-accordion-item">
+                        <div class="md-accordion-header">
+                            <span>Módulo 1 — Introdução ao C4 Model</span>
+                            <span style="font-size:12px;font-weight:500;">2 aulas · 25min</span>
+                        </div>
+                        <div class="md-accordion-body">
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">Porquê o C4 Model? (10:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">Os 4 Níveis de Abstração (15:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="md-accordion-item">
+                        <div class="md-accordion-header">
+                            <span>Módulo 2 — Nível 1: Contexto do Sistema</span>
+                            <span style="font-size:12px;font-weight:500;">2 aulas · 30min</span>
+                        </div>
+                        <div class="md-accordion-body">
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">Desenhando o Diagrama de Contexto (16:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">Atores, Sistemas e Relações (14:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="md-accordion-item">
+                        <div class="md-accordion-header">
+                            <span>Módulo 3 — Nível 2: Containers</span>
+                            <span style="font-size:12px;font-weight:500;">2 aulas · 35min</span>
+                        </div>
+                        <div class="md-accordion-body">
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">Identificando os Containers (18:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">Tecnologias e Protocolos (17:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="md-accordion-item">
+                        <div class="md-accordion-header">
+                            <span>Módulo 4 — Níveis 3 e 4: Componentes e Código</span>
+                            <span style="font-size:12px;font-weight:500;">2 aulas · 30min</span>
+                        </div>
+                        <div class="md-accordion-body">
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">Diagrama de Componentes (16:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                            <a href="#" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">Do C4 ao Código Real (14:00)</span>
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Apresentação -->
+            <div id="tab-apresentacao" style="display:none;">
+                <h5 style="font-weight:700; margin-bottom:12px;">Sobre esta Formação</h5>
+                <p style="color:var(--md-text-secondary); line-height:1.8;">@about</p>
+                <p style="color:var(--md-text-secondary); line-height:1.8;">
+                    Esta formação é <strong style="color:var(--md-success);">completamente gratuita</strong> e não requer subscrição.
+                    Basta criar uma conta grátis na plataforma para aceder a todos os vídeos, materiais e exercícios.
+                </p>
+            </div>
+
+            <!-- Instrutor -->
+            <div id="tab-instrutor" style="display:none;">
+                <div class="d-flex align-items-start gap-3 mb-16">
+                    <img src="/images/carlos-freire.jpg" alt="Carlos Freire" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+                    <div>
+                        <h5 style="font-weight:700; margin-bottom:4px;">Carlos Freire</h5>
+                        <p style="color:var(--md-accent); font-size:13px; margin-bottom:12px;">MCSD — Arquiteto de Software &amp; Tech Lead</p>
+                        <p style="color:var(--md-text-secondary); font-size:14px; line-height:1.7;">
+                            Com mais de 25 anos de experiência em desenvolvimento de software e arquitetura
+                            de sistemas, Carlos já formou mais de 50 profissionais em Portugal e trabalha
+                            atualmente como consultor em empresas de referência no ecossistema Microsoft .NET.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="md-card" style="position:sticky; top:80px;">
+                <!-- Free badge -->
+                <div style="text-align:center; padding:16px 0 20px; border-bottom:1px solid var(--md-border); margin-bottom:16px;">
+                    <div style="width:56px;height:56px;border-radius:14px;background:@iconGrad;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;margin:0 auto 10px;">@iconText</div>
+                    <div style="font-size:28px; font-weight:900; color:var(--md-success);">Grátis</div>
+                    <p style="font-size:12px; color:var(--md-text-muted); margin:0;">Sem custos. Sempre.</p>
+                </div>
+
+                <div class="md-info-row">
+                    <span class="md-info-label"><i class="bi bi-clock"></i> Duração</span>
+                    <span class="md-info-value">@duration</span>
+                </div>
+                <div class="md-info-row">
+                    <span class="md-info-label"><i class="bi bi-folder"></i> Módulos</span>
+                    <span class="md-info-value">@modules</span>
+                </div>
+                <div class="md-info-row">
+                    <span class="md-info-label"><i class="bi bi-play-circle"></i> Aulas</span>
+                    <span class="md-info-value">@lessons</span>
+                </div>
+                <div class="md-info-row">
+                    <span class="md-info-label"><i class="bi bi-unlock-fill"></i> Acesso</span>
+                    <span class="md-info-value" style="color:var(--md-success);">Gratuito</span>
+                </div>
+
+                <div class="mt-4">
+                    <a asp-controller="Auth" asp-action="Register" class="btn-md-primary w-100" style="justify-content:center; padding:12px;">
+                        <i class="bi bi-play-fill"></i> Começar Agora — Grátis
+                    </a>
+                    <p style="font-size:12px; color:var(--md-text-muted); text-align:center; margin-top:10px;">
+                        Já tem conta? <a asp-controller="Auth" asp-action="Login" style="color:var(--md-accent);">Entrar</a>
+                    </p>
+                </div>
+
+                <!-- Instrutor -->
+                <div class="mt-4 pt-4" style="border-top:1px solid var(--md-border);">
+                    <p style="font-size:14px; font-weight:700; color:var(--md-text-primary); margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--md-border);">Instrutor</p>
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="/images/carlos-freire.jpg" alt="Carlos Freire" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+                        <div>
+                            <p style="font-weight:700; font-size:14px; margin:0; color:var(--md-text-primary);">Carlos Freire</p>
+                            <p style="font-size:12px; color:var(--md-text-muted); margin:0;">MCSD · Arquiteto de Software</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Próximo passo -->
+                <div class="mt-4 pt-4" style="border-top:1px solid var(--md-border);">
+                    <p style="font-size:13px; font-weight:700; color:var(--md-text-primary); margin-bottom:10px;">Depois desta formação</p>
+                    <a asp-controller="Projects" asp-action="Detail" asp-route-id="1" style="display:flex; align-items:center; gap:10px; text-decoration:none; padding:10px 0; border-bottom:1px solid var(--md-border-light);">
+                        <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,rgba(232,80,26,0.2),rgba(200,55,42,0.2));display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="bi bi-code-square" style="color:var(--md-accent); font-size:16px;"></i>
+                        </div>
+                        <div>
+                            <p style="font-size:12px; font-weight:600; color:var(--md-text-primary); margin:0;">Sistema de Gestão de KPIs</p>
+                            <p style="font-size:11px; color:var(--md-text-muted); margin:0;">Projecto pago · Intermediário</p>
+                        </div>
+                        <i class="bi bi-arrow-right" style="color:var(--md-text-muted); font-size:12px; margin-left:auto;"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function showTab(name, el) {
+        event.preventDefault();
+        document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+        document.querySelectorAll('.md-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + name).style.display = 'block';
+        el.classList.add('active');
+    }
+</script>
+}
