@@ -67,6 +67,47 @@
     </button>
 </form>
 
+@section AuthLeft {
+<div class="auth-free-intro">
+    <h2>Comece hoje,<br /><span class="md-gradient-text">de graça.</span></h2>
+    <p>Crie a sua conta e tenha acesso imediato a 2 formações completas e gratuitas — os fundamentos que todo arquiteto .NET precisa de dominar.</p>
+
+    <a asp-controller="Formations" asp-action="Detail" asp-route-id="1" class="free-course-card">
+        <div class="free-course-icon" style="background:linear-gradient(135deg,#6366F1,#8B5CF6); color:#fff;">AS</div>
+        <div class="free-course-info">
+            <p class="free-course-title">Fundamentos de Arquitetura de Software</p>
+            <div class="free-course-meta">
+                <span><i class="bi bi-play-circle"></i> 12 aulas</span>
+                <span><i class="bi bi-clock"></i> 3h 00min</span>
+                <span class="md-badge md-badge-success" style="font-size:10px;">Grátis</span>
+            </div>
+        </div>
+        <i class="bi bi-arrow-right" style="color:var(--md-text-muted); font-size:14px;"></i>
+    </a>
+
+    <a asp-controller="Formations" asp-action="Detail" asp-route-id="2" class="free-course-card">
+        <div class="free-course-icon" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4); color:#fff;">C4</div>
+        <div class="free-course-info">
+            <p class="free-course-title">Fundamentos do C4 Model</p>
+            <div class="free-course-meta">
+                <span><i class="bi bi-play-circle"></i> 8 aulas</span>
+                <span><i class="bi bi-clock"></i> 2h 00min</span>
+                <span class="md-badge md-badge-success" style="font-size:10px;">Grátis</span>
+            </div>
+        </div>
+        <i class="bi bi-arrow-right" style="color:var(--md-text-muted); font-size:14px;"></i>
+    </a>
+
+    <div class="auth-social-proof" style="margin-top:20px;">
+        <img src="/images/carlos-freire.jpg" alt="Carlos Freire" style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+        <div>
+            <p class="quote">"Estes fundamentos são a base de tudo. Sem eles, o código vira caos."</p>
+            <p class="author">Carlos Freire — MCSD, Arquiteto de Software</p>
+        </div>
+    </div>
+</div>
+}
+
 @section Scripts {
 <script>
     function togglePassword(id, btn) {
