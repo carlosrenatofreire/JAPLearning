@@ -11,7 +11,7 @@
             Status = "Breve",
             Image = "/images/tumb-default.png",
             Level = "★★☆ Intermediário",
-            Lessons = 0, Duration = "", Modules = 0,
+            Lessons = 18, Duration = "2h 30min", Modules = 4,
             IsFree = false, Progress = 0,
             Description = "A arquitetura em camadas mantém-se relevante e é amplamente adotada para a maioria das aplicações.",
             DetailRoute = ""
@@ -44,7 +44,7 @@
             Status = "Breve",
             Image = "/images/tumb-default.png",
             Level = "★★★ Avançado",
-            Lessons = 0, Duration = "", Modules = 0,
+            Lessons = 62, Duration = "8h 00min", Modules = 10,
             IsFree = false, Progress = 0,
             Description = "Loja online completa — catálogo, carrinho, checkout e pagamentos.",
             DetailRoute = ""
@@ -55,7 +55,7 @@
             Status = "Breve",
             Image = "/images/tumb-default.png",
             Level = "★★★ Avançado",
-            Lessons = 0, Duration = "", Modules = 0,
+            Lessons = 50, Duration = "6h 30min", Modules = 9,
             IsFree = false, Progress = 0,
             Description = "Painel de administração — produtos, encomendas, clientes e relatórios.",
             DetailRoute = ""
@@ -66,7 +66,7 @@
             Status = "Breve",
             Image = "/images/tumb-default.png",
             Level = "★★☆ Intermediário",
-            Lessons = 0, Duration = "", Modules = 0,
+            Lessons = 42, Duration = "5h 30min", Modules = 7,
             IsFree = false, Progress = 0,
             Description = "Gestão de apólices, comissões, sinistros e seguradoras.",
             DetailRoute = ""
@@ -99,7 +99,7 @@
             Status = "Breve",
             Image = "/images/tumb-default.png",
             Level = "★★★ Avançado",
-            Lessons = 0, Duration = "", Modules = 0,
+            Lessons = 55, Duration = "7h 30min", Modules = 9,
             IsFree = false, Progress = 0,
             Description = "Planeamento, execução, medições, orçamentos e cronogramas.",
             DetailRoute = ""
@@ -110,7 +110,7 @@
             Status = "Breve",
             Image = "/images/tumb-default.png",
             Level = "★★☆ Intermediário",
-            Lessons = 0, Duration = "", Modules = 0,
+            Lessons = 38, Duration = "5h 00min", Modules = 6,
             IsFree = false, Progress = 0,
             Description = "Abertura, atribuição, acompanhamento e fecho de chamados.",
             DetailRoute = ""
@@ -225,6 +225,10 @@
                             @if (!string.IsNullOrEmpty(p.Duration))
                             {
                                 <span><i class="bi bi-clock"></i> @p.Duration</span>
+                            }
+                            @if (p.Modules > 0)
+                            {
+                                <span><i class="bi bi-folder"></i> @p.Modules módulos</span>
                             }
                         </div>
                     }
