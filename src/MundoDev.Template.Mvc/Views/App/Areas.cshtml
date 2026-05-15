@@ -1,48 +1,134 @@
 @{
-    ViewData["Title"] = "Áreas";
-    ViewData["ActiveMenu"] = "";
+    ViewData["Title"] = "Categorias";
+    ViewData["ActiveMenu"] = "areas";
     Layout = "~/Views/Shared/_LayoutApp.cshtml";
+
+    var categories = new[] {
+        new {
+            Key = "arquitetura",
+            Title = "Arquitetura",
+            Subtitle = "Projetos reais corporativos",
+            Description = "Sistemas completos do zero — modelagem, C4, banco de dados, APIs e padrões corporativos em .NET.",
+            Icon = "bi-diagram-3",
+            Projects = 7,
+            Lessons = 326,
+            Hours = "37h",
+            Progress = 15,
+            BgColor = "rgba(232,80,26,0.12)",
+            BorderColor = "rgba(232,80,26,0.3)",
+            IconColor = "var(--md-accent)"
+        },
+        new {
+            Key = "fundamentos",
+            Title = "Fundamentos",
+            Subtitle = "A base que todo arquiteto precisa",
+            Description = "Conceitos essenciais antes de desenhar sistemas — princípios de arquitetura e C4 Model.",
+            Icon = "bi-mortarboard",
+            Projects = 2,
+            Lessons = 20,
+            Hours = "5h",
+            Progress = 87,
+            BgColor = "rgba(99,102,241,0.12)",
+            BorderColor = "rgba(99,102,241,0.3)",
+            IconColor = "#818cf8"
+        },
+        new {
+            Key = "desenvolvimento",
+            Title = "Desenvolvimento",
+            Subtitle = "Técnicas e padrões de código",
+            Description = "Práticas modernas, padrões de design e qualidade de código que separam dev de arquiteto.",
+            Icon = "bi-code-slash",
+            Projects = 1,
+            Lessons = 18,
+            Hours = "2h 30min",
+            Progress = 0,
+            BgColor = "rgba(34,197,94,0.12)",
+            BorderColor = "rgba(34,197,94,0.3)",
+            IconColor = "#4ade80"
+        }
+    };
 }
+
+<style>
+    .cat-card {
+        display: block;
+        height: 100%;
+        background: var(--md-bg-card);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius-lg);
+        padding: 24px;
+        text-decoration: none;
+        transition: var(--md-transition);
+        position: relative;
+        overflow: hidden;
+    }
+    .cat-card::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 4px;
+        background: var(--cat-accent);
+    }
+    .cat-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--cat-border);
+    }
+    .cat-icon {
+        width: 56px; height: 56px;
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+        margin-bottom: 16px;
+    }
+    .cat-title { font-size: 20px; font-weight: 800; color: var(--md-text-primary); margin: 0 0 4px; }
+    .cat-subtitle { font-size: 12px; font-weight: 600; margin: 0 0 12px; }
+    .cat-desc { font-size: 13px; color: var(--md-text-secondary); line-height: 1.6; margin: 0 0 18px; }
+    .cat-stats {
+        display: flex; gap: 14px; flex-wrap: wrap;
+        font-size: 12px; color: var(--md-text-muted);
+        padding-top: 14px; border-top: 1px solid var(--md-border-light);
+        margin-bottom: 14px;
+    }
+    .cat-stats span { display: flex; align-items: center; gap: 5px; }
+</style>
 
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <div>
-        <h4 style="font-weight:800; margin-bottom:4px;">Áreas de Formação</h4>
-        <p style="color:var(--md-text-muted); font-size:14px; margin:0;">Percursos completos incluídos no seu plano</p>
+        <h4 style="font-weight:800; margin-bottom:4px;">Categorias</h4>
+        <p style="color:var(--md-text-muted); font-size:14px; margin:0;">Três trilhas que organizam todos os projetos do seu plano.</p>
     </div>
 </div>
 
 <div class="row g-4">
-    @for (int i = 1; i <= 4; i++)
+    @foreach (var c in categories)
     {
-        <div class="col-md-6">
-            <a asp-controller="App" asp-action="AreaDetail" asp-route-id="@i"
-               style="display:block; background:var(--md-bg-card); border:1px solid var(--md-border); border-radius:var(--md-radius-lg); overflow:hidden; text-decoration:none; transition:var(--md-transition);"
-               onmouseover="this.style.borderColor='rgba(232,80,26,0.35)'"
-               onmouseout="this.style.borderColor='var(--md-border)'">
-                <div style="padding:24px;">
-                    <div style="display:flex; align-items:flex-start; gap:16px;">
-                        <div style="width:52px; height:52px; background:var(--md-gradient); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:#fff; flex-shrink:0;">.N</div>
-                        <div style="flex:1;">
-                            <h5 style="font-weight:800; margin-bottom:6px; color:var(--md-text-primary);">Arquitetura de Software .NET</h5>
-                            <p style="font-size:14px; color:var(--md-text-secondary); margin-bottom:14px; line-height:1.6;">
-                                Domina os conceitos de arquitetura corporativa, padrões de design e boas práticas em .NET.
-                            </p>
-                            <div style="font-size:13px; color:var(--md-text-muted); display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px;">
-                                <span><i class="bi bi-collection"></i> 6 Projectos</span>
-                                <span><i class="bi bi-clock"></i> 44:00 Horas</span>
-                                <span><i class="bi bi-play-circle"></i> 372 Aulas</span>
-                            </div>
-                            <!-- Progress -->
-                            <div>
-                                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--md-text-muted); margin-bottom:5px;">
-                                    <span>Progresso</span>
-                                    <span style="color:var(--md-accent); font-weight:700;">20%</span>
-                                </div>
-                                <div class="md-progress">
-                                    <div class="md-progress-bar" style="width:20%;"></div>
-                                </div>
-                            </div>
-                        </div>
+        <div class="col-md-6 col-xl-4">
+            <a asp-controller="App" asp-action="Projects" asp-fragment="@c.Key"
+               class="cat-card"
+               style="--cat-accent:@c.IconColor; --cat-border:@c.BorderColor;">
+                <div class="cat-icon" style="background:@c.BgColor; color:@c.IconColor;">
+                    <i class="bi @c.Icon"></i>
+                </div>
+                <h5 class="cat-title">@c.Title</h5>
+                <p class="cat-subtitle" style="color:@c.IconColor;">@c.Subtitle</p>
+                <p class="cat-desc">@c.Description</p>
+                <div class="cat-stats">
+                    <span><i class="bi bi-collection"></i> @c.Projects @(c.Projects == 1 ? "projeto" : "projetos")</span>
+                    <span><i class="bi bi-play-circle"></i> @c.Lessons aulas</span>
+                    <span><i class="bi bi-clock"></i> @c.Hours</span>
+                </div>
+                <div>
+                    <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--md-text-muted); margin-bottom:5px;">
+                        <span>
+                            @if (c.Progress == 0) { <text>Não iniciado</text> }
+                            else if (c.Progress == 100) { <text>Concluído</text> }
+                            else { <text>Em progresso</text> }
+                        </span>
+                        <span style="color:@c.IconColor; font-weight:700;">@c.Progress%</span>
+                    </div>
+                    <div class="md-progress">
+                        <div class="md-progress-bar" style="width:@(c.Progress)%; background:@c.IconColor;"></div>
                     </div>
                 </div>
             </a>
