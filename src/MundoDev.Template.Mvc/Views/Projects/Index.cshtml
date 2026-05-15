@@ -269,7 +269,7 @@
     <!-- Filters -->
     <div class="filter-bar">
         <span style="font-size:13px; color:var(--md-text-muted); font-weight:600;">Filtrar:</span>
-        <button class="filter-btn active" data-filter="all">Todos</button>
+        <button class="filter-btn" data-filter="all">Todos</button>
         <button class="filter-btn" data-filter="arquitetura">Arquitetura</button>
         <button class="filter-btn" data-filter="fundamentos">Fundamentos</button>
         <button class="filter-btn" data-filter="desenvolvimento">Desenvolvimento</button>
@@ -338,6 +338,8 @@
         const buttons = document.querySelectorAll('.filter-btn');
         const cards = document.querySelectorAll('.project-card-wrap');
         const empty = document.getElementById('filter-empty');
+        const VALID = ['all', 'arquitetura', 'fundamentos', 'desenvolvimento'];
+        const DEFAULT_FILTER = 'arquitetura';
 
         function applyFilter(filter) {
             let visible = 0;
@@ -347,13 +349,25 @@
                 if (match) visible++;
             });
             empty.classList.toggle('show', visible === 0);
+            buttons.forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
+        }
+
+        function resolveFilterFromHash() {
+            const h = (location.hash || '').replace('#', '').toLowerCase();
+            return VALID.includes(h) ? h : DEFAULT_FILTER;
         }
 
         buttons.forEach(btn => btn.addEventListener('click', () => {
-            buttons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            applyFilter(btn.dataset.filter);
+            const f = btn.dataset.filter;
+            // Atualiza o hash sem fazer scroll
+            history.replaceState(null, '', f === 'all' ? location.pathname : '#' + f);
+            applyFilter(f);
         }));
+
+        // Reage a mudanças manuais do hash (ex.: link colado, botão back)
+        window.addEventListener('hashchange', () => applyFilter(resolveFilterFromHash()));
+
+        applyFilter(resolveFilterFromHash());
     })();
 </script>
 }
