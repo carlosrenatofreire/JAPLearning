@@ -23,7 +23,7 @@
             Image = "/images/tumb-default.png",
             Level = "★☆☆ Iniciante",
             Lessons = 12, Duration = "3h 00min", Modules = 4,
-            IsFree = true, Progress = 0,
+            IsFree = true, Progress = 100,
             Description = "A base que todo arquiteto .NET precisa de dominar.",
             DetailRoute = "/Formations/Detail/1"
         },
@@ -34,7 +34,7 @@
             Image = "/images/tumb-default.png",
             Level = "★☆☆ Iniciante",
             Lessons = 8, Duration = "2h 00min", Modules = 3,
-            IsFree = true, Progress = 0,
+            IsFree = true, Progress = 75,
             Description = "Comunique arquitetura com os 4 níveis do C4 Model.",
             DetailRoute = "/Formations/Detail/2"
         },
@@ -78,7 +78,7 @@
             Image = "/images/tumb-default.png",
             Level = "★★☆ Intermediário",
             Lessons = 32, Duration = "4h 30min", Modules = 6,
-            IsFree = false, Progress = 0,
+            IsFree = false, Progress = 50,
             Description = "Veículos, condutores, manutenções, abastecimentos e quilometragem.",
             DetailRoute = "/App/ProjectDetail/3"
         },
@@ -89,7 +89,7 @@
             Image = "/images/sistema-gestao-indicadores-kpi.png",
             Level = "★★☆ Intermediário",
             Lessons = 47, Duration = "6h 00min", Modules = 8,
-            IsFree = false, Progress = 35,
+            IsFree = false, Progress = 0,
             Description = "Indicadores, metas, evolução e relatórios executivos.",
             DetailRoute = "/App/ProjectDetail/1"
         },
@@ -232,20 +232,22 @@
                             }
                         </div>
                     }
-                    @if (p.Progress > 0)
-                    {
-                        <div style="margin-top:10px;">
-                            <div class="md-progress">
-                                <div class="md-progress-bar" style="width:@(p.Progress)%;"></div>
-                            </div>
+                    <div style="margin-top:10px;">
+                        <div class="md-progress">
+                            <div class="md-progress-bar" style="width:@(p.Progress)%;"></div>
                         </div>
-                    }
-                    @if (p.IsFree)
-                    {
-                        <div style="margin-top:10px;">
-                            <span class="md-badge md-badge-success">Grátis</span>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; font-size:11px;">
+                            <span style="color:var(--md-text-muted);">
+                                @if (p.Progress == 0) { <text>Não iniciado</text> }
+                                else if (p.Progress == 100) { <text>Concluído</text> }
+                                else { <text>Em progresso</text> }
+                            </span>
+                            @if (p.IsFree)
+                            {
+                                <span class="md-badge md-badge-success">Grátis</span>
+                            }
                         </div>
-                    }
+                    </div>
                 </div>
             @Html.Raw(closeTag)
         </div>
