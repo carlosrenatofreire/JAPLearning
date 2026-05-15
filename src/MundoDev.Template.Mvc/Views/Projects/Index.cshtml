@@ -1,6 +1,160 @@
 @{
-    ViewData["Title"] = "Projectos";
+    ViewData["Title"] = "Projetos de Arquitetura e Desenvolvimento";
     Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+
+    // Lista de projetos — ordenada alfabeticamente
+    var projects = new[] {
+        new {
+            Id = 10,
+            Title = "Arquitetura em Camadas",
+            Category = "Desenvolvimento",
+            CategoryKey = "desenvolvimento",
+            Status = "Breve",
+            Image = "/images/tumb-default.jpg",
+            Level = "★★☆ Intermediário",
+            Lessons = 0,
+            Duration = "",
+            Modules = 0,
+            IsFree = false,
+            Description = "A arquitetura em camadas mantém-se relevante e é amplamente adotada para a maioria das aplicações — segregação clara e adaptável de interfaces.",
+            DetailRoute = "" // sem detalhe
+        },
+        new {
+            Id = 1,
+            Title = "Fundamentos de Arquitetura de Software",
+            Category = "Fundamentos",
+            CategoryKey = "fundamentos",
+            Status = "MPV",
+            Image = "/images/tumb-default.jpg",
+            Level = "★☆☆ Iniciante",
+            Lessons = 12,
+            Duration = "3h 00min",
+            Modules = 4,
+            IsFree = true,
+            Description = "A base que todo arquiteto .NET precisa de dominar antes de desenhar sistemas.",
+            DetailRoute = "/Formations/Detail/1"
+        },
+        new {
+            Id = 2,
+            Title = "Fundamentos do C4 Model",
+            Category = "Fundamentos",
+            CategoryKey = "fundamentos",
+            Status = "MPV",
+            Image = "/images/tumb-default.jpg",
+            Level = "★☆☆ Iniciante",
+            Lessons = 8,
+            Duration = "2h 00min",
+            Modules = 3,
+            IsFree = true,
+            Description = "Comunique arquitetura de forma clara com os 4 níveis do C4 Model.",
+            DetailRoute = "/Formations/Detail/2"
+        },
+        new {
+            Id = 7,
+            Title = "Sistema E-Commerce",
+            Category = "Arquitetura",
+            CategoryKey = "arquitetura",
+            Status = "Breve",
+            Image = "/images/tumb-default.jpg",
+            Level = "★★★ Avançado",
+            Lessons = 0,
+            Duration = "",
+            Modules = 0,
+            IsFree = false,
+            Description = "Loja online completa — catálogo, carrinho, checkout, integração de pagamentos e gestão de stock.",
+            DetailRoute = ""
+        },
+        new {
+            Id = 8,
+            Title = "Sistema E-Commerce (BackOffice)",
+            Category = "Arquitetura",
+            CategoryKey = "arquitetura",
+            Status = "Breve",
+            Image = "/images/tumb-default.jpg",
+            Level = "★★★ Avançado",
+            Lessons = 0,
+            Duration = "",
+            Modules = 0,
+            IsFree = false,
+            Description = "Painel de administração para o e-commerce — produtos, encomendas, clientes e relatórios.",
+            DetailRoute = ""
+        },
+        new {
+            Id = 4,
+            Title = "Sistema de Gestão de Corretora de Seguros",
+            Category = "Arquitetura",
+            CategoryKey = "arquitetura",
+            Status = "Breve",
+            Image = "/images/tumb-default.jpg",
+            Level = "★★☆ Intermediário",
+            Lessons = 0,
+            Duration = "",
+            Modules = 0,
+            IsFree = false,
+            Description = "Gestão de apólices, comissões, sinistros e relacionamento com seguradoras.",
+            DetailRoute = ""
+        },
+        new {
+            Id = 3,
+            Title = "Sistema de Gestão de Frota de Veículos",
+            Category = "Arquitetura",
+            CategoryKey = "arquitetura",
+            Status = "MPV",
+            Image = "/images/tumb-default.jpg",
+            Level = "★★☆ Intermediário",
+            Lessons = 32,
+            Duration = "4h 30min",
+            Modules = 6,
+            IsFree = false,
+            Description = "Veículos, condutores, manutenções, abastecimentos e quilometragem — do Excel ao sistema corporativo.",
+            DetailRoute = "/Projects/Detail/3"
+        },
+        new {
+            Id = 5,
+            Title = "Sistema de Gestão de Indicadores e KPIs",
+            Category = "Arquitetura",
+            CategoryKey = "arquitetura",
+            Status = "Breve",
+            Image = "/images/sistema-gestao-indicadores-kpi.png",
+            Level = "★★☆ Intermediário",
+            Lessons = 47,
+            Duration = "6h 00min",
+            Modules = 8,
+            IsFree = false,
+            Description = "Indicadores, metas, evolução e relatórios executivos. Do Excel ao sistema corporativo.",
+            DetailRoute = "/Projects/Detail/1"
+        },
+        new {
+            Id = 9,
+            Title = "Sistema de Gestão de Obras",
+            Category = "Arquitetura",
+            CategoryKey = "arquitetura",
+            Status = "Breve",
+            Image = "/images/tumb-default.jpg",
+            Level = "★★★ Avançado",
+            Lessons = 0,
+            Duration = "",
+            Modules = 0,
+            IsFree = false,
+            Description = "Planeamento, execução, medições, orçamentos e cronogramas para a construção civil.",
+            DetailRoute = ""
+        },
+        new {
+            Id = 6,
+            Title = "Sistema de Gestão de Ordem de Serviço",
+            Category = "Arquitetura",
+            CategoryKey = "arquitetura",
+            Status = "Breve",
+            Image = "/images/tumb-default.jpg",
+            Level = "★★☆ Intermediário",
+            Lessons = 0,
+            Duration = "",
+            Modules = 0,
+            IsFree = false,
+            Description = "Abertura, atribuição, acompanhamento e fecho de chamados com SLA e histórico.",
+            DetailRoute = ""
+        }
+    };
 }
 
 <style>
@@ -34,142 +188,172 @@
     }
     .level-stars { color: var(--md-warning); font-size: 12px; }
 
-    /* Hover effect on project thumbnail */
-    .md-course-card { overflow: hidden; }
-    .md-course-card-thumb { overflow: hidden; }
+    /* Card */
+    .md-course-card { overflow: hidden; position: relative; }
+    .md-course-card-thumb {
+        position: relative;
+        overflow: hidden;
+        padding: 0;
+        background: var(--md-bg-secondary);
+        aspect-ratio: 16/9;
+    }
     .md-course-card-thumb img {
+        width: 100%; height: 100%;
+        object-fit: cover; display: block;
         transition: transform 0.4s ease;
     }
     .md-course-card:hover .md-course-card-thumb img {
         transform: scale(1.05);
     }
 
-    /* Coming soon card */
-    .coming-soon-card {
-        height: 100%;
-        min-height: 380px;
-        border: 2px dashed var(--md-border);
-        border-radius: var(--md-radius-lg);
-        background: var(--md-bg-secondary);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 32px 24px;
-        transition: var(--md-transition);
+    /* Status badge over thumbnail */
+    .status-badge {
+        position: absolute;
+        top: 12px; right: 12px;
+        padding: 4px 10px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        border-radius: 6px;
+        z-index: 2;
+        backdrop-filter: blur(4px);
     }
-    .coming-soon-card:hover {
-        border-color: var(--md-accent);
-        background: rgba(232,80,26,0.04);
+    .status-badge.mpv {
+        background: rgba(34,197,94,0.92);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(34,197,94,0.35);
     }
-    .coming-soon-icon {
-        width: 56px; height: 56px;
-        border-radius: 14px;
-        background: rgba(232,80,26,0.1);
-        border: 1px solid rgba(232,80,26,0.25);
-        display: flex; align-items: center; justify-content: center;
-        font-size: 24px;
-        color: var(--md-accent);
-        margin-bottom: 16px;
+    .status-badge.breve {
+        background: rgba(245,158,11,0.92);
+        color: #1a0f00;
+        box-shadow: 0 2px 8px rgba(245,158,11,0.35);
     }
-    .coming-soon-card h5 {
+
+    /* Category badge variants */
+    .cat-badge {
+        display: inline-block;
+        font-size: 11px;
         font-weight: 700;
-        margin-bottom: 8px;
-        color: var(--md-text-primary);
+        padding: 3px 10px;
+        border-radius: 5px;
+        letter-spacing: 0.03em;
     }
-    .coming-soon-card p {
-        font-size: 13px;
+    .cat-arquitetura  { background: rgba(232,80,26,0.12);  color: var(--md-accent);   border: 1px solid rgba(232,80,26,0.3); }
+    .cat-fundamentos  { background: rgba(99,102,241,0.12); color: #818cf8;            border: 1px solid rgba(99,102,241,0.3); }
+    .cat-desenvolvimento { background: rgba(34,197,94,0.12); color: #4ade80;          border: 1px solid rgba(34,197,94,0.3); }
+
+    /* Non-clickable (Breve) card */
+    .project-card-wrap.is-breve .md-course-card { cursor: default; opacity: 0.92; }
+    .project-card-wrap.is-breve .md-course-card:hover .md-course-card-thumb img { transform: none; }
+
+    /* Empty state */
+    .filter-empty {
+        text-align: center;
+        padding: 60px 20px;
         color: var(--md-text-muted);
-        margin: 0;
-        line-height: 1.5;
+        display: none;
     }
+    .filter-empty.show { display: block; }
 </style>
 
 <div class="container">
     <div class="page-header">
         <p style="color:var(--md-accent); font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px;">Catálogo</p>
-        <h1 style="font-size:38px; font-weight:900; margin-bottom:12px;">Projectos</h1>
-        <p style="color:var(--md-text-secondary); font-size:16px; max-width:560px; margin:0;">
-            Cada projeto é um sistema real desenvolvido do zero — da planilha à arquitetura, do C4 ao código.
+        <h1 style="font-size:38px; font-weight:900; margin-bottom:12px;">Projetos de Arquitetura e Desenvolvimento</h1>
+        <p style="color:var(--md-text-secondary); font-size:16px; max-width:640px; margin:0;">
+            Fundamentos sólidos, projetos reais de arquitetura e técnicas modernas de desenvolvimento — tudo o que precisa para se tornar um arquiteto .NET de referência.
         </p>
     </div>
 
     <!-- Filters -->
     <div class="filter-bar">
         <span style="font-size:13px; color:var(--md-text-muted); font-weight:600;">Filtrar:</span>
-        <button class="filter-btn active">Todos</button>
-        <button class="filter-btn">Iniciante</button>
-        <button class="filter-btn">Intermediário</button>
-        <button class="filter-btn">Avançado</button>
+        <button class="filter-btn active" data-filter="all">Todos</button>
+        <button class="filter-btn" data-filter="arquitetura">Arquitetura</button>
+        <button class="filter-btn" data-filter="fundamentos">Fundamentos</button>
+        <button class="filter-btn" data-filter="desenvolvimento">Desenvolvimento</button>
     </div>
 
     <!-- Grid -->
-    <div class="row g-4 mb-5">
-        <!-- Projeto real disponível -->
-        <div class="col-md-6 col-lg-4">
-            <a asp-controller="Projects" asp-action="Detail" asp-route-id="1" class="md-course-card">
-                <div class="md-course-card-thumb" style="background: var(--md-bg-secondary); padding:0;">
-                    <img src="/images/sistema-gestao-indicadores-kpi.png" alt="Sistema de Gestão de Indicadores e KPIs"
-                         style="width:100%; height:100%; object-fit:cover; display:block;" />
-                </div>
-                <div class="md-course-card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="level-stars">★★☆ Intermediário</span>
+    <div id="project-grid" class="row g-4 mb-5">
+        @foreach (var p in projects)
+        {
+            var isClickable = !string.IsNullOrEmpty(p.DetailRoute);
+            var openTag = isClickable
+                ? $"<a href=\"{p.DetailRoute}\" class=\"md-course-card\">"
+                : "<div class=\"md-course-card\">";
+            var closeTag = isClickable ? "</a>" : "</div>";
+
+            <div class="col-md-6 col-lg-4 project-card-wrap @(isClickable ? "" : "is-breve")" data-category="@p.CategoryKey">
+                @Html.Raw(openTag)
+                    <div class="md-course-card-thumb">
+                        <img src="@p.Image" alt="@p.Title" />
+                        <span class="status-badge @(p.Status == "MPV" ? "mpv" : "breve")">@p.Status</span>
                     </div>
-                    <p class="md-course-card-title">Sistema de Gestão de Indicadores e KPIs</p>
-                    <div class="md-course-card-meta">
-                        <span><i class="bi bi-play-circle"></i> 47 aulas</span>
-                        <span><i class="bi bi-clock"></i> 6h 00min</span>
-                        <span><i class="bi bi-folder"></i> 8 módulos</span>
+                    <div class="md-course-card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="cat-badge cat-@p.CategoryKey">@p.Category</span>
+                            <span class="level-stars">@p.Level</span>
+                        </div>
+                        <p class="md-course-card-title">@p.Title</p>
+                        <p style="font-size:13px; color:var(--md-text-muted); line-height:1.5; margin:0 0 12px;">@p.Description</p>
+                        @if (p.Lessons > 0)
+                        {
+                            <div class="md-course-card-meta">
+                                <span><i class="bi bi-play-circle"></i> @p.Lessons aulas</span>
+                                @if (!string.IsNullOrEmpty(p.Duration))
+                                {
+                                    <span><i class="bi bi-clock"></i> @p.Duration</span>
+                                }
+                                @if (p.Modules > 0)
+                                {
+                                    <span><i class="bi bi-folder"></i> @p.Modules módulos</span>
+                                }
+                            </div>
+                        }
+                        <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--md-border-light); display:flex; align-items:center; gap:8px;">
+                            <img src="/images/carlos-freire.jpg" alt="Carlos Freire" style="width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+                            <span style="font-size:12px; color:var(--md-text-muted);">Carlos Freire</span>
+                            @if (p.IsFree)
+                            {
+                                <span class="md-badge md-badge-success" style="margin-left:auto;">Grátis</span>
+                            }
+                        </div>
                     </div>
-                    <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--md-border-light); display:flex; align-items:center; gap:8px;">
-                        <img src="/images/carlos-freire.jpg" alt="Carlos Freire" style="width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
-                        <span style="font-size:12px; color:var(--md-text-muted);">Carlos Freire</span>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <!-- Próximos projetos (placeholders) -->
-        <div class="col-md-6 col-lg-4">
-            <div class="coming-soon-card">
-                <div class="coming-soon-icon"><i class="bi bi-cart-check"></i></div>
-                <h5>Sistema de E-commerce</h5>
-                <p>Em breve · Avançado<br/>Carrinho, checkout, integração de pagamentos e gestão de stock.</p>
+                @Html.Raw(closeTag)
             </div>
-        </div>
+        }
+    </div>
 
-        <div class="col-md-6 col-lg-4">
-            <div class="coming-soon-card">
-                <div class="coming-soon-icon"><i class="bi bi-people"></i></div>
-                <h5>Sistema de RH e Folha</h5>
-                <p>Em breve · Intermediário<br/>Colaboradores, ponto, férias e cálculo de salários.</p>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-            <div class="coming-soon-card">
-                <div class="coming-soon-icon"><i class="bi bi-kanban"></i></div>
-                <h5>Sistema de Gestão de Projetos</h5>
-                <p>Em breve · Intermediário<br/>Kanban, sprints, alocação de equipas e relatórios.</p>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-            <div class="coming-soon-card">
-                <div class="coming-soon-icon"><i class="bi bi-bank"></i></div>
-                <h5>Sistema Financeiro Corporativo</h5>
-                <p>Em breve · Avançado<br/>Contas a pagar/receber, conciliação bancária e DRE.</p>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-            <div class="coming-soon-card">
-                <div class="coming-soon-icon"><i class="bi bi-stars"></i></div>
-                <h5>Sugira o Próximo</h5>
-                <p>Estamos a ouvir.<br/>Tem uma ideia de projeto real que gostaria de ver? Conte-nos.</p>
-            </div>
-        </div>
+    <div id="filter-empty" class="filter-empty">
+        <i class="bi bi-search" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+        Nenhum projeto encontrado nesta categoria.
     </div>
 </div>
+
+@section Scripts {
+<script>
+    (function () {
+        const buttons = document.querySelectorAll('.filter-btn');
+        const cards = document.querySelectorAll('.project-card-wrap');
+        const empty = document.getElementById('filter-empty');
+
+        function applyFilter(filter) {
+            let visible = 0;
+            cards.forEach(c => {
+                const match = filter === 'all' || c.dataset.category === filter;
+                c.style.display = match ? '' : 'none';
+                if (match) visible++;
+            });
+            empty.classList.toggle('show', visible === 0);
+        }
+
+        buttons.forEach(btn => btn.addEventListener('click', () => {
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            applyFilter(btn.dataset.filter);
+        }));
+    })();
+</script>
+}
