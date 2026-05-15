@@ -33,6 +33,57 @@
         background: rgba(232,80,26,0.08);
     }
     .level-stars { color: var(--md-warning); font-size: 12px; }
+
+    /* Hover effect on project thumbnail */
+    .md-course-card { overflow: hidden; }
+    .md-course-card-thumb { overflow: hidden; }
+    .md-course-card-thumb img {
+        transition: transform 0.4s ease;
+    }
+    .md-course-card:hover .md-course-card-thumb img {
+        transform: scale(1.05);
+    }
+
+    /* Coming soon card */
+    .coming-soon-card {
+        height: 100%;
+        min-height: 380px;
+        border: 2px dashed var(--md-border);
+        border-radius: var(--md-radius-lg);
+        background: var(--md-bg-secondary);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 32px 24px;
+        transition: var(--md-transition);
+    }
+    .coming-soon-card:hover {
+        border-color: var(--md-accent);
+        background: rgba(232,80,26,0.04);
+    }
+    .coming-soon-icon {
+        width: 56px; height: 56px;
+        border-radius: 14px;
+        background: rgba(232,80,26,0.1);
+        border: 1px solid rgba(232,80,26,0.25);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 24px;
+        color: var(--md-accent);
+        margin-bottom: 16px;
+    }
+    .coming-soon-card h5 {
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--md-text-primary);
+    }
+    .coming-soon-card p {
+        font-size: 13px;
+        color: var(--md-text-muted);
+        margin: 0;
+        line-height: 1.5;
+    }
 </style>
 
 <div class="container">
@@ -55,32 +106,70 @@
 
     <!-- Grid -->
     <div class="row g-4 mb-5">
-        @for (int i = 1; i <= 6; i++)
-        {
-            <div class="col-md-6 col-lg-4">
-                <a asp-controller="Projects" asp-action="Detail" asp-route-id="@i" class="md-course-card">
-                    <div class="md-course-card-thumb" style="background: var(--md-bg-secondary); overflow:hidden; padding:0;">
-                        <img src="/images/sistema-gestao-indicadores-kpi.png" alt="Sistema de Gestão de Indicadores e KPIs"
-                             style="width:100%; height:100%; object-fit:cover; display:block;" />
+        <!-- Projeto real disponível -->
+        <div class="col-md-6 col-lg-4">
+            <a asp-controller="Projects" asp-action="Detail" asp-route-id="1" class="md-course-card">
+                <div class="md-course-card-thumb" style="background: var(--md-bg-secondary); padding:0;">
+                    <img src="/images/sistema-gestao-indicadores-kpi.png" alt="Sistema de Gestão de Indicadores e KPIs"
+                         style="width:100%; height:100%; object-fit:cover; display:block;" />
+                </div>
+                <div class="md-course-card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="level-stars">★★☆ Intermediário</span>
                     </div>
-                    <div class="md-course-card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="md-badge md-badge-accent">Gestão de KPIs</span>
-                            <span class="level-stars">★★☆ Intermediário</span>
-                        </div>
-                        <p class="md-course-card-title">Sistema de Gestão de Indicadores e KPIs</p>
-                        <div class="md-course-card-meta">
-                            <span><i class="bi bi-play-circle"></i> 47 aulas</span>
-                            <span><i class="bi bi-clock"></i> 6h 00min</span>
-                            <span><i class="bi bi-folder"></i> 8 módulos</span>
-                        </div>
-                        <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--md-border-light); display:flex; align-items:center; gap:8px;">
-                            <img src="/images/carlos-freire.jpg" alt="Carlos Freire" style="width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
-                            <span style="font-size:12px; color:var(--md-text-muted);">Carlos Freire</span>
-                        </div>
+                    <p class="md-course-card-title">Sistema de Gestão de Indicadores e KPIs</p>
+                    <div class="md-course-card-meta">
+                        <span><i class="bi bi-play-circle"></i> 47 aulas</span>
+                        <span><i class="bi bi-clock"></i> 6h 00min</span>
+                        <span><i class="bi bi-folder"></i> 8 módulos</span>
                     </div>
-                </a>
+                    <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--md-border-light); display:flex; align-items:center; gap:8px;">
+                        <img src="/images/carlos-freire.jpg" alt="Carlos Freire" style="width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+                        <span style="font-size:12px; color:var(--md-text-muted);">Carlos Freire</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Próximos projetos (placeholders) -->
+        <div class="col-md-6 col-lg-4">
+            <div class="coming-soon-card">
+                <div class="coming-soon-icon"><i class="bi bi-cart-check"></i></div>
+                <h5>Sistema de E-commerce</h5>
+                <p>Em breve · Avançado<br/>Carrinho, checkout, integração de pagamentos e gestão de stock.</p>
             </div>
-        }
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="coming-soon-card">
+                <div class="coming-soon-icon"><i class="bi bi-people"></i></div>
+                <h5>Sistema de RH e Folha</h5>
+                <p>Em breve · Intermediário<br/>Colaboradores, ponto, férias e cálculo de salários.</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="coming-soon-card">
+                <div class="coming-soon-icon"><i class="bi bi-kanban"></i></div>
+                <h5>Sistema de Gestão de Projetos</h5>
+                <p>Em breve · Intermediário<br/>Kanban, sprints, alocação de equipas e relatórios.</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="coming-soon-card">
+                <div class="coming-soon-icon"><i class="bi bi-bank"></i></div>
+                <h5>Sistema Financeiro Corporativo</h5>
+                <p>Em breve · Avançado<br/>Contas a pagar/receber, conciliação bancária e DRE.</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="coming-soon-card">
+                <div class="coming-soon-icon"><i class="bi bi-stars"></i></div>
+                <h5>Sugira o Próximo</h5>
+                <p>Estamos a ouvir.<br/>Tem uma ideia de projeto real que gostaria de ver? Conte-nos.</p>
+            </div>
+        </div>
     </div>
 </div>
