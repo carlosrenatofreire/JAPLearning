@@ -61,7 +61,7 @@
             <div class="kpi-icon" style="background:rgba(99,102,241,0.12); color:#818CF8;">
                 <i class="bi bi-people"></i>
             </div>
-            <div class="kpi-value">—</div>
+            <div class="kpi-value">@ViewBag.TotalUsers</div>
             <div class="kpi-label">Utilizadores</div>
         </div>
     </div>
@@ -70,7 +70,7 @@
             <div class="kpi-icon" style="background:rgba(34,197,94,0.12); color:var(--md-success);">
                 <i class="bi bi-collection-play"></i>
             </div>
-            <div class="kpi-value">—</div>
+            <div class="kpi-value">@ViewBag.ActiveCourses</div>
             <div class="kpi-label">Cursos Activos</div>
         </div>
     </div>
@@ -79,7 +79,7 @@
             <div class="kpi-icon" style="background:rgba(245,158,11,0.12); color:var(--md-warning);">
                 <i class="bi bi-bag-check"></i>
             </div>
-            <div class="kpi-value">—</div>
+            <div class="kpi-value">@ViewBag.TotalOrders</div>
             <div class="kpi-label">Pedidos</div>
         </div>
     </div>
@@ -88,7 +88,7 @@
             <div class="kpi-icon" style="background:rgba(232,80,26,0.12); color:var(--md-accent);">
                 <i class="bi bi-cash-stack"></i>
             </div>
-            <div class="kpi-value">—</div>
+            <div class="kpi-value">@(((decimal)(ViewBag.TotalRevenue ?? 0m)).ToString("C0", new System.Globalization.CultureInfo("pt-BR")))</div>
             <div class="kpi-label">Receita Total</div>
         </div>
     </div>
