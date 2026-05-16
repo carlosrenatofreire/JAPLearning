@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git pull *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "PowerShell(gh pr create --title \"Add RemoveRange to IRepository interface\" --body $body)",
+      "Bash(git push *)",
+      "Bash(gh pr create --title 'Add MundoDev UI template — design system, 4 layouts and all pages' --body ' *)",
+      "Bash(apt-get install *)",
+      "Bash(curl -sS https://webi.sh/gh)",
+      "Bash(sh)",
+      "Bash(gh --version)",
+      "Bash(winget install *)",
+      "Bash(choco install *)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(export PATH=\"$PATH:/c/ProgramData/chocolatey/bin\")",
+      "Read(//c/ProgramData/chocolatey/bin/**)",
+      "Read(//c/ProgramData/chocolatey/**)",
+      "Bash(export PATH=\"$PATH:/c/Program Files/GitHub CLI\")",
+      "Bash(gh auth *)",
+      "Bash(gh pr create --title 'Add MundoDev UI template — design system, 4 layouts e todas as páginas' --body ' *)",
+      "Bash(gh pr *)",
+      "Bash(git commit -m 'Fix Excel icon color: #1D6F42 \\(invisible on dark\\) → #4ade80 *)",
+      "Bash(git commit -m 'Remove traffic-light dots from spreadsheet titlebar *)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(gh api *)",
+      "Bash(git fetch *)",
+      "Bash(git reset *)",
+      "Bash(dotnet build *)"
+    ]
+  }
+}
