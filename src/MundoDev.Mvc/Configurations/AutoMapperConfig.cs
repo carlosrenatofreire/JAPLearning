@@ -78,23 +78,42 @@ namespace MundoDev.Mvc.Configurations
                 cfg.CreateMap<Article, ArticleViewModel>()
                     .ForMember(d => d.SubjectName, o => o.MapFrom(s => s.Subject.Name));
 
+                cfg.CreateMap<ArticleViewModel, Article>()
+                    .ForMember(d => d.Subject, o => o.Ignore());
+
+                // Plan (bidirectional)
+                cfg.CreateMap<Plan, PlanViewModel>().ReverseMap()
+                    .ForMember(d => d.Orders, o => o.Ignore());
+
                 // Certificate
                 cfg.CreateMap<Certificate, CertificateViewModel>()
                     .ForMember(d => d.UserFullName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"))
                     .ForMember(d => d.CourseTitle, o => o.MapFrom(s => s.Course.Title));
 
+                cfg.CreateMap<CertificateViewModel, Certificate>()
+                    .ForMember(d => d.User, o => o.Ignore())
+                    .ForMember(d => d.Course, o => o.Ignore());
+
                 // Question
                 cfg.CreateMap<Question, QuestionViewModel>()
                     .ForMember(d => d.LessonName, o => o.MapFrom(s => s.Lesson.Name));
 
+                cfg.CreateMap<QuestionViewModel, Question>()
+                    .ForMember(d => d.Lesson, o => o.Ignore())
+                    .ForMember(d => d.Options, o => o.Ignore())
+                    .ForMember(d => d.UserLessonQuestions, o => o.Ignore());
+
                 // QuestionOption
                 cfg.CreateMap<QuestionOption, QuestionOptionViewModel>();
+                cfg.CreateMap<QuestionOptionViewModel, QuestionOption>()
+                    .ForMember(d => d.Question, o => o.Ignore())
+                    .ForMember(d => d.UserLessonQuestions, o => o.Ignore());
 
                 // Testimonial
-                cfg.CreateMap<Testimonial, TestimonialViewModel>();
+                cfg.CreateMap<Testimonial, TestimonialViewModel>().ReverseMap()
+                    .ForMember(d => d.User, o => o.Ignore());
 
-                // Plan
-                cfg.CreateMap<Plan, PlanViewModel>();
+                // Plan — handled above with reverse mapping
 
                 // Order
                 cfg.CreateMap<Order, OrderViewModel>()
@@ -102,9 +121,19 @@ namespace MundoDev.Mvc.Configurations
                     .ForMember(d => d.PlanName, o => o.MapFrom(s => s.Plan.Name))
                     .ForMember(d => d.StatusName, o => o.MapFrom(s => s.Status.Name));
 
+                cfg.CreateMap<OrderViewModel, Order>()
+                    .ForMember(d => d.User, o => o.Ignore())
+                    .ForMember(d => d.Plan, o => o.Ignore())
+                    .ForMember(d => d.Status, o => o.Ignore())
+                    .ForMember(d => d.Payments, o => o.Ignore());
+
                 // Payment
                 cfg.CreateMap<Payment, PaymentViewModel>()
                     .ForMember(d => d.UserFullName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"));
+
+                cfg.CreateMap<PaymentViewModel, Payment>()
+                    .ForMember(d => d.User, o => o.Ignore())
+                    .ForMember(d => d.Order, o => o.Ignore());
 
                 // AuditLog
                 cfg.CreateMap<AuditLog, AuditLogViewModel>();
