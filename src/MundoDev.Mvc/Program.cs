@@ -10,7 +10,7 @@ builder.Configuration.AddDoppler(options =>
 {
     options.ServiceToken = "dp.st.dev_carlos.VJxtuLmTSW0akkPfes2Wc95GceAk4Z5iDvS9yejGVWE";
     options.Project = "mundodev";
-    options.Config = "dev_carlos";
+    options.Config = builder.Environment.IsProduction() ? "prd" : "dev_carlos";
 });
 
 var root = (IConfigurationRoot)builder.Configuration;
