@@ -1,11 +1,11 @@
 using FluentValidation;
-using MundoDev.Mvc.ViewModels.Entities;
+using MundoDev.Business.Models.Domains.Entities;
 
-namespace MundoDev.Mvc.Validators.Entities
+namespace MundoDev.Business.Validations.Entities
 {
-    public class UserValidator : AbstractValidator<UserViewModel>
+    public class UserValidation : AbstractValidator<User>
     {
-        public UserValidator()
+        public UserValidation()
         {
             RuleFor(x => x.FirstName)
                 .NotEmpty().WithMessage("First name is required.")
@@ -22,6 +22,10 @@ namespace MundoDev.Mvc.Validators.Entities
 
             RuleFor(x => x.RoleId)
                 .NotEmpty().WithMessage("Role is required.");
+
+            RuleFor(x => x.Password)
+                .NotEmpty().WithMessage("Password is required.")
+                .MinimumLength(6).WithMessage("Password must be at least 6 characters.");
         }
     }
 }

@@ -1,11 +1,11 @@
 using FluentValidation;
-using MundoDev.Mvc.ViewModels.Entities;
+using MundoDev.Business.Models.Domains.Entities;
 
-namespace MundoDev.Mvc.Validators.Entities
+namespace MundoDev.Business.Validations.Entities
 {
-    public class CourseValidator : AbstractValidator<CourseViewModel>
+    public class CourseValidation : AbstractValidator<Course>
     {
-        public CourseValidator()
+        public CourseValidation()
         {
             RuleFor(x => x.Title)
                 .NotEmpty().WithMessage("Title is required.")
