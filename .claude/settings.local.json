@@ -32,7 +32,9 @@
       "Bash(Remove-Item \"C:\\\\MundoDev\\\\MundoDev\\\\.claude\\\\worktrees\\\\lucid-cray-217194\\\\src\\\\MundoDev.Mvc\\\\Validators\\\\Entities\\\\CourseValidator.cs\" -Force)",
       "Bash(Remove-Item \"C:\\\\MundoDev\\\\MundoDev\\\\.claude\\\\worktrees\\\\lucid-cray-217194\\\\src\\\\MundoDev.Mvc\\\\Validators\\\\Entities\\\\ArticleValidator.cs\" -Force)",
       "Bash(Remove-Item \"C:\\\\MundoDev\\\\MundoDev\\\\.claude\\\\worktrees\\\\lucid-cray-217194\\\\src\\\\MundoDev.Mvc\\\\Validators\\\\Parameters\\\\RoleValidator.cs\" -Force)",
-      "Bash(Remove-Item \"C:\\\\MundoDev\\\\MundoDev\\\\.claude\\\\worktrees\\\\lucid-cray-217194\\\\src\\\\MundoDev.Mvc\\\\Configurations\\\\FluentValidationConfig.cs\" -Force)"
+      "Bash(Remove-Item \"C:\\\\MundoDev\\\\MundoDev\\\\.claude\\\\worktrees\\\\lucid-cray-217194\\\\src\\\\MundoDev.Mvc\\\\Configurations\\\\FluentValidationConfig.cs\" -Force)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\MundoDev\\\\MundoDev\\\\src\\\\MundoDev.Template.Mvc\\\\Views\\\\\" -Recurse -File | Where-Object { $_.Name -match \"\\(sidebar|nav|menu\\)\" })",
+      "Bash(find \"C:\\\\MundoDev\\\\MundoDev\\\\src\\\\MundoDev.Template.Mvc\\\\wwwroot\" -type f \\\\\\( -name \"*.css\" -o -name \"*.js\" \\\\\\) 2>/dev/null)"
     ]
   }
 }
