@@ -3,6 +3,13 @@ using MundoDev.Business.Interfaces.Internals.Entities;
 using MundoDev.Business.Interfaces.Internals.Parameters;
 using MundoDev.Business.Interfaces.Internals.Relationships;
 using MundoDev.Business.Interfaces.Internals.Shareds;
+using MundoDev.Business.Interfaces.Services.Auxiliaries;
+using MundoDev.Business.Interfaces.Services.Entities;
+using MundoDev.Business.Interfaces.Services.Parameters;
+using MundoDev.Business.Notifications;
+using MundoDev.Business.Services.Auxiliaries;
+using MundoDev.Business.Services.Entities;
+using MundoDev.Business.Services.Parameters;
 using MundoDev.Data.Repositories.Auxiliaries;
 using MundoDev.Data.Repositories.Entities;
 using MundoDev.Data.Repositories.Parameters;
@@ -51,6 +58,34 @@ namespace MundoDev.Mvc.Configurations
 
             // Auxiliaries
             services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+
+            // Notificator (Scoped per request)
+            services.AddScoped<INotificator, Notificator>();
+
+            // Services - Parameters
+            services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ILevelService, LevelService>();
+            services.AddScoped<ISubjectService, SubjectService>();
+            services.AddScoped<ITeacherService, TeacherService>();
+            services.AddScoped<IOrderStatusService, OrderStatusService>();
+
+            // Services - Entities
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ICourseService, CourseService>();
+            services.AddScoped<ITopicService, TopicService>();
+            services.AddScoped<ILessonService, LessonService>();
+            services.AddScoped<IArticleService, ArticleService>();
+            services.AddScoped<ICertificateService, CertificateService>();
+            services.AddScoped<IQuestionService, QuestionService>();
+            services.AddScoped<IQuestionOptionService, QuestionOptionService>();
+            services.AddScoped<ITestimonialService, TestimonialService>();
+            services.AddScoped<IPlanService, PlanService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+
+            // Services - Auxiliaries
+            services.AddScoped<IAuditLogService, AuditLogService>();
 
             return services;
         }
