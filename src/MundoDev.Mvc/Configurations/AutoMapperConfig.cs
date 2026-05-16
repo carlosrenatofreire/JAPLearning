@@ -45,14 +45,34 @@ namespace MundoDev.Mvc.Configurations
                     .ForMember(d => d.TeacherName, o => o.MapFrom(s => s.Teacher.Name))
                     .ForMember(d => d.LevelName, o => o.MapFrom(s => s.Level.Name));
 
+                cfg.CreateMap<CourseViewModel, Course>()
+                    .ForMember(d => d.Category, o => o.Ignore())
+                    .ForMember(d => d.Teacher, o => o.Ignore())
+                    .ForMember(d => d.Level, o => o.Ignore())
+                    .ForMember(d => d.Topics, o => o.Ignore())
+                    .ForMember(d => d.Lessons, o => o.Ignore())
+                    .ForMember(d => d.Certificates, o => o.Ignore())
+                    .ForMember(d => d.Requirements, o => o.Ignore());
+
                 // Topic
                 cfg.CreateMap<Topic, TopicViewModel>()
                     .ForMember(d => d.CourseName, o => o.MapFrom(s => s.Course.Title));
+
+                cfg.CreateMap<TopicViewModel, Topic>()
+                    .ForMember(d => d.Course, o => o.Ignore())
+                    .ForMember(d => d.Lessons, o => o.Ignore());
 
                 // Lesson
                 cfg.CreateMap<Lesson, LessonViewModel>()
                     .ForMember(d => d.CourseTitle, o => o.MapFrom(s => s.Course.Title))
                     .ForMember(d => d.TopicName, o => o.MapFrom(s => s.Topic.Name));
+
+                cfg.CreateMap<LessonViewModel, Lesson>()
+                    .ForMember(d => d.Course, o => o.Ignore())
+                    .ForMember(d => d.Topic, o => o.Ignore())
+                    .ForMember(d => d.Questions, o => o.Ignore())
+                    .ForMember(d => d.UserCourseLessons, o => o.Ignore())
+                    .ForMember(d => d.UserLessonTests, o => o.Ignore());
 
                 // Article
                 cfg.CreateMap<Article, ArticleViewModel>()
