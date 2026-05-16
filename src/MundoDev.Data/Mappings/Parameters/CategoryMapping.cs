@@ -16,6 +16,9 @@ namespace MundoDev.Data.Mappings.Parameters
                 .IsRequired()
                 .HasColumnType("varchar(100)");
 
+            builder.Property(e => e.Subtitle)
+                .HasColumnType("varchar(150)");
+
             builder.Property(e => e.Description)
                 .HasColumnType("varchar(255)");
 

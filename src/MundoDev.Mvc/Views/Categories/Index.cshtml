@@ -22,6 +22,7 @@
         <thead>
             <tr>
                 <th>Nome</th>
+                <th>Subtítulo</th>
                 <th>Descrição</th>
                 <th>Estado</th>
                 <th style="width:100px; text-align:center;">Acções</th>
@@ -32,6 +33,7 @@
             {
                 <tr>
                     <td style="color:var(--md-text-primary); font-weight:600;">@item.Name</td>
+                    <td style="color:var(--md-text-muted); font-size:13px;">@(item.Subtitle ?? "—")</td>
                     <td>@(item.Description ?? "—")</td>
                     <td>
                         @if (item.IsActived)
@@ -61,7 +63,7 @@
             }
             @if (!Model.Any())
             {
-                <tr><td colspan="4" style="text-align:center; padding:40px; color:var(--md-text-muted);">
+                <tr><td colspan="5" style="text-align:center; padding:40px; color:var(--md-text-muted);">
                     <i class="bi bi-inbox" style="font-size:32px; display:block; margin-bottom:8px;"></i>
                     Nenhum registo encontrado.
                 </td></tr>
@@ -69,3 +71,5 @@
         </tbody>
     </table>
 </div>
+
+@* colspan actualizado para 5 colunas *@
