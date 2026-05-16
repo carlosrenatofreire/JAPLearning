@@ -1,11 +1,11 @@
 using FluentValidation;
-using MundoDev.Mvc.ViewModels.Entities;
+using MundoDev.Business.Models.Domains.Entities;
 
-namespace MundoDev.Mvc.Validators.Entities
+namespace MundoDev.Business.Validations.Entities
 {
-    public class ArticleValidator : AbstractValidator<ArticleViewModel>
+    public class ArticleValidation : AbstractValidator<Article>
     {
-        public ArticleValidator()
+        public ArticleValidation()
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required.")

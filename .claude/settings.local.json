@@ -27,7 +27,12 @@
       "Bash(gh api *)",
       "Bash(git fetch *)",
       "Bash(git reset *)",
-      "Bash(dotnet build *)"
+      "Bash(dotnet build *)",
+      "Bash(Remove-Item \"C:\\\\MundoDev\\\\MundoDev\\\\.claude\\\\worktrees\\\\lucid-cray-217194\\\\src\\\\MundoDev.Mvc\\\\Validators\\\\Entities\\\\UserValidator.cs\" -Force)",
+      "Bash(Remove-Item \"C:\\\\MundoDev\\\\MundoDev\\\\.claude\\\\worktrees\\\\lucid-cray-217194\\\\src\\\\MundoDev.Mvc\\\\Validators\\\\Entities\\\\CourseValidator.cs\" -Force)",
+      "Bash(Remove-Item \"C:\\\\MundoDev\\\\MundoDev\\\\.claude\\\\worktrees\\\\lucid-cray-217194\\\\src\\\\MundoDev.Mvc\\\\Validators\\\\Entities\\\\ArticleValidator.cs\" -Force)",
+      "Bash(Remove-Item \"C:\\\\MundoDev\\\\MundoDev\\\\.claude\\\\worktrees\\\\lucid-cray-217194\\\\src\\\\MundoDev.Mvc\\\\Validators\\\\Parameters\\\\RoleValidator.cs\" -Force)",
+      "Bash(Remove-Item \"C:\\\\MundoDev\\\\MundoDev\\\\.claude\\\\worktrees\\\\lucid-cray-217194\\\\src\\\\MundoDev.Mvc\\\\Configurations\\\\FluentValidationConfig.cs\" -Force)"
     ]
   }
 }

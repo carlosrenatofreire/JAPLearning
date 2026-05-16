@@ -1,11 +1,11 @@
 using FluentValidation;
-using MundoDev.Mvc.ViewModels.Parameters;
+using MundoDev.Business.Models.Domains.Parameters;
 
-namespace MundoDev.Mvc.Validators.Parameters
+namespace MundoDev.Business.Validations.Parameters
 {
-    public class RoleValidator : AbstractValidator<RoleViewModel>
+    public class RoleValidation : AbstractValidator<Role>
     {
-        public RoleValidator()
+        public RoleValidation()
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required.")
