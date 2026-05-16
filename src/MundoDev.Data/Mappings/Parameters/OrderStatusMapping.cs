@@ -8,7 +8,7 @@ namespace MundoDev.Data.Mappings.Parameters
     {
         public void Configure(EntityTypeBuilder<OrderStatus> builder)
         {
-            builder.ToTable("OrderStatuses");
+            builder.ToTable("P_OrderStatuses");
 
             builder.HasKey(e => e.Id);
 

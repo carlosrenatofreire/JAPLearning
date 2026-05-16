@@ -8,7 +8,7 @@ namespace MundoDev.Data.Mappings.Relationships
     {
         public void Configure(EntityTypeBuilder<CourseRequirement> builder)
         {
-            builder.ToTable("CourseRequirements");
+            builder.ToTable("R_CourseRequirements");
 
             builder.HasKey(e => e.Id);
 
