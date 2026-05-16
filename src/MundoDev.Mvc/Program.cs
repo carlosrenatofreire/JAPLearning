@@ -23,7 +23,7 @@ builder.Services.AddDbContext<MainDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 // AutoMapper
-builder.Services.AddAutoMapper(typeof(DomainProfile));
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<DomainProfile>());
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
