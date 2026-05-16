@@ -1,6 +1,6 @@
-namespace MundoDev.Business.Models.ViewModels.Parameters
+namespace MundoDev.Mvc.ViewModels.Parameters
 {
-    public class TeacherViewModel
+    public class CategoryViewModel
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;

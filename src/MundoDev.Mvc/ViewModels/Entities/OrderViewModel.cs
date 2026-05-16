@@ -1,4 +1,4 @@
-namespace MundoDev.Business.Models.ViewModels.Entities
+namespace MundoDev.Mvc.ViewModels.Entities
 {
     public class OrderViewModel
     {

@@ -2,11 +2,11 @@ using AutoMapper;
 using MundoDev.Business.Models.Domains.Auxiliaries;
 using MundoDev.Business.Models.Domains.Entities;
 using MundoDev.Business.Models.Domains.Parameters;
-using MundoDev.Business.Models.ViewModels.Auxiliaries;
-using MundoDev.Business.Models.ViewModels.Entities;
-using MundoDev.Business.Models.ViewModels.Parameters;
+using MundoDev.Mvc.ViewModels.Auxiliaries;
+using MundoDev.Mvc.ViewModels.Entities;
+using MundoDev.Mvc.ViewModels.Parameters;
 
-namespace MundoDev.Business.Mappings
+namespace MundoDev.Mvc.Mappings
 {
     public class DomainProfile : Profile
     {
