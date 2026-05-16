@@ -1,0 +1,81 @@
+@model MundoDev.Mvc.ViewModels.Entities.TestimonialViewModel
+@{
+    ViewData["Title"] = "Editar Testemunho";
+}
+@await Html.PartialAsync("_CrudStyles")
+
+<div class="page-header">
+    <div>
+        <h4 class="page-header-title">Editar Testemunho</h4>
+        <p class="page-header-sub"><a asp-action="Index" style="color:var(--md-accent);">Testemunhos</a> / Editar</p>
+    </div>
+</div>
+
+<div class="md-card" style="max-width:760px;">
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="validation-summary"></div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="md-label">Nome do Autor <span class="text-danger">*</span></label>
+                <input asp-for="AuthorName" class="md-input" />
+            </div>
+            <div class="col-md-6">
+                <label class="md-label">Cargo / Papel</label>
+                <input asp-for="Role" class="md-input" />
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label class="md-label">Cidade</label>
+                <input asp-for="City" class="md-input" />
+            </div>
+            <div class="col-md-4">
+                <label class="md-label">País</label>
+                <input asp-for="Country" class="md-input" />
+            </div>
+            <div class="col-md-4">
+                <label class="md-label">Avaliação (1-5)</label>
+                <input asp-for="Rating" type="number" class="md-input" min="1" max="5" />
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="md-label">URL da Foto</label>
+                <input asp-for="PhotoUrl" class="md-input" />
+            </div>
+            <div class="col-md-6">
+                <label class="md-label">LinkedIn URL</label>
+                <input asp-for="LinkedinUrl" class="md-input" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="md-label">Depoimento</label>
+            <textarea asp-for="Quote" class="md-input" rows="3"></textarea>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-auto">
+                <label class="md-form-check">
+                    <input asp-for="Featured" type="checkbox" />
+                    <span><i class="bi bi-bookmark-star"></i> Em destaque</span>
+                </label>
+            </div>
+            <div class="col-auto">
+                <label class="md-form-check">
+                    <input asp-for="IsActived" type="checkbox" />
+                    <span>Activo</span>
+                </label>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:12px;">
+            <button type="submit" class="btn-md-primary"><i class="bi bi-check-lg"></i> Guardar</button>
+            <a asp-action="Index" class="btn-md-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>

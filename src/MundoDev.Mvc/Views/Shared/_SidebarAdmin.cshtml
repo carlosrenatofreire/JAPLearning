@@ -26,6 +26,18 @@
     <a asp-controller="Articles" asp-action="Index" class="sidebar-item @(active == "articles" ? "active" : "")">
         <i class="bi bi-file-earmark-text"></i> Artigos
     </a>
+    <a asp-controller="Questions" asp-action="Index" class="sidebar-item @(active == "questions" ? "active" : "")">
+        <i class="bi bi-question-circle"></i> Questões
+    </a>
+    <a asp-controller="QuestionOptions" asp-action="Index" class="sidebar-item @(active == "questionoptions" ? "active" : "")">
+        <i class="bi bi-ui-radios"></i> Opções de Questão
+    </a>
+    <a asp-controller="Testimonials" asp-action="Index" class="sidebar-item @(active == "testimonials" ? "active" : "")">
+        <i class="bi bi-chat-quote"></i> Testemunhos
+    </a>
+    <a asp-controller="Certificates" asp-action="Index" class="sidebar-item @(active == "certificates" ? "active" : "")">
+        <i class="bi bi-award"></i> Certificados
+    </a>
 </div>
 
 <div class="sidebar-section">
