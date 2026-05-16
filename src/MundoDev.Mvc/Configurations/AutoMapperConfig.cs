@@ -78,6 +78,13 @@ namespace MundoDev.Mvc.Configurations
                 cfg.CreateMap<Article, ArticleViewModel>()
                     .ForMember(d => d.SubjectName, o => o.MapFrom(s => s.Subject.Name));
 
+                cfg.CreateMap<ArticleViewModel, Article>()
+                    .ForMember(d => d.Subject, o => o.Ignore());
+
+                // Plan (bidirectional)
+                cfg.CreateMap<Plan, PlanViewModel>().ReverseMap()
+                    .ForMember(d => d.Orders, o => o.Ignore());
+
                 // Certificate
                 cfg.CreateMap<Certificate, CertificateViewModel>()
                     .ForMember(d => d.UserFullName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"))
@@ -93,8 +100,7 @@ namespace MundoDev.Mvc.Configurations
                 // Testimonial
                 cfg.CreateMap<Testimonial, TestimonialViewModel>();
 
-                // Plan
-                cfg.CreateMap<Plan, PlanViewModel>();
+                // Plan — handled above with reverse mapping
 
                 // Order
                 cfg.CreateMap<Order, OrderViewModel>()
@@ -102,9 +108,19 @@ namespace MundoDev.Mvc.Configurations
                     .ForMember(d => d.PlanName, o => o.MapFrom(s => s.Plan.Name))
                     .ForMember(d => d.StatusName, o => o.MapFrom(s => s.Status.Name));
 
+                cfg.CreateMap<OrderViewModel, Order>()
+                    .ForMember(d => d.User, o => o.Ignore())
+                    .ForMember(d => d.Plan, o => o.Ignore())
+                    .ForMember(d => d.Status, o => o.Ignore())
+                    .ForMember(d => d.Payments, o => o.Ignore());
+
                 // Payment
                 cfg.CreateMap<Payment, PaymentViewModel>()
                     .ForMember(d => d.UserFullName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"));
+
+                cfg.CreateMap<PaymentViewModel, Payment>()
+                    .ForMember(d => d.User, o => o.Ignore())
+                    .ForMember(d => d.Order, o => o.Ignore());
 
                 // AuditLog
                 cfg.CreateMap<AuditLog, AuditLogViewModel>();
