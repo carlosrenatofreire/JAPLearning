@@ -1,0 +1,8 @@
+@if (User.IsInRole("Administrador") || User.IsInRole("Supervisor"))
+{
+    @await Html.PartialAsync("_SidebarAdmin")
+}
+else
+{
+    @await Html.PartialAsync("_SidebarAluno")
+}

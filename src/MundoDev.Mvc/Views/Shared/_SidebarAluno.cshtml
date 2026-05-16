@@ -1,0 +1,30 @@
+@{
+    var active = ViewData["ActiveMenu"]?.ToString() ?? "";
+}
+
+<div class="sidebar-section">
+    <p class="sidebar-section-title">Principal</p>
+    <a asp-controller="Home" asp-action="Index" class="sidebar-item @(active == "dashboard" ? "active" : "")">
+        <i class="bi bi-grid-1x2"></i> Dashboard
+    </a>
+</div>
+
+<div class="sidebar-section">
+    <p class="sidebar-section-title">Minha Aprendizagem</p>
+    <a asp-controller="Home" asp-action="MyCourses" class="sidebar-item @(active == "my-courses" ? "active" : "")">
+        <i class="bi bi-collection-play"></i> Meus Cursos
+    </a>
+    <a asp-controller="Home" asp-action="MyCertificates" class="sidebar-item @(active == "certificates" ? "active" : "")">
+        <i class="bi bi-award"></i> Certificados
+    </a>
+    <a asp-controller="Home" asp-action="MyOrders" class="sidebar-item @(active == "my-orders" ? "active" : "")">
+        <i class="bi bi-bag-check"></i> Meus Pedidos
+    </a>
+</div>
+
+<div class="sidebar-section">
+    <p class="sidebar-section-title">Conta</p>
+    <a asp-controller="Account" asp-action="Profile" class="sidebar-item @(active == "profile" ? "active" : "")">
+        <i class="bi bi-person"></i> Dados Pessoais
+    </a>
+</div>
