@@ -11,7 +11,7 @@ namespace MundoDev.Business.Models.Domains.Entities
         public DateTime EndLicense { get; set; }
         public decimal Value { get; set; }
         public decimal Discount { get; set; }
-        public Guid? StatusId { get; set; }
+        public Guid StatusId { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? ChangedDate { get; set; }
         public bool IsActived { get; set; } = true;
@@ -19,7 +19,7 @@ namespace MundoDev.Business.Models.Domains.Entities
 
         public User User { get; set; } = null!;
         public Plan Plan { get; set; } = null!;
-        public OrderStatus? Status { get; set; }
+        public OrderStatus Status { get; set; } = null!;
         public ICollection<Payment> Payments { get; set; } = new List<Payment>();
     }
 }

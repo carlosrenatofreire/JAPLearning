@@ -1,10 +1,10 @@
 using MundoDev.Business.Models.Enums;
-using MundoDev.Business.Models.Shareds;
 
-namespace MundoDev.Business.Models.Domains.Auxiliaries
+namespace MundoDev.Business.Models.ViewModels.Auxiliaries
 {
-    public class AuditLog : Entity
+    public class AuditLogViewModel
     {
+        public Guid Id { get; set; }
         public LogType LogLevel { get; set; }
         public DateTime CreatedDate { get; set; }
         public string CreatedBy { get; set; } = string.Empty;

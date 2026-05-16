@@ -1,10 +1,10 @@
 using MundoDev.Business.Models.Enums;
-using MundoDev.Business.Models.Shareds;
 
-namespace MundoDev.Business.Models.Domains.Entities
+namespace MundoDev.Business.Models.ViewModels.Entities
 {
-    public class Plan : Entity
+    public class PlanViewModel
     {
+        public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
         public int? Months { get; set; }
@@ -12,11 +12,8 @@ namespace MundoDev.Business.Models.Domains.Entities
         public bool? Promotion { get; set; }
         public int? DiscountPercent { get; set; }
         public PlanType PlanType { get; set; }
+        public bool IsActived { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? ChangedDate { get; set; }
-        public bool IsActived { get; set; } = true;
-        public bool IsDeleted { get; set; }
-
-        public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }
