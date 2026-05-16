@@ -1,6 +1,6 @@
 using MundoDev.Business.Models.Enums;
 
-namespace MundoDev.Business.Models.ViewModels.Entities
+namespace MundoDev.Mvc.ViewModels.Entities
 {
     public class PaymentViewModel
     {

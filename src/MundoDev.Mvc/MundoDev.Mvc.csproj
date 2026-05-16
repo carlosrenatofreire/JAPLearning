@@ -9,11 +9,19 @@
   <ItemGroup>
     <Folder Include="Configurations\" />
     <Folder Include="Extensions\" />
-    <Folder Include="ViewModels\" />
+    <Folder Include="Mappings\" />
+    <Folder Include="ViewModels\Auxiliaries\" />
+    <Folder Include="ViewModels\Entities\" />
+    <Folder Include="ViewModels\Parameters\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
     <PackageReference Include="Doppler.Extensions.Configuration" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MundoDev.Business\MundoDev.Business.csproj" />
   </ItemGroup>
 
 </Project>

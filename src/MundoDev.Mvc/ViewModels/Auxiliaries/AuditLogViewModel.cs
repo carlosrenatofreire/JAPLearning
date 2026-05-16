@@ -1,6 +1,6 @@
 using MundoDev.Business.Models.Enums;
 
-namespace MundoDev.Business.Models.ViewModels.Auxiliaries
+namespace MundoDev.Mvc.ViewModels.Auxiliaries
 {
     public class AuditLogViewModel
     {
