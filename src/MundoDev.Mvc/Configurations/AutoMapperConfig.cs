@@ -13,18 +13,31 @@ namespace MundoDev.Mvc.Configurations
         {
             services.AddAutoMapper(cfg =>
             {
-                // Parameters
-                cfg.CreateMap<Role, RoleViewModel>();
-                cfg.CreateMap<Category, CategoryViewModel>();
-                cfg.CreateMap<Level, LevelViewModel>();
-                cfg.CreateMap<Subject, SubjectViewModel>();
-                cfg.CreateMap<Teacher, TeacherViewModel>();
-                cfg.CreateMap<OrderStatus, OrderStatusViewModel>();
+                // Parameters (bidirectional)
+                cfg.CreateMap<Role, RoleViewModel>().ReverseMap();
+                cfg.CreateMap<Category, CategoryViewModel>().ReverseMap();
+                cfg.CreateMap<Level, LevelViewModel>().ReverseMap();
+                cfg.CreateMap<Subject, SubjectViewModel>().ReverseMap();
+                cfg.CreateMap<Teacher, TeacherViewModel>().ReverseMap();
+                cfg.CreateMap<OrderStatus, OrderStatusViewModel>().ReverseMap();
 
                 // User
                 cfg.CreateMap<User, UserViewModel>()
-                    .ForMember(d => d.RoleName, o => o.MapFrom(s => s.Role.Name))
-                    .ForMember(d => d.FullName, o => o.MapFrom(s => $"{s.FirstName} {s.LastName}"));
+                    .ForMember(d => d.RoleName, o => o.MapFrom(s => s.Role != null ? s.Role.Name : string.Empty))
+                    .ForMember(d => d.FullName, o => o.MapFrom(s => $"{s.FirstName} {s.LastName}"))
+                    .ForMember(d => d.Password, o => o.Ignore())
+                    .ForMember(d => d.ConfirmPassword, o => o.Ignore());
+
+                cfg.CreateMap<UserViewModel, User>()
+                    .ForMember(d => d.Role, o => o.Ignore())
+                    .ForMember(d => d.Orders, o => o.Ignore())
+                    .ForMember(d => d.Payments, o => o.Ignore())
+                    .ForMember(d => d.Certificates, o => o.Ignore())
+                    .ForMember(d => d.UserCourseLessons, o => o.Ignore())
+                    .ForMember(d => d.UserLessonTests, o => o.Ignore())
+                    .ForMember(d => d.Password, o => o.Ignore())
+                    .ForMember(d => d.ResetToken, o => o.Ignore())
+                    .ForMember(d => d.ResetTokenExpiry, o => o.Ignore());
 
                 // Course
                 cfg.CreateMap<Course, CourseViewModel>()
