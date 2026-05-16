@@ -1,25 +1,22 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MundoDev.Business.Interfaces.Internals.Shareds;
 using MundoDev.Mvc.Models;
 using System.Diagnostics;
 
 namespace MundoDev.Mvc.Controllers
 {
-    public class HomeController : Controller
+    [Authorize]
+    public class HomeController : BaseController
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        public HomeController(INotificator notificator) : base(notificator) { }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        public IActionResult Index() => View();
+
+        public IActionResult Privacy() => View();
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        public IActionResult Error() =>
+            View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }
