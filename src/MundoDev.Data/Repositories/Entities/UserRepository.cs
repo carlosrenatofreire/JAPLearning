@@ -12,7 +12,10 @@ namespace MundoDev.Data.Repositories.Entities
 
         public async Task<User?> GetByEmail(string email)
         {
-            return await DbSet.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
+            return await DbSet
+                .AsNoTracking()
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Email == email);
         }
     }
 }
