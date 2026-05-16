@@ -8,7 +8,7 @@ namespace MundoDev.Data.Mappings.Entities
     {
         public void Configure(EntityTypeBuilder<Payment> builder)
         {
-            builder.ToTable("Payments");
+            builder.ToTable("E_Payments");
 
             builder.HasKey(e => e.Id);
 

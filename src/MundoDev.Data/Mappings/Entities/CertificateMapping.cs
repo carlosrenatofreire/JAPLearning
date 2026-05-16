@@ -8,7 +8,7 @@ namespace MundoDev.Data.Mappings.Entities
     {
         public void Configure(EntityTypeBuilder<Certificate> builder)
         {
-            builder.ToTable("Certificates");
+            builder.ToTable("E_Certificates");
 
             builder.HasKey(e => e.Id);
 

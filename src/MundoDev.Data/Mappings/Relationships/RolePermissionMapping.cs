@@ -8,7 +8,7 @@ namespace MundoDev.Data.Mappings.Relationships
     {
         public void Configure(EntityTypeBuilder<RolePermission> builder)
         {
-            builder.ToTable("RolePermissions");
+            builder.ToTable("R_RolePermissions");
 
             builder.HasKey(e => e.Id);
 

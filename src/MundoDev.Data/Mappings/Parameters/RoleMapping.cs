@@ -8,7 +8,7 @@ namespace MundoDev.Data.Mappings.Parameters
     {
         public void Configure(EntityTypeBuilder<Role> builder)
         {
-            builder.ToTable("Roles");
+            builder.ToTable("P_Roles");
 
             builder.HasKey(e => e.Id);
 

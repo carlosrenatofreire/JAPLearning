@@ -8,7 +8,7 @@ namespace MundoDev.Data.Mappings.Auxiliaries
     {
         public void Configure(EntityTypeBuilder<AuditLog> builder)
         {
-            builder.ToTable("AuditLogs");
+            builder.ToTable("A_AuditLogs");
 
             builder.HasKey(e => e.Id);
 
