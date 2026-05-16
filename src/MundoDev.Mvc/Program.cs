@@ -1,19 +1,29 @@
 using Doppler.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
+using MundoDev.Data.Contexts;
+using MundoDev.Mvc.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Adiciona o Doppler como fonte de configuração
+// Doppler — fonte de configuração centralizada
 builder.Configuration.AddDoppler(options =>
 {
     options.ServiceToken = "dp.st.dev_carlos.VJxtuLmTSW0akkPfes2Wc95GceAk4Z5iDvS9yejGVWE";
-    options.Project = "mundodev"; 
+    options.Project = "mundodev";
     options.Config = "dev_carlos";
 });
 
 var root = (IConfigurationRoot)builder.Configuration;
 root.Reload();
 
-var myConn = builder.Configuration["CONNECTIONSTRINGS"];
+var connectionString = builder.Configuration["CONNECTIONSTRINGS"];
+
+// DbContext
+builder.Services.AddDbContext<MainDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
+// AutoMapper
+builder.Services.AddAutoMapper(typeof(DomainProfile));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
