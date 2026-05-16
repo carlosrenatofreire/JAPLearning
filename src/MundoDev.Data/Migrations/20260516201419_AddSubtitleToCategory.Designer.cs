@@ -12,7 +12,7 @@ using MundoDev.Data.Contexts;
 namespace MundoDev.Data.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    [Migration("20260516200225_AddSubtitleToCategory")]
+    [Migration("20260516201419_AddSubtitleToCategory")]
     partial class AddSubtitleToCategory
     {
         /// <inheritdoc />
