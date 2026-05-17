@@ -9,7 +9,7 @@ namespace MundoDev.Mvc.ViewModels.Entities
         public string? Description { get; set; }
         public int? Months { get; set; }
         public decimal? Price { get; set; }
-        public bool? Promotion { get; set; }
+        public bool Promotion { get; set; }
         public int? DiscountPercent { get; set; }
         public PlanType PlanType { get; set; }
         public bool IsActived { get; set; }
