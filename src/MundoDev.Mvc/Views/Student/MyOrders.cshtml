@@ -1,0 +1,55 @@
+@model List<MundoDev.Mvc.ViewModels.Entities.OrderViewModel>
+@{
+    ViewData["Title"]      = "Meus Pedidos";
+    ViewData["ActiveMenu"] = "my-orders";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-header-title">Meus Pedidos</h4>
+        <p class="page-header-sub">Histórico de subscrições e pagamentos</p>
+    </div>
+</div>
+
+<div class="md-card" style="padding:0; overflow:hidden;">
+    <table class="crud-table">
+        <thead>
+            <tr>
+                <th>Plano</th>
+                <th>Início</th>
+                <th>Fim</th>
+                <th>Valor</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td style="font-weight:600; color:var(--md-text-primary);">@order.PlanName</td>
+                    <td style="color:var(--md-text-muted);">@order.StartLicense.ToString("dd/MM/yyyy")</td>
+                    <td style="color:var(--md-text-muted);">@order.EndLicense.ToString("dd/MM/yyyy")</td>
+                    <td style="font-weight:600;">@order.Value.ToString("C2")</td>
+                    <td>
+                        @if (order.IsActived)
+                        {
+                            <span class="badge-active"><i class="bi bi-circle-fill" style="font-size:7px;"></i> @order.StatusName</span>
+                        }
+                        else
+                        {
+                            <span class="badge-inactive"><i class="bi bi-circle-fill" style="font-size:7px;"></i> @order.StatusName</span>
+                        }
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="5" style="text-align:center; padding:40px; color:var(--md-text-muted);">
+                    <i class="bi bi-bag-x" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+                    Nenhum pedido encontrado.
+                </td></tr>
+            }
+        </tbody>
+    </table>
+</div>
