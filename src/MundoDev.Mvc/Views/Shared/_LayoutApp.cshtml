@@ -204,18 +204,20 @@
                 <span class="app-topbar-title">@(ViewData["Title"] ?? "MundoDev")</span>
                 <div class="topbar-right">
                     @{
-                        var fullName = User.Identity?.Name ?? "";
-                        var initials = string.Join("", fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                                            .Take(2).Select(w => w[0].ToString().ToUpper()));
-                        var roleName = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
+                        var fullName   = User.Identity?.Name ?? "";
+                        var initials   = string.Join("", fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                              .Take(2).Select(w => w[0].ToString().ToUpper()));
+                        var roleName   = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
+                        var subLabel   = ViewBag.PlanName as string ?? roleName;
                     }
-                    <div class="topbar-user">
+                    <a asp-controller="Student" asp-action="PersonalData" class="topbar-user" style="text-decoration:none;">
                         <div class="md-avatar" style="width:32px;height:32px;font-size:12px;flex-shrink:0;">@initials</div>
                         <div class="topbar-user-info">
                             <p class="topbar-user-name" style="margin:0;">@fullName</p>
-                            <p class="topbar-user-role" style="margin:0;">@roleName</p>
+                            <p class="topbar-user-role" style="margin:0;">@subLabel</p>
                         </div>
-                    </div>
+                        <i class="bi bi-chevron-down" style="font-size:11px; color:var(--md-text-muted);"></i>
+                    </a>
                     <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
                         <button type="submit" class="topbar-logout" title="Sair">
                             <i class="bi bi-box-arrow-right"></i>
