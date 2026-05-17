@@ -64,10 +64,10 @@ namespace MundoDev.Mvc.Controllers
 
             var authProps = new AuthenticationProperties
             {
-                IsPersistent = model.RememberMe,
+                IsPersistent = true,
                 ExpiresUtc   = model.RememberMe
                     ? DateTimeOffset.UtcNow.AddDays(30)
-                    : DateTimeOffset.UtcNow.AddHours(8)
+                    : DateTimeOffset.UtcNow.AddHours(24)
             };
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProps);
