@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MundoDev.Business.Interfaces.Internals.Shareds;
 using MundoDev.Business.Interfaces.Services.Entities;
+using MundoDev.Business.Interfaces.Services.Parameters;
 using MundoDev.Business.Interfaces.Services.Relationships;
 using MundoDev.Mvc.ViewModels.Entities;
+using MundoDev.Mvc.ViewModels.Parameters;
 using MundoDev.Mvc.ViewModels.Student;
 using System.Security.Claims;
 
@@ -22,6 +24,7 @@ namespace MundoDev.Mvc.Controllers
         private readonly ICertificateService        _certificateService;
         private readonly IOrderService              _orderService;
         private readonly IUserCourseLessonService   _userCourseLessonService;
+        private readonly ICategoryService           _categoryService;
         private readonly IMapper                    _mapper;
 
         public StudentController(
@@ -32,6 +35,7 @@ namespace MundoDev.Mvc.Controllers
             ICertificateService certificateService,
             IOrderService orderService,
             IUserCourseLessonService userCourseLessonService,
+            ICategoryService categoryService,
             IMapper mapper,
             INotificator notificator) : base(notificator)
         {
@@ -42,6 +46,7 @@ namespace MundoDev.Mvc.Controllers
             _certificateService      = certificateService;
             _orderService            = orderService;
             _userCourseLessonService = userCourseLessonService;
+            _categoryService         = categoryService;
             _mapper                  = mapper;
         }
 
@@ -426,6 +431,93 @@ namespace MundoDev.Mvc.Controllers
 
             TempData["Success"] = "Dados actualizados com sucesso.";
             return RedirectToAction(nameof(PersonalData));
+        }
+
+        // ─── Course Catalog ──────────────────────────────────────────────────
+
+        [HttpGet]
+        public async Task<IActionResult> Courses(string? category = null)
+        {
+            ViewData["ActiveMenu"] = "courses";
+            ViewData["Title"]      = "Cursos";
+
+            var userId       = GetCurrentUserId();
+            var allCourses   = await _courseService.GetAllAsync();
+            var allTopics    = await _topicService.GetAllAsync();
+            var allLessons   = await _lessonService.GetAllAsync();
+            var userProgress = await _userCourseLessonService.GetByUserAsync(userId);
+            var allCategories = await _categoryService.GetAllAsync();
+
+            var completedLessonIds = userProgress
+                .Where(x => x.CompletedDate.HasValue)
+                .Select(x => x.LessonId)
+                .ToHashSet();
+
+            var items = allCourses
+                .Where(c => c.IsActived)
+                .OrderBy(c => c.Title)
+                .Select(c =>
+                {
+                    var courseLessons = allLessons.Where(l => l.CourseId == c.Id && l.IsActived).ToList();
+                    var courseTopics  = allTopics.Where(t => t.CourseId == c.Id && t.IsActived).ToList();
+                    var completed     = courseLessons.Count(l => completedLessonIds.Contains(l.Id));
+
+                    var lastRecord = userProgress
+                        .Where(x => courseLessons.Any(l => l.Id == x.LessonId))
+                        .OrderByDescending(x => x.CompletedDate)
+                        .FirstOrDefault();
+
+                    var totalDuration = courseLessons
+                        .Where(l => l.TimeLesson.HasValue)
+                        .Aggregate(TimeSpan.Zero, (sum, l) => sum + l.TimeLesson!.Value);
+
+                    return new CourseCatalogItemViewModel
+                    {
+                        Course           = _mapper.Map<CourseViewModel>(c),
+                        TotalLessons     = courseLessons.Count,
+                        TotalTopics      = courseTopics.Count,
+                        CompletedLessons = completed,
+                        LastLessonId     = lastRecord?.LessonId,
+                        TotalDuration    = totalDuration
+                    };
+                }).ToList();
+
+            var vm = new CourseCatalogViewModel
+            {
+                Courses    = items,
+                Categories = allCategories.Where(c => c.IsActived)
+                                          .Select(c => _mapper.Map<CategoryViewModel>(c))
+                                          .OrderBy(c => c.Name)
+                                          .ToList()
+            };
+
+            ViewBag.ActiveCategory = category;
+            return View(vm);
+        }
+
+        // ─── Categories ───────────────────────────────────────────────────────
+
+        [HttpGet]
+        public async Task<IActionResult> Categories()
+        {
+            ViewData["ActiveMenu"] = "categories";
+            ViewData["Title"]      = "Categorias";
+
+            var categories = await _categoryService.GetAllAsync();
+            var allCourses = await _courseService.GetAllAsync();
+
+            var vm = categories
+                .Where(c => c.IsActived)
+                .OrderBy(c => c.Name)
+                .Select(c => new
+                {
+                    Category    = _mapper.Map<CategoryViewModel>(c),
+                    CourseCount = allCourses.Count(x => x.CategoryId == c.Id && x.IsActived)
+                })
+                .ToList();
+
+            ViewBag.CategoryItems = vm;
+            return View();
         }
 
         // ─── Change Password ─────────────────────────────────────────────────
