@@ -6,10 +6,12 @@ using MundoDev.Business.Interfaces.Internals.Shareds;
 using MundoDev.Business.Interfaces.Services.Auxiliaries;
 using MundoDev.Business.Interfaces.Services.Entities;
 using MundoDev.Business.Interfaces.Services.Parameters;
+using MundoDev.Business.Interfaces.Services.Relationships;
 using MundoDev.Business.Notifications;
 using MundoDev.Business.Services.Auxiliaries;
 using MundoDev.Business.Services.Entities;
 using MundoDev.Business.Services.Parameters;
+using MundoDev.Business.Services.Relationships;
 using MundoDev.Data.Repositories.Auxiliaries;
 using MundoDev.Data.Repositories.Entities;
 using MundoDev.Data.Repositories.Parameters;
@@ -83,6 +85,9 @@ namespace MundoDev.Mvc.Configurations
             services.AddScoped<IPlanService, PlanService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IPaymentService, PaymentService>();
+
+            // Services - Relationships
+            services.AddScoped<IUserCourseLessonService, UserCourseLessonService>();
 
             // Services - Auxiliaries
             services.AddScoped<IAuditLogService, AuditLogService>();
