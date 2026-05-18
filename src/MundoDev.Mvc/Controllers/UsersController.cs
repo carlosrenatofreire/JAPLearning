@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MundoDev.Business.Interfaces.Externals;
 using MundoDev.Business.Interfaces.Internals.Shareds;
 using MundoDev.Business.Interfaces.Services.Entities;
 using MundoDev.Business.Interfaces.Services.Parameters;
@@ -13,16 +14,19 @@ namespace MundoDev.Mvc.Controllers
     [Authorize(Roles = "Administrador,Supervisor")]
     public class UsersController : BaseController
     {
-        private readonly IUserService _service;
-        private readonly IRoleService _roleService;
-        private readonly IMapper _mapper;
+        private readonly IUserService       _service;
+        private readonly IRoleService       _roleService;
+        private readonly ICloudinaryService _cloudinary;
+        private readonly IMapper            _mapper;
 
-        public UsersController(IUserService service, IRoleService roleService, IMapper mapper, INotificator notificator)
+        public UsersController(IUserService service, IRoleService roleService,
+            ICloudinaryService cloudinary, IMapper mapper, INotificator notificator)
             : base(notificator)
         {
-            _service = service;
+            _service    = service;
             _roleService = roleService;
-            _mapper = mapper;
+            _cloudinary = cloudinary;
+            _mapper     = mapper;
         }
 
         public async Task<IActionResult> Index()
@@ -72,7 +76,7 @@ namespace MundoDev.Mvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, UserViewModel vm)
+        public async Task<IActionResult> Edit(Guid id, UserViewModel vm, IFormFile? photo)
         {
             ViewData["ActiveMenu"] = "users";
             // Remove password validation on edit (optional change)
@@ -81,18 +85,30 @@ namespace MundoDev.Mvc.Controllers
 
             if (!ModelState.IsValid) { await PopulateRolesAsync(); return View(vm); }
 
+            var existing = await _service.GetByIdAsync(id);
+
             var entity = _mapper.Map<User>(vm);
             entity.Id = id;
             entity.ChangedDate = DateTime.UtcNow;
 
             // Only hash and update password if provided
-            if (!string.IsNullOrWhiteSpace(vm.Password))
-                entity.Password = BCrypt.Net.BCrypt.HashPassword(vm.Password);
+            entity.Password = !string.IsNullOrWhiteSpace(vm.Password)
+                ? BCrypt.Net.BCrypt.HashPassword(vm.Password)
+                : existing?.Password ?? string.Empty;
+
+            // Photo upload
+            if (photo != null && photo.Length > 0)
+            {
+                if (!string.IsNullOrWhiteSpace(existing?.PhotoUrl))
+                {
+                    var oldId = _cloudinary.ExtractPublicId(existing.PhotoUrl);
+                    if (oldId != null) await _cloudinary.DeleteImageAsync(oldId);
+                }
+                entity.PhotoUrl = await _cloudinary.UploadImageAsync(photo, "users");
+            }
             else
             {
-                // Keep existing password — fetch from DB
-                var existing = await _service.GetByIdAsync(id);
-                entity.Password = existing?.Password ?? string.Empty;
+                entity.PhotoUrl = existing?.PhotoUrl;
             }
 
             if (!await _service.UpdateAsync(entity)) { AddErrors(); await PopulateRolesAsync(); return View(vm); }

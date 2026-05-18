@@ -25,6 +25,10 @@ namespace MundoDev.Mvc.Controllers
 
         public async Task<IActionResult> Index()
         {
+            // Alunos não têm dashboard aqui — redirecionar para a área de aluno
+            if (User.IsInRole("Aluno"))
+                return RedirectToAction("Dashboard", "Student");
+
             ViewData["ActiveMenu"] = "dashboard";
 
             if (User.IsInRole("Administrador") || User.IsInRole("Supervisor"))
