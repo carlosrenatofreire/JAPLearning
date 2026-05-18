@@ -226,9 +226,11 @@
                         </div>
                         <i class="bi bi-chevron-down" style="font-size:11px; color:var(--md-text-muted);"></i>
                     </a>
-                    <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
-                        <button type="submit" class="topbar-logout" title="Sair">
-                            <i class="bi bi-box-arrow-right"></i>
+                    <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;" id="logoutForm">
+                        <button type="button" class="topbar-logout" title="Sair" onclick="mdConfirmLogout()"
+                                style="width:auto; padding:0 12px; gap:6px; display:flex; align-items:center; font-size:13px; font-weight:600;">
+                            <i class="bi bi-box-arrow-right" style="font-size:15px;"></i>
+                            <span>Sair</span>
                         </button>
                     </form>
                 </div>
@@ -260,24 +262,103 @@
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 
+    <!-- ── Modal de confirmação global ─────────────────────────────── -->
+    <div id="mdConfirmModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:10000; align-items:center; justify-content:center;">
+        <div style="background:var(--md-bg-card,#16162a); border:1px solid var(--md-border,rgba(255,255,255,0.08)); border-radius:14px; padding:36px 32px 28px; max-width:400px; width:90%; text-align:center; box-shadow:0 24px 72px rgba(0,0,0,0.6); animation:mdModalIn .18s ease;">
+            <div id="mdModalIcon" style="width:68px; height:68px; border-radius:50%; border:3px solid #f59e0b; display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px;">
+                <i class="bi bi-exclamation-lg" style="font-size:34px; color:#f59e0b;"></i>
+            </div>
+            <h5 id="mdModalTitle" style="color:var(--md-text-primary,#fff); font-size:18px; font-weight:700; margin:0 0 8px;">Tem certeza?</h5>
+            <p id="mdModalMessage" style="color:var(--md-text-muted,rgba(255,255,255,0.5)); font-size:14px; margin:0 0 28px; line-height:1.5;"></p>
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button id="mdModalCancelBtn" onclick="mdModalClose()"
+                        style="flex:1; max-width:160px; padding:10px 0; border-radius:var(--md-radius-sm,8px); background:transparent; border:1px solid var(--md-border,rgba(255,255,255,0.12)); color:var(--md-text-secondary,rgba(255,255,255,0.7)); font-size:14px; font-weight:600; cursor:pointer; transition:background .15s;">
+                    Cancelar
+                </button>
+                <button id="mdModalConfirmBtn"
+                        style="flex:1; max-width:160px; padding:10px 0; border-radius:var(--md-radius-sm,8px); background:var(--md-danger,#dc3545); border:none; color:#fff; font-size:14px; font-weight:600; cursor:pointer; transition:opacity .15s;">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+    <style>
+        @@keyframes globalSpin { to { transform: rotate(360deg); } }
+        @@keyframes mdModalIn { from { transform:scale(.92); opacity:0; } to { transform:scale(1); opacity:1; } }
+        #mdModalCancelBtn:hover { background:rgba(255,255,255,0.06) !important; }
+        #mdModalConfirmBtn:hover { opacity:.85; }
+    </style>
+
     <!-- Overlay global de loading para forms CRUD -->
     <div id="globalLoadingOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center; flex-direction:column; gap:16px;">
         <div style="width:52px; height:52px; border:4px solid rgba(255,255,255,0.2); border-top-color:#fff; border-radius:50%; animation:globalSpin .7s linear infinite;"></div>
         <span style="color:#fff; font-size:14px; font-weight:600; letter-spacing:.03em;">A guardar...</span>
     </div>
-    <style>
-        @@keyframes globalSpin { to { transform: rotate(360deg); } }
-    </style>
-    <script>
-        // Auto-attach overlay a qualquer form que tenha um botão btn-md-primary
-        // Exclui forms de delete (não têm btn-md-primary) e o form de logout
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('form').forEach(function (form) {
-                const hasMainBtn = form.querySelector('button.btn-md-primary[type="submit"]');
-                if (!hasMainBtn) return;
 
-                form.addEventListener('submit', function (e) {
-                    // Só mostra overlay se o form for válido (HTML5 validation)
+    <script>
+        // ── Modal helpers ──────────────────────────────────────────────
+        var _mdCallback = null;
+
+        function mdModalOpen(title, message, confirmLabel, confirmColor, callback) {
+            document.getElementById('mdModalTitle').textContent   = title;
+            document.getElementById('mdModalMessage').textContent = message;
+            var btn = document.getElementById('mdModalConfirmBtn');
+            btn.textContent = confirmLabel || 'Confirmar';
+            btn.style.background = confirmColor || 'var(--md-danger,#dc3545)';
+            _mdCallback = callback;
+            btn.onclick = function () { mdModalClose(); if (_mdCallback) _mdCallback(); };
+            var modal = document.getElementById('mdConfirmModal');
+            modal.style.display = 'flex';
+        }
+
+        function mdModalClose() {
+            document.getElementById('mdConfirmModal').style.display = 'none';
+            _mdCallback = null;
+        }
+
+        // Fechar ao clicar fora do card
+        document.getElementById('mdConfirmModal').addEventListener('click', function (e) {
+            if (e.target === this) mdModalClose();
+        });
+
+        // ── Logout ─────────────────────────────────────────────────────
+        function mdConfirmLogout() {
+            mdModalOpen(
+                'Terminar sessão',
+                'Tem certeza que deseja sair da sua conta?',
+                'Sim, sair',
+                'var(--md-danger,#dc3545)',
+                function () { document.getElementById('logoutForm').submit(); }
+            );
+        }
+
+        // ── Auto-attach a todos os botões de eliminar dos CRUDs ────────
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Delete buttons: intercepta qualquer form cujo único submit btn seja action-btn danger
+            document.querySelectorAll('form').forEach(function (form) {
+                var deleteBtn = form.querySelector('button.action-btn.danger[type="submit"]');
+                if (!deleteBtn) return;
+
+                // Converte para type="button" para evitar submit nativo
+                deleteBtn.type = 'button';
+                form.onsubmit   = null;
+
+                deleteBtn.addEventListener('click', function () {
+                    mdModalOpen(
+                        'Eliminar registo',
+                        'Esta acção é irreversível. Deseja mesmo continuar?',
+                        'Sim, eliminar',
+                        'var(--md-danger,#dc3545)',
+                        function () { form.submit(); }
+                    );
+                });
+            });
+
+            // Loading overlay: auto-attach a forms com btn-md-primary
+            document.querySelectorAll('form').forEach(function (form) {
+                if (!form.querySelector('button.btn-md-primary[type="submit"]')) return;
+                form.addEventListener('submit', function () {
                     if (!form.checkValidity()) return;
                     document.getElementById('globalLoadingOverlay').style.display = 'flex';
                 });

@@ -35,9 +35,17 @@
                 <tr>
                     <td>
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <div class="md-avatar" style="width:32px;height:32px;font-size:12px;flex-shrink:0;">
-                                @(string.Join("", item.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => w[0].ToString().ToUpper())))
-                            </div>
+                            @if (!string.IsNullOrWhiteSpace(item.PhotoUrl))
+                            {
+                                <img src="@item.PhotoUrl" alt="@item.FullName"
+                                     style="width:36px; height:36px; border-radius:50%; object-fit:cover; flex-shrink:0; border:2px solid var(--md-border);" />
+                            }
+                            else
+                            {
+                                <div class="md-avatar" style="width:36px;height:36px;font-size:13px;flex-shrink:0;">
+                                    @(string.Join("", item.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => w[0].ToString().ToUpper())))
+                                </div>
+                            }
                             <span style="color:var(--md-text-primary); font-weight:600;">@item.FullName</span>
                         </div>
                     </td>
