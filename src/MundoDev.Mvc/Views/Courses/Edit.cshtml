@@ -123,12 +123,6 @@
     </form>
 </div>
 
-<!-- Overlay de loading -->
-<div id="loadingOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center; flex-direction:column; gap:16px;">
-    <div style="width:52px; height:52px; border:4px solid rgba(255,255,255,0.2); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite;"></div>
-    <span style="color:#fff; font-size:14px; font-weight:600; letter-spacing:.03em;">A guardar...</span>
-</div>
-
 @section Scripts {
 <script>
     // Preview ao seleccionar nova thumbnail
@@ -142,14 +136,5 @@
         label.style.display = 'block';
         label.textContent   = 'Nova thumbnail seleccionada';
     });
-
-    // Overlay no submit
-    document.getElementById('courseForm').addEventListener('submit', function () {
-        const overlay = document.getElementById('loadingOverlay');
-        overlay.style.display = 'flex';
-    });
 </script>
-<style>
-    @@keyframes spin { to { transform: rotate(360deg); } }
-</style>
 }

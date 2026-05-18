@@ -259,5 +259,30 @@
         }
     </script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- Overlay global de loading para forms CRUD -->
+    <div id="globalLoadingOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center; flex-direction:column; gap:16px;">
+        <div style="width:52px; height:52px; border:4px solid rgba(255,255,255,0.2); border-top-color:#fff; border-radius:50%; animation:globalSpin .7s linear infinite;"></div>
+        <span style="color:#fff; font-size:14px; font-weight:600; letter-spacing:.03em;">A guardar...</span>
+    </div>
+    <style>
+        @@keyframes globalSpin { to { transform: rotate(360deg); } }
+    </style>
+    <script>
+        // Auto-attach overlay a qualquer form que tenha um botão btn-md-primary
+        // Exclui forms de delete (não têm btn-md-primary) e o form de logout
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('form').forEach(function (form) {
+                const hasMainBtn = form.querySelector('button.btn-md-primary[type="submit"]');
+                if (!hasMainBtn) return;
+
+                form.addEventListener('submit', function (e) {
+                    // Só mostra overlay se o form for válido (HTML5 validation)
+                    if (!form.checkValidity()) return;
+                    document.getElementById('globalLoadingOverlay').style.display = 'flex';
+                });
+            });
+        });
+    </script>
 </body>
 </html>
