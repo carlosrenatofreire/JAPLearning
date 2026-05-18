@@ -1,5 +1,5 @@
+using MundoDev.Data.Seeders;
 using MundoDev.Mvc.Configurations;
-using MundoDev.Mvc.Seeds;
 
 var builder = WebApplication.CreateBuilder(args);
 

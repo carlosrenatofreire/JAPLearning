@@ -1,11 +1,12 @@
 using BCrypt.Net;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using MundoDev.Business.Models.Domains.Entities;
 using MundoDev.Business.Models.Domains.Parameters;
 using MundoDev.Business.Models.Domains.Relationships;
 using MundoDev.Data.Contexts;
 
-namespace MundoDev.Mvc.Seeds
+namespace MundoDev.Data.Seeders
 {
     public static class DataSeeder
     {
@@ -165,9 +166,9 @@ namespace MundoDev.Mvc.Seeds
         }
 
         // Catalog IDs
-        private static readonly Guid CatFundamentosId    = new("00000010-0000-0000-0000-000000000001");
-        private static readonly Guid CatArquiteturaId    = new("00000010-0000-0000-0000-000000000002");
-        private static readonly Guid CatDesenvolvimentoId= new("00000010-0000-0000-0000-000000000003");
+        private static readonly Guid CatFundamentosId     = new("00000010-0000-0000-0000-000000000001");
+        private static readonly Guid CatArquiteturaId     = new("00000010-0000-0000-0000-000000000002");
+        private static readonly Guid CatDesenvolvimentoId = new("00000010-0000-0000-0000-000000000003");
 
         private static readonly Guid LvlInicianteId      = new("00000011-0000-0000-0000-000000000001");
         private static readonly Guid LvlIntermediarioId  = new("00000011-0000-0000-0000-000000000002");
@@ -212,16 +213,16 @@ namespace MundoDev.Mvc.Seeds
             if (!await context.Set<Course>().AnyAsync())
             {
                 context.Set<Course>().AddRange(
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000001"), Title = "Fundamentos de Arquitetura de Software",    CategoryId = CatFundamentosId,     LevelId = LvlInicianteId,     TeacherId = TeacherCarlosId, IsFree = true,  IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000002"), Title = "Fundamentos do C4 Model",                   CategoryId = CatFundamentosId,     LevelId = LvlInicianteId,     TeacherId = TeacherCarlosId, IsFree = true,  IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000003"), Title = "Sistema de Gestão de Frota de Veículos",     CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000004"), Title = "Sistema de Gestão de Corretora de Seguros",  CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000005"), Title = "Sistema de Gestão de Indicadores e KPIs",   CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000006"), Title = "Sistema de Gestão de Ordem de Serviço",     CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000007"), Title = "Sistema E-Commerce",                        CategoryId = CatArquiteturaId,     LevelId = LvlAvancadoId,      TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000008"), Title = "Sistema E-Commerce (BackOffice)",            CategoryId = CatArquiteturaId,     LevelId = LvlAvancadoId,      TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000009"), Title = "Sistema de Gestão de Obras",                CategoryId = CatArquiteturaId,     LevelId = LvlAvancadoId,      TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000010"), Title = "Arquitetura em Camadas",                    CategoryId = CatDesenvolvimentoId, LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow }
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000001"), Title = "Fundamentos de Arquitetura de Software",   CategoryId = CatFundamentosId,     LevelId = LvlInicianteId,     TeacherId = TeacherCarlosId, IsFree = true,  IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000002"), Title = "Fundamentos do C4 Model",                  CategoryId = CatFundamentosId,     LevelId = LvlInicianteId,     TeacherId = TeacherCarlosId, IsFree = true,  IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000003"), Title = "Sistema de Gestão de Frota de Veículos",    CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000004"), Title = "Sistema de Gestão de Corretora de Seguros", CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000005"), Title = "Sistema de Gestão de Indicadores e KPIs",  CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000006"), Title = "Sistema de Gestão de Ordem de Serviço",    CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000007"), Title = "Sistema E-Commerce",                       CategoryId = CatArquiteturaId,     LevelId = LvlAvancadoId,      TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000008"), Title = "Sistema E-Commerce (BackOffice)",           CategoryId = CatArquiteturaId,     LevelId = LvlAvancadoId,      TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000009"), Title = "Sistema de Gestão de Obras",               CategoryId = CatArquiteturaId,     LevelId = LvlAvancadoId,      TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000010"), Title = "Arquitetura em Camadas",                   CategoryId = CatDesenvolvimentoId, LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow }
                 );
                 await context.SaveChangesAsync();
             }
