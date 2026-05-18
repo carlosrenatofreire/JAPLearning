@@ -106,13 +106,18 @@
         </div>
 
         <div style="display:flex; gap:12px; margin-top:24px;">
-            <button type="submit" id="submitBtn" class="btn-md-primary">
-                <i class="bi bi-check-lg" id="submitIcon"></i>
-                <span id="submitText">Guardar</span>
+            <button type="submit" class="btn-md-primary">
+                <i class="bi bi-check-lg"></i> Guardar
             </button>
             <a asp-action="Index" class="btn-md-ghost">Cancelar</a>
         </div>
     </form>
+</div>
+
+<!-- Overlay de loading -->
+<div id="loadingOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center; flex-direction:column; gap:16px;">
+    <div style="width:52px; height:52px; border:4px solid rgba(255,255,255,0.2); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite;"></div>
+    <span style="color:#fff; font-size:14px; font-weight:600; letter-spacing:.03em;">A guardar...</span>
 </div>
 
 @section Scripts {
@@ -127,18 +132,13 @@
         wrap.style.display = 'block';
     });
 
-    // Loading no submit
+    // Overlay no submit
     document.getElementById('courseForm').addEventListener('submit', function () {
-        const btn  = document.getElementById('submitBtn');
-        const icon = document.getElementById('submitIcon');
-        const text = document.getElementById('submitText');
-        btn.disabled  = true;
-        icon.className = 'bi bi-arrow-repeat spin-icon';
-        text.textContent = 'A guardar...';
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.style.display = 'flex';
     });
 </script>
 <style>
     @@keyframes spin { to { transform: rotate(360deg); } }
-    .spin-icon { display:inline-block; animation: spin .7s linear infinite; }
 </style>
 }
