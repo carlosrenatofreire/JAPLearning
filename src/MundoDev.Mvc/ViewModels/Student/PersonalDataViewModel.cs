@@ -19,5 +19,7 @@ namespace MundoDev.Mvc.ViewModels.Student
 
         [Display(Name = "Telefone")]
         public string? Phone { get; set; }
+
+        public string? CurrentPhotoUrl { get; set; }
     }
 }

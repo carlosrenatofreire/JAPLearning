@@ -1,3 +1,4 @@
+using MundoDev.Business.Interfaces.Externals;
 using MundoDev.Business.Interfaces.Internals.Auxiliaries;
 using MundoDev.Business.Interfaces.Internals.Entities;
 using MundoDev.Business.Interfaces.Internals.Parameters;
@@ -7,7 +8,9 @@ using MundoDev.Business.Interfaces.Services.Auxiliaries;
 using MundoDev.Business.Interfaces.Services.Entities;
 using MundoDev.Business.Interfaces.Services.Parameters;
 using MundoDev.Business.Interfaces.Services.Relationships;
+using MundoDev.Business.Models.Settings;
 using MundoDev.Business.Notifications;
+using MundoDev.Business.Services.Externals;
 using MundoDev.Business.Services.Auxiliaries;
 using MundoDev.Business.Services.Entities;
 using MundoDev.Business.Services.Parameters;
@@ -22,10 +25,14 @@ namespace MundoDev.Mvc.Configurations
 {
     public static class DependencyInjectionConfig
     {
-        public static IServiceCollection AddDependencyInjectionConfiguration(this IServiceCollection services)
+        public static IServiceCollection AddDependencyInjectionConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
             // HttpContextAccessor
             services.AddHttpContextAccessor();
+
+            // Cloudinary
+            services.Configure<CloudinarySetting>(configuration.GetSection("CloudinarySettings"));
+            services.AddScoped<ICloudinaryService, CloudinaryService>();
 
             // Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

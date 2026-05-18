@@ -19,6 +19,9 @@ namespace MundoDev.Data.Mappings.Parameters
             builder.Property(e => e.Description)
                 .HasColumnType("varchar(500)");
 
+            builder.Property(e => e.PhotoUrl)
+                .HasColumnType("varchar(500)");
+
             builder.HasMany(e => e.Courses)
                 .WithOne(e => e.Teacher)
                 .HasForeignKey(e => e.TeacherId);

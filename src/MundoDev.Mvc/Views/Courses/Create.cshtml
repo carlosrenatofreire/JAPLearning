@@ -12,7 +12,7 @@
 </div>
 
 <div class="md-card" style="max-width:780px;">
-    <form asp-action="Create" method="post">
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="ModelOnly" class="md-alert md-alert-danger mb-3"></div>
 
@@ -71,8 +71,9 @@
             </div>
             <div class="col-md-8">
                 <div class="md-form-row">
-                    <label asp-for="Thumbnail" class="md-label">Thumbnail (URL)</label>
-                    <input asp-for="Thumbnail" class="md-input" placeholder="https://..." />
+                    <label class="md-label">Thumbnail do Curso</label>
+                    <input type="file" name="thumbnail" accept="image/jpeg,image/png,image/webp" class="md-input" style="padding:6px;" />
+                    <small style="color:var(--md-text-muted); font-size:11px;">Formatos aceites: JPG, PNG, WebP — dimensão recomendada: 1200×800 px</small>
                 </div>
             </div>
             <div class="col-12">
