@@ -77,4 +77,127 @@
         color: #86EFAC; border-radius: var(--md-radius); padding: 12px 16px;
         font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
     }
+
+    /* ── DataTables overrides — dark theme ──────────────────────── */
+
+    /* Wrapper geral */
+    .dataTables_wrapper { font-size: 14px; color: var(--md-text-secondary); }
+
+    /* Header (search box) */
+    .dt-header {
+        display: flex;
+        justify-content: flex-end;
+        padding: 14px 16px 10px;
+        border-bottom: 1px solid var(--md-border);
+    }
+    .dataTables_filter { float: none !important; text-align: right; }
+    .dataTables_filter label { display: flex; align-items: center; gap: 8px; color: var(--md-text-muted); font-size: 13px; }
+    .dataTables_filter input {
+        background: var(--md-bg-input, rgba(255,255,255,0.05));
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius-sm);
+        color: var(--md-text-primary);
+        padding: 6px 12px;
+        font-size: 13px;
+        outline: none;
+        width: 220px;
+        transition: border-color .15s;
+    }
+    .dataTables_filter input:focus { border-color: var(--md-accent); }
+    .dataTables_filter input::placeholder { color: var(--md-text-muted); }
+
+    /* Sort icons nas colunas */
+    table.crud-table thead th.sorting,
+    table.crud-table thead th.sorting_asc,
+    table.crud-table thead th.sorting_desc {
+        cursor: pointer;
+        user-select: none;
+        padding-right: 28px;
+        position: relative;
+    }
+    table.crud-table thead th.sorting::after,
+    table.crud-table thead th.sorting_asc::after,
+    table.crud-table thead th.sorting_desc::after {
+        font-family: 'bootstrap-icons';
+        position: absolute;
+        right: 10px;
+        top: 50%; transform: translateY(-50%);
+        font-size: 13px;
+        color: var(--md-text-muted);
+    }
+    table.crud-table thead th.sorting::after       { content: '\f127'; opacity: .4; }   /* bi-chevron-expand */
+    table.crud-table thead th.sorting_asc::after   { content: '\f235'; color: var(--md-accent); opacity: 1; } /* bi-sort-up */
+    table.crud-table thead th.sorting_desc::after  { content: '\f234'; color: var(--md-accent); opacity: 1; } /* bi-sort-down */
+    /* Remover imagens padrão do DataTables */
+    table.dataTable thead .sorting,
+    table.dataTable thead .sorting_asc,
+    table.dataTable thead .sorting_desc,
+    table.dataTable thead .sorting_asc_disabled,
+    table.dataTable thead .sorting_desc_disabled {
+        background-image: none !important;
+    }
+
+    /* Footer (info + paginação) */
+    .dt-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+        border-top: 1px solid var(--md-border);
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    /* Info text */
+    .dataTables_info { color: var(--md-text-muted); font-size: 13px; }
+
+    /* Paginação */
+    .dataTables_paginate { display: flex; align-items: center; gap: 4px; }
+    .dataTables_paginate .paginate_button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 34px;
+        height: 34px;
+        padding: 0 10px;
+        border-radius: var(--md-radius-sm);
+        border: 1px solid var(--md-border);
+        background: none;
+        color: var(--md-text-secondary) !important;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none !important;
+        transition: background .15s, color .15s, border-color .15s;
+        box-sizing: border-box;
+    }
+    .dataTables_paginate .paginate_button:hover:not(.disabled):not(.current) {
+        background: rgba(255,255,255,0.06) !important;
+        color: var(--md-text-primary) !important;
+        border-color: rgba(255,255,255,0.15) !important;
+    }
+    .dataTables_paginate .paginate_button.current,
+    .dataTables_paginate .paginate_button.current:hover {
+        background: var(--md-accent) !important;
+        border-color: var(--md-accent) !important;
+        color: #fff !important;
+        font-weight: 700;
+    }
+    .dataTables_paginate .paginate_button.disabled,
+    .dataTables_paginate .paginate_button.disabled:hover {
+        opacity: .35;
+        cursor: default !important;
+        background: none !important;
+    }
+    .dataTables_paginate .paginate_button.first,
+    .dataTables_paginate .paginate_button.last {
+        font-size: 15px;
+        font-weight: 700;
+    }
+    .dataTables_paginate .ellipsis { color: var(--md-text-muted); padding: 0 4px; line-height: 34px; }
+
+    /* Remove borda dupla DataTables/bootstrap */
+    table.dataTable { border-collapse: collapse !important; margin: 0 !important; }
+    table.dataTable.no-footer { border-bottom: none !important; }
+    .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody { border-top: none !important; }
 </style>
