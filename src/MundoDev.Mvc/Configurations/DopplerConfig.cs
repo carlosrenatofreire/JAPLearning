@@ -6,11 +6,21 @@ namespace MundoDev.Mvc.Configurations
     {
         public static WebApplicationBuilder AddDopplerConfiguration(this WebApplicationBuilder builder)
         {
+            // Token lido de variável de ambiente DOPPLER_TOKEN (nunca hardcoded)
+            var token = Environment.GetEnvironmentVariable("DOPPLER_TOKEN");
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                // Em desenvolvimento local sem Doppler configurado, continua sem ele
+                // (appsettings.json ou variáveis locais serão usadas)
+                return builder;
+            }
+
             builder.Configuration.AddDoppler(options =>
             {
-                options.ServiceToken = "dp.st.dev_carlos.VJxtuLmTSW0akkPfes2Wc95GceAk4Z5iDvS9yejGVWE";
-                options.Project = "mundodev";
-                options.Config = builder.Environment.IsProduction() ? "prd" : "dev_carlos";
+                options.ServiceToken = token;
+                options.Project      = "mundodev";
+                options.Config       = builder.Environment.IsProduction() ? "prd" : "dev_carlos";
             });
 
             var root = (IConfigurationRoot)builder.Configuration;
