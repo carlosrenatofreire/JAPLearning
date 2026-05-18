@@ -18,6 +18,7 @@ namespace MundoDev.Mvc.Seeds
             await SeedModulesAndPermissionsAsync(context);
             await SeedUsersAsync(context);
             await SeedRolePermissionsAsync(context);
+            await SeedCatalogDataAsync(context);
         }
 
         // ── FIXED IDs ──────────────────────────────────────────────────────────────
@@ -161,6 +162,69 @@ namespace MundoDev.Mvc.Seeds
             }
             context.Set<Permission>().AddRange(permissions);
             await context.SaveChangesAsync();
+        }
+
+        // Catalog IDs
+        private static readonly Guid CatFundamentosId    = new("00000010-0000-0000-0000-000000000001");
+        private static readonly Guid CatArquiteturaId    = new("00000010-0000-0000-0000-000000000002");
+        private static readonly Guid CatDesenvolvimentoId= new("00000010-0000-0000-0000-000000000003");
+
+        private static readonly Guid LvlInicianteId      = new("00000011-0000-0000-0000-000000000001");
+        private static readonly Guid LvlIntermediarioId  = new("00000011-0000-0000-0000-000000000002");
+        private static readonly Guid LvlAvancadoId       = new("00000011-0000-0000-0000-000000000003");
+
+        private static readonly Guid TeacherCarlosId     = new("00000012-0000-0000-0000-000000000001");
+
+        private static async Task SeedCatalogDataAsync(MainDbContext context)
+        {
+            // Categories
+            if (!await context.Set<Category>().AnyAsync())
+            {
+                context.Set<Category>().AddRange(
+                    new Category { Id = CatFundamentosId,     Name = "Fundamentos",    Subtitle = "Base teórica e conceitual",       IsActived = true },
+                    new Category { Id = CatArquiteturaId,     Name = "Arquitetura",    Subtitle = "Sistemas completos do mundo real", IsActived = true },
+                    new Category { Id = CatDesenvolvimentoId, Name = "Desenvolvimento",Subtitle = "Desenvolvimento prático .NET",     IsActived = true }
+                );
+                await context.SaveChangesAsync();
+            }
+
+            // Levels
+            if (!await context.Set<Level>().AnyAsync())
+            {
+                context.Set<Level>().AddRange(
+                    new Level { Id = LvlInicianteId,     Name = "Iniciante",     IsActived = true },
+                    new Level { Id = LvlIntermediarioId, Name = "Intermediário",  IsActived = true },
+                    new Level { Id = LvlAvancadoId,      Name = "Avançado",       IsActived = true }
+                );
+                await context.SaveChangesAsync();
+            }
+
+            // Teacher
+            if (!await context.Set<Teacher>().AnyAsync())
+            {
+                context.Set<Teacher>().Add(
+                    new Teacher { Id = TeacherCarlosId, Name = "Carlos Freire", Description = "Fundador do MundoDev", IsActived = true }
+                );
+                await context.SaveChangesAsync();
+            }
+
+            // Courses
+            if (!await context.Set<Course>().AnyAsync())
+            {
+                context.Set<Course>().AddRange(
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000001"), Title = "Fundamentos de Arquitetura de Software",    CategoryId = CatFundamentosId,     LevelId = LvlInicianteId,     TeacherId = TeacherCarlosId, IsFree = true,  IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000002"), Title = "Fundamentos do C4 Model",                   CategoryId = CatFundamentosId,     LevelId = LvlInicianteId,     TeacherId = TeacherCarlosId, IsFree = true,  IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000003"), Title = "Sistema de Gestão de Frota de Veículos",     CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000004"), Title = "Sistema de Gestão de Corretora de Seguros",  CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000005"), Title = "Sistema de Gestão de Indicadores e KPIs",   CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000006"), Title = "Sistema de Gestão de Ordem de Serviço",     CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000007"), Title = "Sistema E-Commerce",                        CategoryId = CatArquiteturaId,     LevelId = LvlAvancadoId,      TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000008"), Title = "Sistema E-Commerce (BackOffice)",            CategoryId = CatArquiteturaId,     LevelId = LvlAvancadoId,      TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000009"), Title = "Sistema de Gestão de Obras",                CategoryId = CatArquiteturaId,     LevelId = LvlAvancadoId,      TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000010"), Title = "Arquitetura em Camadas",                    CategoryId = CatDesenvolvimentoId, LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow }
+                );
+                await context.SaveChangesAsync();
+            }
         }
 
         private static async Task SeedRolePermissionsAsync(MainDbContext context)

@@ -24,6 +24,9 @@ namespace MundoDev.Mvc.Configurations
     {
         public static IServiceCollection AddDependencyInjectionConfiguration(this IServiceCollection services)
         {
+            // HttpContextAccessor
+            services.AddHttpContextAccessor();
+
             // Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
