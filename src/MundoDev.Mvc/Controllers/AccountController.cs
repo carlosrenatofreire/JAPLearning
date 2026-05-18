@@ -51,12 +51,15 @@ namespace MundoDev.Mvc.Controllers
 
             // TODO: If Role navigation property is not loaded, user.Role may be null.
             // Consider updating IUserRepository.GetByEmail to include Role navigation.
+            var roleName = user.Role?.Name ?? string.Empty;
+
             var claims = new List<Claim>
             {
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
                 new(ClaimTypes.Email, user.Email),
-                new(ClaimTypes.Role, user.Role?.Name ?? string.Empty)
+                new(ClaimTypes.Role, roleName),
+                new("PhotoUrl", user.PhotoUrl ?? string.Empty)
             };
 
             var identity  = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -74,6 +77,10 @@ namespace MundoDev.Mvc.Controllers
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
+
+            // Alunos vão directo ao Dashboard da área de aluno
+            if (roleName == "Aluno")
+                return RedirectToAction("Dashboard", "Student");
 
             return RedirectToAction("Index", "Home");
         }

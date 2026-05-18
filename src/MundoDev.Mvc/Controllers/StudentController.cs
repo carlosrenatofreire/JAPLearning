@@ -432,13 +432,14 @@ namespace MundoDev.Mvc.Controllers
                 return View(model);
             }
 
-            // Refresh name claim in cookie
+            // Refresh claims in cookie (including updated PhotoUrl)
             var claims = new List<Claim>
             {
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
                 new(ClaimTypes.Email, user.Email),
-                new(ClaimTypes.Role, User.FindFirstValue(ClaimTypes.Role) ?? "")
+                new(ClaimTypes.Role, User.FindFirstValue(ClaimTypes.Role) ?? ""),
+                new("PhotoUrl", user.PhotoUrl ?? string.Empty)
             };
             var identity  = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
