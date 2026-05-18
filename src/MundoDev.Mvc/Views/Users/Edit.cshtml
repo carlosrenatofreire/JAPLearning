@@ -12,7 +12,7 @@
 </div>
 
 <div class="md-card" style="max-width:720px;">
-    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="ModelOnly" class="md-alert md-alert-danger mb-3"></div>
 
@@ -72,6 +72,28 @@
                 <div class="md-form-row">
                     <label asp-for="City" class="md-label"></label>
                     <input asp-for="City" class="md-input" />
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="md-form-row">
+                    <label class="md-label">Foto de Perfil</label>
+                    <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+                        @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
+                        {
+                            <img src="@Model.PhotoUrl" alt="Foto actual"
+                                 style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--md-border);flex-shrink:0;" />
+                        }
+                        else
+                        {
+                            <div style="width:64px;height:64px;border-radius:50%;background:var(--md-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="bi bi-person" style="font-size:24px;color:var(--md-text-muted);"></i>
+                            </div>
+                        }
+                        <div style="flex:1;">
+                            <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" class="md-input" style="padding:6px;" />
+                            <small style="color:var(--md-text-muted);font-size:11px;">JPG, PNG ou WebP — envie nova para substituir</small>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-12">
