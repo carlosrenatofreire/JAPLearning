@@ -20,8 +20,7 @@ namespace MundoDev.Mvc.Configurations
             {
                 options.ServiceToken = token;
                 options.Project      = "mundodev";
-                // TODO: criar config "prd" no Doppler para separar secrets de produção
-                options.Config       = Environment.GetEnvironmentVariable("DOPPLER_CONFIG") ?? "dev_carlos";
+                options.Config       = builder.Environment.IsProduction() ? "prd" : "dev_carlos";
             });
 
             var root = (IConfigurationRoot)builder.Configuration;
