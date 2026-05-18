@@ -12,7 +12,7 @@
 </div>
 
 <div class="md-card" style="max-width:780px;">
-    <form asp-action="Create" method="post" enctype="multipart/form-data">
+    <form asp-action="Create" method="post" enctype="multipart/form-data" id="courseForm">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="ModelOnly" class="md-alert md-alert-danger mb-3"></div>
 
@@ -72,7 +72,12 @@
             <div class="col-md-8">
                 <div class="md-form-row">
                     <label class="md-label">Thumbnail do Curso</label>
-                    <input type="file" name="thumbnail" accept="image/jpeg,image/png,image/webp" class="md-input" style="padding:6px;" />
+                    <div id="thumbPreviewWrap" style="display:none; margin-bottom:8px;">
+                        <img id="thumbPreview" src="" alt="Preview"
+                             style="width:120px; height:80px; object-fit:cover; border-radius:6px; border:2px solid var(--md-border);" />
+                        <small style="display:block; color:var(--md-text-muted); font-size:11px; margin-top:4px;">Pré-visualização</small>
+                    </div>
+                    <input type="file" id="thumbnailInput" name="thumbnail" accept="image/jpeg,image/png,image/webp" class="md-input" style="padding:6px;" />
                     <small style="color:var(--md-text-muted); font-size:11px;">Formatos aceites: JPG, PNG, WebP — dimensão recomendada: 1200×800 px</small>
                 </div>
             </div>
@@ -101,8 +106,39 @@
         </div>
 
         <div style="display:flex; gap:12px; margin-top:24px;">
-            <button type="submit" class="btn-md-primary"><i class="bi bi-check-lg"></i> Guardar</button>
+            <button type="submit" id="submitBtn" class="btn-md-primary">
+                <i class="bi bi-check-lg" id="submitIcon"></i>
+                <span id="submitText">Guardar</span>
+            </button>
             <a asp-action="Index" class="btn-md-ghost">Cancelar</a>
         </div>
     </form>
 </div>
+
+@section Scripts {
+<script>
+    // Preview da thumbnail
+    document.getElementById('thumbnailInput').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        const wrap = document.getElementById('thumbPreviewWrap');
+        const img  = document.getElementById('thumbPreview');
+        img.src = URL.createObjectURL(file);
+        wrap.style.display = 'block';
+    });
+
+    // Loading no submit
+    document.getElementById('courseForm').addEventListener('submit', function () {
+        const btn  = document.getElementById('submitBtn');
+        const icon = document.getElementById('submitIcon');
+        const text = document.getElementById('submitText');
+        btn.disabled  = true;
+        icon.className = 'bi bi-arrow-repeat spin-icon';
+        text.textContent = 'A guardar...';
+    });
+</script>
+<style>
+    @@keyframes spin { to { transform: rotate(360deg); } }
+    .spin-icon { display:inline-block; animation: spin .7s linear infinite; }
+</style>
+}

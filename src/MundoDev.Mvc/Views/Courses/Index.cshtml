@@ -35,8 +35,23 @@
             {
                 <tr>
                     <td style="color:var(--md-text-primary); font-weight:600;">
-                        @item.Title
-                        @if (item.IsBrief) { <span class="md-badge md-badge-info ms-1" style="font-size:10px;">Brief</span> }
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            @if (!string.IsNullOrWhiteSpace(item.Thumbnail))
+                            {
+                                <img src="@item.Thumbnail" alt="@item.Title"
+                                     style="width:52px; height:36px; object-fit:cover; border-radius:5px; flex-shrink:0; border:1px solid var(--md-border);" />
+                            }
+                            else
+                            {
+                                <div style="width:52px; height:36px; border-radius:5px; background:var(--md-border); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                    <i class="bi bi-collection-play" style="font-size:14px; color:var(--md-text-muted);"></i>
+                                </div>
+                            }
+                            <span>
+                                @item.Title
+                                @if (item.IsBrief) { <span class="md-badge md-badge-info ms-1" style="font-size:10px;">Brief</span> }
+                            </span>
+                        </div>
                     </td>
                     <td>@item.CategoryName</td>
                     <td>@item.TeacherName</td>
