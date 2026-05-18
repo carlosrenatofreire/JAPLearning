@@ -8,7 +8,7 @@ builder.AddDopplerConfiguration();
 builder.Services
     .AddContextConfiguration(builder.Configuration)
     .AddAutoMapperConfiguration()
-    .AddDependencyInjectionConfiguration()
+    .AddDependencyInjectionConfiguration(builder.Configuration)
     .AddAuthConfiguration()
     .AddControllersWithViews();
 

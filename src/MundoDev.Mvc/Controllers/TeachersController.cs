@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MundoDev.Business.Interfaces.Externals;
 using MundoDev.Business.Interfaces.Internals.Shareds;
 using MundoDev.Business.Interfaces.Services.Parameters;
 using MundoDev.Business.Models.Domains.Parameters;
@@ -11,14 +12,17 @@ namespace MundoDev.Mvc.Controllers
     [Authorize(Roles = "Administrador,Supervisor")]
     public class TeachersController : BaseController
     {
-        private readonly ITeacherService _service;
-        private readonly IMapper _mapper;
+        private readonly ITeacherService   _service;
+        private readonly ICloudinaryService _cloudinary;
+        private readonly IMapper           _mapper;
 
-        public TeachersController(ITeacherService service, IMapper mapper, INotificator notificator)
+        public TeachersController(ITeacherService service, ICloudinaryService cloudinary,
+            IMapper mapper, INotificator notificator)
             : base(notificator)
         {
-            _service = service;
-            _mapper = mapper;
+            _service    = service;
+            _cloudinary = cloudinary;
+            _mapper     = mapper;
         }
 
         public async Task<IActionResult> Index()
@@ -37,12 +41,14 @@ namespace MundoDev.Mvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(TeacherViewModel vm)
+        public async Task<IActionResult> Create(TeacherViewModel vm, IFormFile? photo)
         {
             ViewData["ActiveMenu"] = "teachers";
             if (!ModelState.IsValid) return View(vm);
             var entity = _mapper.Map<Teacher>(vm);
             entity.Id = Guid.NewGuid();
+            if (photo != null && photo.Length > 0)
+                entity.PhotoUrl = await _cloudinary.UploadImageAsync(photo, "teachers");
             if (!await _service.AddAsync(entity)) { AddErrors(); return View(vm); }
             TempData["Success"] = "Professor criado com sucesso.";
             return RedirectToAction(nameof(Index));
@@ -59,12 +65,22 @@ namespace MundoDev.Mvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, TeacherViewModel vm)
+        public async Task<IActionResult> Edit(Guid id, TeacherViewModel vm, IFormFile? photo)
         {
             ViewData["ActiveMenu"] = "teachers";
             if (!ModelState.IsValid) return View(vm);
             var entity = _mapper.Map<Teacher>(vm);
             entity.Id = id;
+            if (photo != null && photo.Length > 0)
+            {
+                // Delete old photo from Cloudinary if exists
+                if (!string.IsNullOrWhiteSpace(vm.PhotoUrl))
+                {
+                    var oldPublicId = _cloudinary.ExtractPublicId(vm.PhotoUrl);
+                    if (oldPublicId != null) await _cloudinary.DeleteImageAsync(oldPublicId);
+                }
+                entity.PhotoUrl = await _cloudinary.UploadImageAsync(photo, "teachers");
+            }
             if (!await _service.UpdateAsync(entity)) { AddErrors(); return View(vm); }
             TempData["Success"] = "Professor actualizado com sucesso.";
             return RedirectToAction(nameof(Index));

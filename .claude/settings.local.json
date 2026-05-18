@@ -34,7 +34,14 @@
       "Bash(Remove-Item \"C:\\\\MundoDev\\\\MundoDev\\\\.claude\\\\worktrees\\\\lucid-cray-217194\\\\src\\\\MundoDev.Mvc\\\\Validators\\\\Parameters\\\\RoleValidator.cs\" -Force)",
       "Bash(Remove-Item \"C:\\\\MundoDev\\\\MundoDev\\\\.claude\\\\worktrees\\\\lucid-cray-217194\\\\src\\\\MundoDev.Mvc\\\\Configurations\\\\FluentValidationConfig.cs\" -Force)",
       "PowerShell(Get-ChildItem -Path \"C:\\\\MundoDev\\\\MundoDev\\\\src\\\\MundoDev.Template.Mvc\\\\Views\\\\\" -Recurse -File | Where-Object { $_.Name -match \"\\(sidebar|nav|menu\\)\" })",
-      "Bash(find \"C:\\\\MundoDev\\\\MundoDev\\\\src\\\\MundoDev.Template.Mvc\\\\wwwroot\" -type f \\\\\\( -name \"*.css\" -o -name \"*.js\" \\\\\\) 2>/dev/null)"
+      "Bash(find \"C:\\\\MundoDev\\\\MundoDev\\\\src\\\\MundoDev.Template.Mvc\\\\wwwroot\" -type f \\\\\\( -name \"*.css\" -o -name \"*.js\" \\\\\\) 2>/dev/null)",
+      "Bash(find \"C:\\\\MundoDev\" -name \"*.cs\" -path \"*Seed*\" 2>/dev/null | head -20; find \"C:\\\\MundoDev\" -name \"*.sql\" 2>/dev/null | head -10)",
+      "Bash(dotnet ef *)",
+      "Bash(git stash *)",
+      "Bash(git commit -m 'fix: change PlanViewModel.Promotion from bool? to bool for checkbox asp-for compatibility *)",
+      "Bash(git commit -m 'fix: persist auth cookie 24h by default \\(30d with RememberMe\\) *)",
+      "Bash(git commit -m 'feat: add course catalog + categories explorer to student area *)",
+      "Bash(dotnet add *)"
     ]
   }
 }

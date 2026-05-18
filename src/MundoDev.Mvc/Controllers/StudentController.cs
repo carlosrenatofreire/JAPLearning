@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MundoDev.Business.Interfaces.Externals;
 using MundoDev.Business.Interfaces.Internals.Shareds;
 using MundoDev.Business.Interfaces.Services.Entities;
 using MundoDev.Business.Interfaces.Services.Parameters;
@@ -25,6 +26,7 @@ namespace MundoDev.Mvc.Controllers
         private readonly IOrderService              _orderService;
         private readonly IUserCourseLessonService   _userCourseLessonService;
         private readonly ICategoryService           _categoryService;
+        private readonly ICloudinaryService         _cloudinary;
         private readonly IMapper                    _mapper;
 
         public StudentController(
@@ -36,6 +38,7 @@ namespace MundoDev.Mvc.Controllers
             IOrderService orderService,
             IUserCourseLessonService userCourseLessonService,
             ICategoryService categoryService,
+            ICloudinaryService cloudinary,
             IMapper mapper,
             INotificator notificator) : base(notificator)
         {
@@ -47,6 +50,7 @@ namespace MundoDev.Mvc.Controllers
             _orderService            = orderService;
             _userCourseLessonService = userCourseLessonService;
             _categoryService         = categoryService;
+            _cloudinary              = cloudinary;
             _mapper                  = mapper;
         }
 
@@ -382,17 +386,18 @@ namespace MundoDev.Mvc.Controllers
 
             var vm = new PersonalDataViewModel
             {
-                FirstName = user.FirstName,
-                LastName  = user.LastName,
-                Email     = user.Email,
-                Phone     = user.PhoneNumber
+                FirstName       = user.FirstName,
+                LastName        = user.LastName,
+                Email           = user.Email,
+                Phone           = user.PhoneNumber,
+                CurrentPhotoUrl = user.PhotoUrl
             };
             return View(vm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PersonalData(PersonalDataViewModel model)
+        public async Task<IActionResult> PersonalData(PersonalDataViewModel model, IFormFile? photo)
         {
             ViewData["ActiveMenu"] = "profile";
             ViewData["Title"]      = "Dados Pessoais";
@@ -408,6 +413,16 @@ namespace MundoDev.Mvc.Controllers
             user.Email       = model.Email;
             user.PhoneNumber = model.Phone;
             user.ChangedDate = DateTime.UtcNow;
+
+            if (photo != null && photo.Length > 0)
+            {
+                if (!string.IsNullOrWhiteSpace(user.PhotoUrl))
+                {
+                    var oldId = _cloudinary.ExtractPublicId(user.PhotoUrl);
+                    if (oldId != null) await _cloudinary.DeleteImageAsync(oldId);
+                }
+                user.PhotoUrl = await _cloudinary.UploadImageAsync(photo, "users");
+            }
 
             await _userService.UpdateAsync(user);
 

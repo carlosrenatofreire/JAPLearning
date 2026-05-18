@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MundoDev.Business.Interfaces.Externals;
 using MundoDev.Business.Interfaces.Internals.Shareds;
 using MundoDev.Business.Interfaces.Services.Entities;
 using MundoDev.Business.Interfaces.Services.Parameters;
@@ -13,21 +14,24 @@ namespace MundoDev.Mvc.Controllers
     [Authorize(Roles = "Administrador,Supervisor")]
     public class CoursesController : BaseController
     {
-        private readonly ICourseService _service;
+        private readonly ICourseService   _service;
         private readonly ICategoryService _categoryService;
-        private readonly ITeacherService _teacherService;
-        private readonly ILevelService _levelService;
-        private readonly IMapper _mapper;
+        private readonly ITeacherService  _teacherService;
+        private readonly ILevelService    _levelService;
+        private readonly ICloudinaryService _cloudinary;
+        private readonly IMapper          _mapper;
 
         public CoursesController(ICourseService service, ICategoryService categoryService,
             ITeacherService teacherService, ILevelService levelService,
+            ICloudinaryService cloudinary,
             IMapper mapper, INotificator notificator) : base(notificator)
         {
-            _service = service;
+            _service         = service;
             _categoryService = categoryService;
-            _teacherService = teacherService;
-            _levelService = levelService;
-            _mapper = mapper;
+            _teacherService  = teacherService;
+            _levelService    = levelService;
+            _cloudinary      = cloudinary;
+            _mapper          = mapper;
         }
 
         public async Task<IActionResult> Index()
@@ -47,13 +51,15 @@ namespace MundoDev.Mvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CourseViewModel vm)
+        public async Task<IActionResult> Create(CourseViewModel vm, IFormFile? thumbnail)
         {
             ViewData["ActiveMenu"] = "courses";
             if (!ModelState.IsValid) { await PopulateDropdownsAsync(); return View(vm); }
             var entity = _mapper.Map<Course>(vm);
             entity.Id = Guid.NewGuid();
             entity.CreatedDate = DateTime.UtcNow;
+            if (thumbnail != null && thumbnail.Length > 0)
+                entity.Thumbnail = await _cloudinary.UploadImageAsync(thumbnail, "courses");
             if (!await _service.AddAsync(entity)) { AddErrors(); await PopulateDropdownsAsync(); return View(vm); }
             TempData["Success"] = "Curso criado com sucesso.";
             return RedirectToAction(nameof(Index));
@@ -71,13 +77,22 @@ namespace MundoDev.Mvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, CourseViewModel vm)
+        public async Task<IActionResult> Edit(Guid id, CourseViewModel vm, IFormFile? thumbnail)
         {
             ViewData["ActiveMenu"] = "courses";
             if (!ModelState.IsValid) { await PopulateDropdownsAsync(); return View(vm); }
             var entity = _mapper.Map<Course>(vm);
             entity.Id = id;
             entity.ChangedDate = DateTime.UtcNow;
+            if (thumbnail != null && thumbnail.Length > 0)
+            {
+                if (!string.IsNullOrWhiteSpace(vm.Thumbnail))
+                {
+                    var oldId = _cloudinary.ExtractPublicId(vm.Thumbnail);
+                    if (oldId != null) await _cloudinary.DeleteImageAsync(oldId);
+                }
+                entity.Thumbnail = await _cloudinary.UploadImageAsync(thumbnail, "courses");
+            }
             if (!await _service.UpdateAsync(entity)) { AddErrors(); await PopulateDropdownsAsync(); return View(vm); }
             TempData["Success"] = "Curso actualizado com sucesso.";
             return RedirectToAction(nameof(Index));

@@ -12,7 +12,7 @@
 </div>
 
 <div class="md-card form-card">
-    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="ModelOnly" class="md-alert md-alert-danger mb-3"></div>
 
@@ -25,6 +25,19 @@
         <div class="md-form-row">
             <label asp-for="Description" class="md-label"></label>
             <textarea asp-for="Description" class="md-input" rows="3"></textarea>
+        </div>
+
+        <div class="md-form-row">
+            <label class="md-label">Foto do Professor</label>
+            @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
+            {
+                <div style="margin-bottom:8px;">
+                    <img src="@Model.PhotoUrl" alt="Foto actual" style="width:80px; height:80px; object-fit:cover; border-radius:50%; border:2px solid var(--md-border);" />
+                    <small style="display:block; color:var(--md-text-muted); font-size:11px; margin-top:4px;">Foto actual — envie uma nova para substituir</small>
+                </div>
+            }
+            <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" class="md-input" style="padding:6px;" />
+            <small style="color:var(--md-text-muted); font-size:11px;">Formatos aceites: JPG, PNG, WebP (máx. 5 MB)</small>
         </div>
 
         <div class="md-form-row">
