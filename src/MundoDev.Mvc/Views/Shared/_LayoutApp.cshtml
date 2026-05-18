@@ -209,9 +209,17 @@
                                               .Take(2).Select(w => w[0].ToString().ToUpper()));
                         var roleName   = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
                         var subLabel   = ViewBag.PlanName as string ?? roleName;
+                        var photoUrl   = User.FindFirst("PhotoUrl")?.Value;
                     }
                     <a asp-controller="Student" asp-action="PersonalData" class="topbar-user" style="text-decoration:none;">
-                        <div class="md-avatar" style="width:32px;height:32px;font-size:12px;flex-shrink:0;">@initials</div>
+                        @if (!string.IsNullOrWhiteSpace(photoUrl))
+                        {
+                            <img src="@photoUrl" alt="@fullName" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+                        }
+                        else
+                        {
+                            <div class="md-avatar" style="width:32px;height:32px;font-size:12px;flex-shrink:0;">@initials</div>
+                        }
                         <div class="topbar-user-info">
                             <p class="topbar-user-name" style="margin:0;">@fullName</p>
                             <p class="topbar-user-role" style="margin:0;">@subLabel</p>
