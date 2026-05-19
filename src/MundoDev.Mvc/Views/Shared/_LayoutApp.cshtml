@@ -342,7 +342,7 @@
             btn.textContent = confirmLabel || 'Confirmar';
             btn.style.background = confirmColor || 'var(--md-danger,#dc3545)';
             _mdCallback = callback;
-            btn.onclick = function () { mdModalClose(); if (_mdCallback) _mdCallback(); };
+            btn.onclick = function () { var cb = _mdCallback; mdModalClose(); if (cb) cb(); };
             var modal = document.getElementById('mdConfirmModal');
             modal.style.display = 'flex';
         }

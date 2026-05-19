@@ -71,10 +71,10 @@ namespace MundoDev.Mvc.Controllers
         [AllowAnonymous] public IActionResult About()   => View();
 
         // Stubs das páginas públicas ainda em desenvolvimento
-        [AllowAnonymous] public IActionResult Courses() => RedirectToAction("Index");
-        [AllowAnonymous] public IActionResult Areas()   => RedirectToAction("Index");
-        [AllowAnonymous] public IActionResult Plans()   => RedirectToAction("Index");
-        [AllowAnonymous] public IActionResult Blog()    => RedirectToAction("Index");
+        [AllowAnonymous] public IActionResult Courses() => RedirectToAction("Login", "Account");
+        [AllowAnonymous] public IActionResult Areas()   => RedirectToAction("Login", "Account");
+        [AllowAnonymous] public IActionResult Plans()   => RedirectToAction("Login", "Account");
+        [AllowAnonymous] public IActionResult Blog()    => RedirectToAction("Login", "Account");
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error() =>

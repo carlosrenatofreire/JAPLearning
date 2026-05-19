@@ -30,8 +30,26 @@
         <tbody>
             @foreach (var item in Model)
             {
+                @{
+                    var teacherInitials = string.Join("", item.Name.Split(' ',
+                        StringSplitOptions.RemoveEmptyEntries).Take(2)
+                        .Select(w => w[0].ToString().ToUpper()));
+                }
                 <tr>
-                    <td style="color:var(--md-text-primary); font-weight:600;">@item.Name</td>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            @if (!string.IsNullOrWhiteSpace(item.PhotoUrl))
+                            {
+                                <img src="@item.PhotoUrl" alt="@item.Name"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid var(--md-border);" />
+                            }
+                            else
+                            {
+                                <div class="md-avatar" style="width:36px;height:36px;font-size:13px;flex-shrink:0;">@teacherInitials</div>
+                            }
+                            <span style="color:var(--md-text-primary); font-weight:600;">@item.Name</span>
+                        </div>
+                    </td>
                     <td>@(item.Description ?? "—")</td>
                     <td>
                         @if (item.IsActived)
