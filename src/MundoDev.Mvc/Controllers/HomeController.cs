@@ -14,44 +14,67 @@ namespace MundoDev.Mvc.Controllers
         private readonly IUserService _userService;
         private readonly ICourseService _courseService;
         private readonly IOrderService _orderService;
+        private readonly ITestimonialService _testimonialService;
 
         public HomeController(IUserService userService, ICourseService courseService,
-            IOrderService orderService, INotificator notificator) : base(notificator)
+            IOrderService orderService, ITestimonialService testimonialService,
+            INotificator notificator) : base(notificator)
         {
-            _userService = userService;
-            _courseService = courseService;
-            _orderService = orderService;
+            _userService        = userService;
+            _courseService      = courseService;
+            _orderService       = orderService;
+            _testimonialService = testimonialService;
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            // Alunos não têm dashboard aqui — redirecionar para a área de aluno
+            // Utilizador não autenticado → landing page pública
+            if (!User.Identity!.IsAuthenticated)
+            {
+                var testimonials = await _testimonialService.GetAllAsync();
+                ViewBag.Testimonials = testimonials
+                    .Where(t => t.IsActived && t.Featured)
+                    .OrderByDescending(t => t.Rating)
+                    .Take(6)
+                    .Select(t => new {
+                        t.AuthorName, t.Role, t.City, t.Quote,
+                        t.PhotoUrl, t.LinkedinUrl, t.Rating
+                    })
+                    .ToList<dynamic>();
+                return View("Landing");
+            }
+
+            // Alunos → área do aluno
             if (User.IsInRole("Aluno"))
                 return RedirectToAction("Dashboard", "Student");
 
+            // Admin / Supervisor → dashboard administrativo
             ViewData["ActiveMenu"] = "dashboard";
 
-            if (User.IsInRole("Administrador") || User.IsInRole("Supervisor"))
-            {
-                var users   = await _userService.GetAllAsync();
-                var courses = await _courseService.GetAllAsync();
-                var orders  = await _orderService.GetAllAsync();
+            var users   = await _userService.GetAllAsync();
+            var courses = await _courseService.GetAllAsync();
+            var orders  = await _orderService.GetAllAsync();
 
-                ViewBag.TotalUsers   = users.Count;
-                ViewBag.ActiveCourses = courses.Count(c => c.IsActived);
-                ViewBag.TotalOrders  = orders.Count;
-                ViewBag.TotalRevenue = orders.Sum(o => o.Value);
-            }
+            ViewBag.TotalUsers    = users.Count;
+            ViewBag.ActiveCourses = courses.Count(c => c.IsActived);
+            ViewBag.TotalOrders   = orders.Count;
+            ViewBag.TotalRevenue  = orders.Sum(o => o.Value);
 
             return View();
         }
 
-        // Placeholder stubs for Aluno sidebar links
-        [HttpGet] public IActionResult MyCourses()      => View();
-        [HttpGet] public IActionResult MyCertificates() => View();
-        [HttpGet] public IActionResult MyOrders()       => View();
+        // ── Páginas públicas ─────────────────────────────────────────────
+        [AllowAnonymous] public IActionResult Privacy() => View();
+        [AllowAnonymous] public IActionResult Faq()     => View();
+        [AllowAnonymous] public IActionResult Terms()   => View();
+        [AllowAnonymous] public IActionResult About()   => View();
 
-        public IActionResult Privacy() => View();
+        // Stubs das páginas públicas ainda em desenvolvimento
+        [AllowAnonymous] public IActionResult Courses() => RedirectToAction("Index");
+        [AllowAnonymous] public IActionResult Areas()   => RedirectToAction("Index");
+        [AllowAnonymous] public IActionResult Plans()   => RedirectToAction("Index");
+        [AllowAnonymous] public IActionResult Blog()    => RedirectToAction("Index");
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error() =>

@@ -1,0 +1,167 @@
+@{
+    ViewData["Title"] = "Perguntas Frequentes";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+}
+
+<style>
+    .faq-item { border: 1px solid var(--md-border); border-radius: var(--md-radius); margin-bottom: 8px; overflow: hidden; }
+    .faq-question {
+        padding: 18px 22px;
+        background: var(--md-bg-card);
+        font-weight: 600; font-size: 15px;
+        cursor: pointer;
+        display: flex; justify-content: space-between; align-items: center;
+        transition: var(--md-transition);
+        user-select: none;
+    }
+    .faq-question:hover { background: var(--md-bg-card-hover); }
+    .faq-answer {
+        padding: 16px 22px;
+        background: var(--md-bg-secondary);
+        font-size: 14px; color: var(--md-text-secondary);
+        line-height: 1.8;
+        display: none;
+        border-top: 1px solid var(--md-border);
+    }
+    .faq-answer.open { display: block; }
+    .faq-category-title {
+        font-size: 13px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .08em;
+        color: var(--md-accent);
+        margin: 40px 0 16px;
+    }
+</style>
+
+<div class="container" style="max-width:800px; padding:60px 16px;">
+    <div class="text-center mb-5">
+        <h1 style="font-size:38px; font-weight:900; margin-bottom:12px;">Perguntas Frequentes</h1>
+        <p style="color:var(--md-text-secondary); font-size:16px;">
+            Não encontrou a resposta?
+            <a asp-controller="Home" asp-action="About" style="color:var(--md-accent);">Fale connosco</a>
+        </p>
+    </div>
+
+    <!-- Plataforma -->
+    <p class="faq-category-title">Plataforma</p>
+
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <span>O que é a MundoDev?</span>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+            A MundoDev é uma plataforma de ensino online especializada em arquitetura de software e desenvolvimento .NET.
+            A nossa metodologia foca na simulação de cenários corporativos reais: da planilha ao sistema, do C4 Model ao código.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <span>Para quem é a MundoDev?</span>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+            A plataforma é ideal para programadores Plenos e Seniores que pretendem transitar para cargos de liderança técnica
+            e arquitetura de software. Também serve equipas de desenvolvimento que querem adotar boas práticas corporativas.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <span>Preciso de conhecimentos prévios?</span>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+            Sim, recomendamos conhecimentos básicos de C# e .NET. Temos projetos de base disponíveis na plataforma para
+            quem precisar de consolidar os fundamentos antes de avançar para os projetos de arquitetura.
+        </div>
+    </div>
+
+    <!-- Planos e Pagamento -->
+    <p class="faq-category-title">Planos e Pagamento</p>
+
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <span>Posso cancelar a qualquer momento?</span>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+            Sim. Pode cancelar a assinatura a qualquer momento através da área de conta, sem penalidades.
+            O acesso mantém-se ativo até ao final do período já pago.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <span>Existe garantia de reembolso?</span>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+            Sim. Oferecemos garantia total de reembolso nos primeiros 7 dias, sem perguntas.
+            Basta entrar em contacto connosco dentro desse prazo.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <span>Que métodos de pagamento aceitam?</span>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+            Aceitamos cartão de crédito, débito e Pix através do Mercado Pago. O pagamento é processado de forma
+            segura e criptografada.
+        </div>
+    </div>
+
+    <!-- Conteúdo -->
+    <p class="faq-category-title">Conteúdo</p>
+
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <span>Com que frequência é adicionado novo conteúdo?</span>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+            Publicamos novos projetos e aulas regularmente. Todos os assinantes têm acesso imediato
+            ao novo conteúdo sem custo adicional.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <span>Os certificados têm validade?</span>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+            Os certificados MundoDev não têm prazo de validade. São emitidos em PDF com validação digital
+            e podem ser partilhados diretamente no LinkedIn.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <span>Como funcionam as sessões de mentoria?</span>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+            Os assinantes do plano anual têm direito a 1 sessão mensal de 45 minutos com o Carlos Freire.
+            As sessões são agendadas pela plataforma com pelo menos 48h de antecedência.
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function toggleFaq(el) {
+        const answer = el.nextElementSibling;
+        const icon   = el.querySelector('i');
+        const isOpen = answer.classList.contains('open');
+        document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
+        document.querySelectorAll('.faq-question i').forEach(i => i.className = 'bi bi-chevron-down');
+        if (!isOpen) {
+            answer.classList.add('open');
+            icon.className = 'bi bi-chevron-up';
+        }
+    }
+</script>
+}

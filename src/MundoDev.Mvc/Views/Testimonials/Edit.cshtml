@@ -12,7 +12,7 @@
 </div>
 
 <div class="md-card" style="max-width:760px;">
-    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -44,8 +44,26 @@
 
         <div class="row g-3 mb-3">
             <div class="col-md-6">
-                <label class="md-label">URL da Foto</label>
-                <input asp-for="PhotoUrl" class="md-input" />
+                <div class="md-form-row">
+                    <label class="md-label">Foto do Autor</label>
+                    <div id="photoPreviewWrap" style="margin-bottom:8px;">
+                        @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
+                        {
+                            <img id="photoPreview" src="@Model.PhotoUrl" alt="Foto actual"
+                                 style="width:64px; height:64px; border-radius:50%; object-fit:cover; border:2px solid var(--md-border);" />
+                            <small id="photoLabel" style="display:block; color:var(--md-text-muted); font-size:11px; margin-top:4px;">Foto actual — seleccione nova para substituir</small>
+                        }
+                        else
+                        {
+                            <img id="photoPreview" src="" alt="Preview"
+                                 style="width:64px; height:64px; border-radius:50%; object-fit:cover; border:2px solid var(--md-border); display:none;" />
+                            <small id="photoLabel" style="display:none; color:var(--md-text-muted); font-size:11px; margin-top:4px;">Pré-visualização</small>
+                        }
+                    </div>
+                    <input type="hidden" asp-for="PhotoUrl" />
+                    <input type="file" id="photoInput" name="photo" accept="image/jpeg,image/png,image/webp" class="md-input" style="padding:6px;" />
+                    <small style="color:var(--md-text-muted); font-size:11px;">Formatos aceites: JPG, PNG, WebP — deixe em branco para manter a actual</small>
+                </div>
             </div>
             <div class="col-md-6">
                 <label class="md-label">LinkedIn URL</label>
@@ -79,3 +97,18 @@
         </div>
     </form>
 </div>
+
+@section Scripts {
+<script>
+    document.getElementById('photoInput').addEventListener('change', function () {
+        const file  = this.files[0];
+        if (!file) return;
+        const img   = document.getElementById('photoPreview');
+        const label = document.getElementById('photoLabel');
+        img.src = URL.createObjectURL(file);
+        img.style.display   = 'block';
+        label.style.display = 'block';
+        label.textContent   = 'Nova foto seleccionada';
+    });
+</script>
+}
