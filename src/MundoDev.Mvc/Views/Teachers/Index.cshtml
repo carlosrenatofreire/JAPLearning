@@ -30,11 +30,9 @@
         <tbody>
             @foreach (var item in Model)
             {
-                @{
-                    var teacherInitials = string.Join("", item.Name.Split(' ',
-                        StringSplitOptions.RemoveEmptyEntries).Take(2)
-                        .Select(w => w[0].ToString().ToUpper()));
-                }
+                var teacherInitials = string.Join("", item.Name.Split(' ',
+                    StringSplitOptions.RemoveEmptyEntries).Take(2)
+                    .Select(w => w[0].ToString().ToUpper()));
                 <tr>
                     <td>
                         <div style="display:flex; align-items:center; gap:10px;">
