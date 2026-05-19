@@ -1,0 +1,164 @@
+@model List<MundoDev.Business.Models.Domains.Entities.Course>
+@{
+    ViewData["Title"] = "Projetos & Cursos";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+    var categories = ViewBag.Categories as List<MundoDev.Business.Models.Domains.Parameters.Category> ?? new();
+}
+
+<style>
+    .courses-hero { padding: 64px 0 48px; border-bottom: 1px solid var(--md-border); margin-bottom: 48px; }
+    .filter-bar {
+        display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 40px;
+    }
+    .filter-btn {
+        padding: 7px 16px; border-radius: 20px; border: 1px solid var(--md-border);
+        background: transparent; color: var(--md-text-secondary);
+        font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--md-transition);
+    }
+    .filter-btn:hover, .filter-btn.active {
+        background: rgba(232,80,26,0.1); border-color: rgba(232,80,26,0.35); color: var(--md-accent);
+    }
+    .course-card {
+        background: var(--md-bg-card); border: 1px solid var(--md-border);
+        border-radius: var(--md-radius); overflow: hidden;
+        transition: var(--md-transition); display: flex; flex-direction: column;
+    }
+    .course-card:hover { border-color: rgba(232,80,26,0.4); transform: translateY(-2px); }
+    .course-thumb {
+        width: 100%; aspect-ratio: 16/9; object-fit: cover;
+        background: var(--md-bg-secondary);
+    }
+    .course-thumb-placeholder {
+        width: 100%; aspect-ratio: 16/9;
+        background: linear-gradient(135deg, rgba(232,80,26,0.12), rgba(160,31,58,0.08));
+        display: flex; align-items: center; justify-content: center;
+        font-size: 40px; color: var(--md-accent);
+    }
+    .course-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+    .course-meta { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .course-title { font-size: 15px; font-weight: 700; color: var(--md-text-primary); margin-bottom: 8px; line-height: 1.4; }
+    .course-sub { font-size: 13px; color: var(--md-text-secondary); margin-bottom: 16px; flex: 1; line-height: 1.6; }
+    .course-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+</style>
+
+<!-- Hero -->
+<section class="courses-hero">
+    <div class="container">
+        <span class="md-badge md-badge-accent mb-3 d-inline-block">Catálogo</span>
+        <h1 style="font-size:40px; font-weight:900; margin-bottom:16px;">
+            Projetos & <span class="md-gradient-text">Cursos</span>
+        </h1>
+        <p style="color:var(--md-text-secondary); font-size:17px; max-width:560px; line-height:1.7; margin:0;">
+            Aprenda construindo sistemas reais. Cada projeto simula um cenário corporativo completo,
+            da planilha ao código .NET em produção.
+        </p>
+    </div>
+</section>
+
+<section style="padding:0 0 80px;">
+    <div class="container">
+
+        <!-- Filtros por categoria -->
+        @if (categories.Any())
+        {
+            <div class="filter-bar">
+                <button class="filter-btn active" data-cat="all">Todos</button>
+                @foreach (var cat in categories)
+                {
+                    <button class="filter-btn" data-cat="@cat.Id">@cat.Name</button>
+                }
+            </div>
+        }
+
+        @if (!Model.Any())
+        {
+            <div style="text-align:center; padding:80px 0; color:var(--md-text-muted);">
+                <i class="bi bi-collection" style="font-size:48px; display:block; margin-bottom:16px;"></i>
+                <p style="font-size:16px;">Nenhum curso disponível no momento. Volte em breve!</p>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4" id="coursesGrid">
+                @foreach (var course in Model)
+                {
+                    <div class="col-sm-6 col-lg-4 course-item" data-cat="@course.CategoryId">
+                        <div class="course-card">
+                            @if (!string.IsNullOrWhiteSpace(course.Thumbnail))
+                            {
+                                <img src="@course.Thumbnail" alt="@course.Title" class="course-thumb" />
+                            }
+                            else
+                            {
+                                <div class="course-thumb-placeholder">
+                                    <i class="bi bi-code-slash"></i>
+                                </div>
+                            }
+                            <div class="course-body">
+                                <div class="course-meta">
+                                    @if (course.IsFree)
+                                    {
+                                        <span class="md-badge md-badge-success">Gratuito</span>
+                                    }
+                                    @if (course.IsBrief)
+                                    {
+                                        <span class="md-badge md-badge-info">Resumido</span>
+                                    }
+                                    @if (course.Category != null)
+                                    {
+                                        <span class="md-badge">@course.Category.Name</span>
+                                    }
+                                </div>
+                                <p class="course-title">@course.Title</p>
+                                @if (!string.IsNullOrWhiteSpace(course.Subtitle))
+                                {
+                                    <p class="course-sub">@course.Subtitle</p>
+                                }
+                                <div class="course-footer">
+                                    @if (course.Teacher != null)
+                                    {
+                                        <span style="font-size:12px; color:var(--md-text-muted);">
+                                            <i class="bi bi-person"></i> @course.Teacher.Name
+                                        </span>
+                                    }
+                                    <a asp-controller="Account" asp-action="Login"
+                                       class="btn-md-ghost" style="font-size:13px; padding:6px 14px;">
+                                        Ver curso <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+<!-- CTA -->
+<section style="background:var(--md-bg-secondary); padding:64px 0; border-top:1px solid var(--md-border);">
+    <div class="container text-center">
+        <h2 style="font-size:28px; font-weight:900; margin-bottom:12px;">Pronto para começar?</h2>
+        <p style="color:var(--md-text-secondary); font-size:15px; max-width:400px; margin:0 auto 24px;">
+            Subscreva e tenha acesso imediato a todos os projetos e cursos.
+        </p>
+        <a asp-controller="Home" asp-action="Plans" class="btn-md-primary" style="padding:12px 28px;">
+            Ver Planos <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('.filter-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            var cat = this.dataset.cat;
+            document.querySelectorAll('.course-item').forEach(function(item) {
+                item.style.display = (cat === 'all' || item.dataset.cat === cat) ? '' : 'none';
+            });
+        });
+    });
+</script>
+}

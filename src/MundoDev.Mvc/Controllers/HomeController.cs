@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MundoDev.Business.Interfaces.Internals.Shareds;
 using MundoDev.Business.Interfaces.Services.Entities;
+using MundoDev.Business.Interfaces.Services.Parameters;
 using MundoDev.Mvc.Models;
 using System.Diagnostics;
 
@@ -15,15 +16,23 @@ namespace MundoDev.Mvc.Controllers
         private readonly ICourseService _courseService;
         private readonly IOrderService _orderService;
         private readonly ITestimonialService _testimonialService;
+        private readonly IPlanService _planService;
+        private readonly ICategoryService _categoryService;
+        private readonly IArticleService _articleService;
 
         public HomeController(IUserService userService, ICourseService courseService,
             IOrderService orderService, ITestimonialService testimonialService,
+            IPlanService planService, ICategoryService categoryService,
+            IArticleService articleService,
             INotificator notificator) : base(notificator)
         {
             _userService        = userService;
             _courseService      = courseService;
             _orderService       = orderService;
             _testimonialService = testimonialService;
+            _planService        = planService;
+            _categoryService    = categoryService;
+            _articleService     = articleService;
         }
 
         [AllowAnonymous]
@@ -70,11 +79,40 @@ namespace MundoDev.Mvc.Controllers
         [AllowAnonymous] public IActionResult Terms()   => View();
         [AllowAnonymous] public IActionResult About()   => View();
 
-        // Stubs das páginas públicas ainda em desenvolvimento
-        [AllowAnonymous] public IActionResult Courses() => RedirectToAction("Login", "Account");
-        [AllowAnonymous] public IActionResult Areas()   => RedirectToAction("Login", "Account");
-        [AllowAnonymous] public IActionResult Plans()   => RedirectToAction("Login", "Account");
-        [AllowAnonymous] public IActionResult Blog()    => RedirectToAction("Login", "Account");
+        // ── Páginas públicas de catálogo ──────────────────────────────────
+        [AllowAnonymous]
+        public async Task<IActionResult> Courses()
+        {
+            var courses    = await _courseService.GetAllAsync();
+            var categories = await _categoryService.GetAllAsync();
+            ViewBag.Categories = categories.Where(c => c.IsActived).OrderBy(c => c.Name).ToList();
+            return View(courses.Where(c => c.IsActived).OrderBy(c => c.Title).ToList());
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> Areas()
+        {
+            var categories = await _categoryService.GetAllAsync();
+            var courses    = await _courseService.GetAllAsync();
+            ViewBag.CoursesCount = courses.Where(c => c.IsActived)
+                                          .GroupBy(c => c.CategoryId)
+                                          .ToDictionary(g => g.Key, g => g.Count());
+            return View(categories.Where(c => c.IsActived).OrderBy(c => c.Name).ToList());
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> Plans()
+        {
+            var plans = await _planService.GetAllAsync();
+            return View(plans.Where(p => p.IsActived).OrderBy(p => p.Price).ToList());
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> Blog()
+        {
+            var articles = await _articleService.GetAllAsync();
+            return View(articles.Where(a => a.IsActived).OrderByDescending(a => a.PublishDate).ToList());
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error() =>
