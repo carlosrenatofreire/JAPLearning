@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using MundoDev.Business.Interfaces.Internals.Shareds;
 using MundoDev.Business.Interfaces.Services.Entities;
 using MundoDev.Business.Interfaces.Services.Parameters;
+using MundoDev.Business.Models.Domains.Entities;
 using MundoDev.Mvc.Models;
 using System.Diagnostics;
 
@@ -19,11 +20,14 @@ namespace MundoDev.Mvc.Controllers
         private readonly IPlanService _planService;
         private readonly ICategoryService _categoryService;
         private readonly IArticleService _articleService;
+        private readonly ITopicService _topicService;
+        private readonly ILessonService _lessonService;
 
         public HomeController(IUserService userService, ICourseService courseService,
             IOrderService orderService, ITestimonialService testimonialService,
             IPlanService planService, ICategoryService categoryService,
-            IArticleService articleService,
+            IArticleService articleService, ITopicService topicService,
+            ILessonService lessonService,
             INotificator notificator) : base(notificator)
         {
             _userService        = userService;
@@ -33,6 +37,8 @@ namespace MundoDev.Mvc.Controllers
             _planService        = planService;
             _categoryService    = categoryService;
             _articleService     = articleService;
+            _topicService       = topicService;
+            _lessonService      = lessonService;
         }
 
         [AllowAnonymous]
@@ -105,6 +111,31 @@ namespace MundoDev.Mvc.Controllers
         {
             var plans = await _planService.GetAllAsync();
             return View(plans.Where(p => p.IsActived).OrderBy(p => p.Price).ToList());
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> CourseDetail(Guid id)
+        {
+            var course = await _courseService.GetByIdAsync(id);
+            if (course == null || !course.IsActived) return NotFound();
+
+            var allTopics  = await _topicService.GetAllAsync();
+            var allLessons = await _lessonService.GetAllAsync();
+
+            var topics  = allTopics.Where(t => t.CourseId == id && t.IsActived).OrderBy(t => t.Order).ToList();
+            var lessons = allLessons.Where(l => l.CourseId == id && l.IsActived).OrderBy(l => l.Order).ToList();
+
+            var totalDuration = lessons
+                .Where(l => l.TimeLesson.HasValue)
+                .Aggregate(TimeSpan.Zero, (sum, l) => sum + l.TimeLesson!.Value);
+
+            ViewBag.Topics        = topics;
+            ViewBag.Lessons       = lessons;
+            ViewBag.TotalDuration = totalDuration;
+            ViewBag.TotalLessons  = lessons.Count;
+            ViewBag.FreePreview   = lessons.Where(l => l.IsFreePreview).ToList();
+
+            return View(course);
         }
 
         [AllowAnonymous]

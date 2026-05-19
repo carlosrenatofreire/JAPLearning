@@ -417,6 +417,20 @@ hr {
 .md-lesson-item.active { color: var(--md-accent); background: rgba(232,80,26,0.06); }
 .md-lesson-item.completed { color: var(--md-success); }
 
+/* ── Breadcrumb ───────────────────────────────────────────── */
+.md-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--md-text-muted);
+    margin-bottom: 24px;
+}
+.md-breadcrumb a { color: var(--md-text-muted); text-decoration: none; transition: var(--md-transition); }
+.md-breadcrumb a:hover { color: var(--md-accent); }
+.md-breadcrumb .separator { color: var(--md-border); }
+.md-breadcrumb .current { color: var(--md-text-secondary); }
+
 /* ── Info Row (stats) ─────────────────────────────────────── */
 .md-info-row {
     display: flex;
