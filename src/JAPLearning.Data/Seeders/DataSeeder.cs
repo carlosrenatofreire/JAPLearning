@@ -15,6 +15,7 @@ namespace JAPLearning.Data.Seeders
             using var scope = serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<MainDbContext>();
 
+            await SeedTeamsAsync(context);
             await SeedRolesAsync(context);
             await SeedModulesAndPermissionsAsync(context);
             await SeedUsersAsync(context);
@@ -22,40 +23,55 @@ namespace JAPLearning.Data.Seeders
             await SeedCatalogDataAsync(context);
         }
 
-        // ── FIXED IDs ──────────────────────────────────────────────────────────────
+        // ── FIXED IDs ─────────────────────────────────────────────────────────────
+
+        // Teams
+        private static readonly Guid TeamDmcId     = new("00000000-0000-0000-0001-000000000001");
+        private static readonly Guid TeamTiId      = new("00000000-0000-0000-0001-000000000002");
+        private static readonly Guid TeamArpaId    = new("00000000-0000-0000-0001-000000000003");
+        private static readonly Guid TeamAdminId   = new("00000000-0000-0000-0001-000000000004");
 
         // Roles
-        private static readonly Guid RoleAlunoId        = new("00000001-0000-0000-0000-000000000001");
-        private static readonly Guid RoleSupervisorId   = new("00000001-0000-0000-0000-000000000002");
-        private static readonly Guid RoleAdminId        = new("00000001-0000-0000-0000-000000000003");
+        private static readonly Guid RoleAlunoId   = new("00000001-0000-0000-0000-000000000001");
+        private static readonly Guid RoleAdminId   = new("00000001-0000-0000-0000-000000000002");
 
         // Users
-        private static readonly Guid UserCarlosId       = new("00000002-0000-0000-0000-000000000001");
-        private static readonly Guid UserSupervisorId   = new("00000002-0000-0000-0000-000000000002");
-        private static readonly Guid UserAdminId        = new("00000002-0000-0000-0000-000000000003");
+        private static readonly Guid UserCarlosId  = new("00000002-0000-0000-0000-000000000001");
+        private static readonly Guid UserVitorId   = new("00000002-0000-0000-0000-000000000002");
 
         // Modules
-        private static readonly Guid ModuleUsersId      = new("00000003-0000-0000-0000-000000000001");
-        private static readonly Guid ModuleRolesId      = new("00000003-0000-0000-0000-000000000002");
-        private static readonly Guid ModuleModulesId    = new("00000003-0000-0000-0000-000000000003");
-        private static readonly Guid ModulePermsId      = new("00000003-0000-0000-0000-000000000004");
-        private static readonly Guid ModuleCoursesId    = new("00000003-0000-0000-0000-000000000005");
-        private static readonly Guid ModuleTopicsId     = new("00000003-0000-0000-0000-000000000006");
-        private static readonly Guid ModuleLessonsId    = new("00000003-0000-0000-0000-000000000007");
-        private static readonly Guid ModuleArticlesId   = new("00000003-0000-0000-0000-000000000008");
-        private static readonly Guid ModulePlansId      = new("00000003-0000-0000-0000-000000000009");
-        private static readonly Guid ModuleOrdersId     = new("00000003-0000-0000-0000-000000000010");
+        private static readonly Guid ModuleUsersId   = new("00000003-0000-0000-0000-000000000001");
+        private static readonly Guid ModuleRolesId   = new("00000003-0000-0000-0000-000000000002");
+        private static readonly Guid ModuleModulesId = new("00000003-0000-0000-0000-000000000003");
+        private static readonly Guid ModulePermsId   = new("00000003-0000-0000-0000-000000000004");
+        private static readonly Guid ModuleCoursesId = new("00000003-0000-0000-0000-000000000005");
+        private static readonly Guid ModuleTopicsId  = new("00000003-0000-0000-0000-000000000006");
+        private static readonly Guid ModuleLessonsId = new("00000003-0000-0000-0000-000000000007");
+        private static readonly Guid ModuleArticlesId= new("00000003-0000-0000-0000-000000000008");
+        private static readonly Guid ModuleTeamsId   = new("00000003-0000-0000-0000-000000000009");
 
-        // ── SEED METHODS ───────────────────────────────────────────────────────────
+        // ── SEED METHODS ──────────────────────────────────────────────────────────
+
+        private static async Task SeedTeamsAsync(MainDbContext context)
+        {
+            if (await context.Set<Team>().AnyAsync()) return;
+
+            context.Set<Team>().AddRange(
+                new Team { Id = TeamDmcId,   Name = "DMC - Developers",  IsActived = true },
+                new Team { Id = TeamTiId,    Name = "Unidade TI",        IsActived = true },
+                new Team { Id = TeamArpaId,  Name = "ARPA Tecnologies",  IsActived = true },
+                new Team { Id = TeamAdminId, Name = "Administradores",   IsActived = true }
+            );
+            await context.SaveChangesAsync();
+        }
 
         private static async Task SeedRolesAsync(MainDbContext context)
         {
             if (await context.Set<Role>().AnyAsync()) return;
 
             context.Set<Role>().AddRange(
-                new Role { Id = RoleAlunoId,      Name = "Aluno",          IsActived = true },
-                new Role { Id = RoleSupervisorId, Name = "Supervisor",     IsActived = true },
-                new Role { Id = RoleAdminId,      Name = "Administrador",  IsActived = true }
+                new Role { Id = RoleAlunoId,  Name = "Aluno",         IsActived = true },
+                new Role { Id = RoleAdminId,  Name = "Administrador", IsActived = true }
             );
             await context.SaveChangesAsync();
         }
@@ -64,51 +80,30 @@ namespace JAPLearning.Data.Seeders
         {
             if (await context.Set<User>().AnyAsync()) return;
 
-            var hash = BCrypt.Net.BCrypt.HashPassword("Password.123");
+            var hash = BCrypt.Net.BCrypt.HashPassword("1");
 
             context.Set<User>().AddRange(
                 new User
                 {
                     Id          = UserCarlosId,
                     RoleId      = RoleAlunoId,
+                    TeamId      = TeamDmcId,
                     FirstName   = "Carlos",
                     LastName    = "Freire",
-                    Email       = "carlosrenatofreire@hotmail.com",
+                    Email       = "aluno@t.t",
                     Password    = hash,
-                    PhoneNumber = "+55 11 99999-0001",
-                    City        = "São Paulo",
-                    State       = "SP",
-                    Country     = "Brasil",
                     CreatedDate = DateTime.UtcNow,
                     IsActived   = true
                 },
                 new User
                 {
-                    Id          = UserSupervisorId,
-                    RoleId      = RoleSupervisorId,
-                    FirstName   = "Supervisor",
-                    LastName    = "JAPLearning",
-                    Email       = "supervisor@mundodev.app.br",
-                    Password    = hash,
-                    PhoneNumber = "+55 11 99999-0002",
-                    City        = "São Paulo",
-                    State       = "SP",
-                    Country     = "Brasil",
-                    CreatedDate = DateTime.UtcNow,
-                    IsActived   = true
-                },
-                new User
-                {
-                    Id          = UserAdminId,
+                    Id          = UserVitorId,
                     RoleId      = RoleAdminId,
-                    FirstName   = "Administrador",
-                    LastName    = "JAPLearning",
-                    Email       = "admin@mundodev.app.br",
+                    TeamId      = TeamAdminId,
+                    FirstName   = "Vitor",
+                    LastName    = "Leal",
+                    Email       = "admin@t.t",
                     Password    = hash,
-                    PhoneNumber = "+55 11 99999-0003",
-                    City        = "São Paulo",
-                    State       = "SP",
-                    Country     = "Brasil",
                     CreatedDate = DateTime.UtcNow,
                     IsActived   = true
                 }
@@ -122,27 +117,24 @@ namespace JAPLearning.Data.Seeders
 
             var modules = new[]
             {
-                new Module { Id = ModuleUsersId,   Name = "Users",       IsActived = true },
-                new Module { Id = ModuleRolesId,   Name = "Roles",       IsActived = true },
-                new Module { Id = ModuleModulesId, Name = "Modules",     IsActived = true },
-                new Module { Id = ModulePermsId,   Name = "Permissions", IsActived = true },
-                new Module { Id = ModuleCoursesId, Name = "Courses",     IsActived = true },
-                new Module { Id = ModuleTopicsId,  Name = "Topics",      IsActived = true },
-                new Module { Id = ModuleLessonsId, Name = "Lessons",     IsActived = true },
-                new Module { Id = ModuleArticlesId,Name = "Articles",    IsActived = true },
-                new Module { Id = ModulePlansId,   Name = "Plans",       IsActived = true },
-                new Module { Id = ModuleOrdersId,  Name = "Orders",      IsActived = true },
+                new Module { Id = ModuleUsersId,    Name = "Users",       IsActived = true },
+                new Module { Id = ModuleRolesId,    Name = "Roles",       IsActived = true },
+                new Module { Id = ModuleModulesId,  Name = "Modules",     IsActived = true },
+                new Module { Id = ModulePermsId,    Name = "Permissions", IsActived = true },
+                new Module { Id = ModuleCoursesId,  Name = "Courses",     IsActived = true },
+                new Module { Id = ModuleTopicsId,   Name = "Topics",      IsActived = true },
+                new Module { Id = ModuleLessonsId,  Name = "Lessons",     IsActived = true },
+                new Module { Id = ModuleArticlesId, Name = "Articles",    IsActived = true },
+                new Module { Id = ModuleTeamsId,    Name = "Teams",       IsActived = true },
             };
             context.Set<Module>().AddRange(modules);
             await context.SaveChangesAsync();
 
-            // Permissions: Ver / Adicionar / Editar / Excluir per module
             var permNames = new[] { "Ver", "Adicionar", "Editar", "Excluir" };
             var moduleIds = new[]
             {
                 ModuleUsersId, ModuleRolesId, ModuleModulesId, ModulePermsId,
-                ModuleCoursesId, ModuleTopicsId, ModuleLessonsId, ModuleArticlesId,
-                ModulePlansId, ModuleOrdersId
+                ModuleCoursesId, ModuleTopicsId, ModuleLessonsId, ModuleArticlesId, ModuleTeamsId
             };
 
             int seq = 1;
@@ -166,6 +158,7 @@ namespace JAPLearning.Data.Seeders
         }
 
         // Catalog IDs
+        private static readonly Guid TeamCatalogId        = TeamDmcId;
         private static readonly Guid CatFundamentosId     = new("00000010-0000-0000-0000-000000000001");
         private static readonly Guid CatArquiteturaId     = new("00000010-0000-0000-0000-000000000002");
         private static readonly Guid CatDesenvolvimentoId = new("00000010-0000-0000-0000-000000000003");
@@ -178,29 +171,26 @@ namespace JAPLearning.Data.Seeders
 
         private static async Task SeedCatalogDataAsync(MainDbContext context)
         {
-            // Categories
             if (!await context.Set<Category>().AnyAsync())
             {
                 context.Set<Category>().AddRange(
-                    new Category { Id = CatFundamentosId,     Name = "Fundamentos",    Subtitle = "Base teórica e conceitual",       IsActived = true },
-                    new Category { Id = CatArquiteturaId,     Name = "Arquitetura",    Subtitle = "Sistemas completos do mundo real", IsActived = true },
-                    new Category { Id = CatDesenvolvimentoId, Name = "Desenvolvimento",Subtitle = "Desenvolvimento prático .NET",     IsActived = true }
+                    new Category { Id = CatFundamentosId,     TeamId = TeamCatalogId, Name = "Fundamentos",    Subtitle = "Base teórica e conceitual",       IsActived = true },
+                    new Category { Id = CatArquiteturaId,     TeamId = TeamCatalogId, Name = "Arquitetura",    Subtitle = "Sistemas completos do mundo real", IsActived = true },
+                    new Category { Id = CatDesenvolvimentoId, TeamId = TeamCatalogId, Name = "Desenvolvimento",Subtitle = "Desenvolvimento prático .NET",     IsActived = true }
                 );
                 await context.SaveChangesAsync();
             }
 
-            // Levels
             if (!await context.Set<Level>().AnyAsync())
             {
                 context.Set<Level>().AddRange(
-                    new Level { Id = LvlInicianteId,     Name = "Iniciante",     IsActived = true },
-                    new Level { Id = LvlIntermediarioId, Name = "Intermediário",  IsActived = true },
-                    new Level { Id = LvlAvancadoId,      Name = "Avançado",       IsActived = true }
+                    new Level { Id = LvlInicianteId,     Name = "Iniciante",    IsActived = true },
+                    new Level { Id = LvlIntermediarioId, Name = "Intermediário", IsActived = true },
+                    new Level { Id = LvlAvancadoId,      Name = "Avançado",      IsActived = true }
                 );
                 await context.SaveChangesAsync();
             }
 
-            // Teacher
             if (!await context.Set<Teacher>().AnyAsync())
             {
                 context.Set<Teacher>().Add(
@@ -209,20 +199,19 @@ namespace JAPLearning.Data.Seeders
                 await context.SaveChangesAsync();
             }
 
-            // Courses
             if (!await context.Set<Course>().AnyAsync())
             {
                 context.Set<Course>().AddRange(
                     new Course { Id = new Guid("00000013-0000-0000-0000-000000000001"), Title = "Fundamentos de Arquitetura de Software",   CategoryId = CatFundamentosId,     LevelId = LvlInicianteId,     TeacherId = TeacherCarlosId, IsFree = true,  IsActived = true, CreatedDate = DateTime.UtcNow },
                     new Course { Id = new Guid("00000013-0000-0000-0000-000000000002"), Title = "Fundamentos do C4 Model",                  CategoryId = CatFundamentosId,     LevelId = LvlInicianteId,     TeacherId = TeacherCarlosId, IsFree = true,  IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000003"), Title = "Sistema de Gestão de Frota de Veículos",    CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000004"), Title = "Sistema de Gestão de Corretora de Seguros", CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000005"), Title = "Sistema de Gestão de Indicadores e KPIs",  CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000006"), Title = "Sistema de Gestão de Ordem de Serviço",    CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000007"), Title = "Sistema E-Commerce",                       CategoryId = CatArquiteturaId,     LevelId = LvlAvancadoId,      TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000008"), Title = "Sistema E-Commerce (BackOffice)",           CategoryId = CatArquiteturaId,     LevelId = LvlAvancadoId,      TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000009"), Title = "Sistema de Gestão de Obras",               CategoryId = CatArquiteturaId,     LevelId = LvlAvancadoId,      TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
-                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000010"), Title = "Arquitetura em Camadas",                   CategoryId = CatDesenvolvimentoId, LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow }
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000003"), Title = "Sistema de Gestão de Frota de Veículos",   CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000004"), Title = "Sistema de Gestão de Corretora de Seguros",CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000005"), Title = "Sistema de Gestão de Indicadores e KPIs", CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000006"), Title = "Sistema de Gestão de Ordem de Serviço",   CategoryId = CatArquiteturaId,     LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000007"), Title = "Sistema E-Commerce",                      CategoryId = CatArquiteturaId,     LevelId = LvlAvancadoId,      TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000008"), Title = "Sistema E-Commerce (BackOffice)",          CategoryId = CatArquiteturaId,     LevelId = LvlAvancadoId,      TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000009"), Title = "Sistema de Gestão de Obras",              CategoryId = CatArquiteturaId,     LevelId = LvlAvancadoId,      TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow },
+                    new Course { Id = new Guid("00000013-0000-0000-0000-000000000010"), Title = "Arquitetura em Camadas",                  CategoryId = CatDesenvolvimentoId, LevelId = LvlIntermediarioId, TeacherId = TeacherCarlosId, IsFree = false, IsActived = true, CreatedDate = DateTime.UtcNow }
                 );
                 await context.SaveChangesAsync();
             }
@@ -235,7 +224,7 @@ namespace JAPLearning.Data.Seeders
             var allPermissionIds = await context.Set<Permission>()
                 .Select(p => p.Id).ToListAsync();
 
-            // Administrador → all permissions
+            // Administrador → todas as permissões
             var adminRolePerms = allPermissionIds.Select((pid, i) => new RolePermission
             {
                 Id           = new Guid($"00000005-0000-0000-0000-{(i + 1):D12}"),
@@ -243,19 +232,7 @@ namespace JAPLearning.Data.Seeders
                 PermissionId = pid
             });
 
-            // Supervisor → Ver + Adicionar + Editar (not Excluir)
-            var supervisorPermIds = await context.Set<Permission>()
-                .Where(p => p.Name != "Excluir")
-                .Select(p => p.Id).ToListAsync();
-
-            var supervisorRolePerms = supervisorPermIds.Select((pid, i) => new RolePermission
-            {
-                Id           = new Guid($"00000006-0000-0000-0000-{(i + 1):D12}"),
-                RoleId       = RoleSupervisorId,
-                PermissionId = pid
-            });
-
-            // Aluno → only Ver
+            // Aluno → apenas Ver
             var alunoPermIds = await context.Set<Permission>()
                 .Where(p => p.Name == "Ver")
                 .Select(p => p.Id).ToListAsync();
@@ -268,7 +245,6 @@ namespace JAPLearning.Data.Seeders
             });
 
             context.Set<RolePermission>().AddRange(adminRolePerms);
-            context.Set<RolePermission>().AddRange(supervisorRolePerms);
             context.Set<RolePermission>().AddRange(alunoRolePerms);
             await context.SaveChangesAsync();
         }
