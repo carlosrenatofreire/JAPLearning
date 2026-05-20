@@ -7,7 +7,7 @@ namespace JAPLearning.Mvc.Configurations
         public static WebApplicationBuilder AddDopplerConfiguration(this WebApplicationBuilder builder)
         {
             // Token lido de variável de ambiente DOPPLER_TOKEN (nunca hardcoded)
-            var token = Environment.GetEnvironmentVariable("DOPPLER_TOKEN");
+            var token = Environment.GetEnvironmentVariable("DOPPLER_TOKEN_JAPLEARNING");
 
             if (string.IsNullOrWhiteSpace(token))
             {
@@ -19,8 +19,8 @@ namespace JAPLearning.Mvc.Configurations
             builder.Configuration.AddDoppler(options =>
             {
                 options.ServiceToken = token;
-                options.Project      = "mundodev";
-                options.Config       = builder.Environment.IsProduction() ? "prd" : "dev_carlos";
+                options.Project      = "jap-learning";
+                options.Config       = builder.Environment.IsProduction() ? "prd" : "dev";
             });
 
             var root = (IConfigurationRoot)builder.Configuration;
