@@ -1,12 +1,9 @@
 namespace JAPLearning.Mvc.ViewModels.Parameters
 {
-    public class CategoryViewModel
+    public class TeamViewModel
     {
         public Guid Id { get; set; }
-        public Guid TeamId { get; set; }
-        public string TeamName { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
-        public string? Subtitle { get; set; }
         public string? Description { get; set; }
         public bool IsActived { get; set; }
     }

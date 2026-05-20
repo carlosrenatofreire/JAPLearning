@@ -15,10 +15,14 @@ namespace JAPLearning.Mvc.Configurations
             {
                 // Parameters (bidirectional)
                 cfg.CreateMap<Role, RoleViewModel>().ReverseMap();
-                cfg.CreateMap<Category, CategoryViewModel>().ReverseMap();
+                cfg.CreateMap<Category, CategoryViewModel>()
+                    .ForMember(d => d.TeamName, o => o.MapFrom(s => s.Team != null ? s.Team.Name : string.Empty))
+                    .ReverseMap()
+                    .ForMember(d => d.Team, o => o.Ignore());
                 cfg.CreateMap<Level, LevelViewModel>().ReverseMap();
                 cfg.CreateMap<Subject, SubjectViewModel>().ReverseMap();
                 cfg.CreateMap<Teacher, TeacherViewModel>().ReverseMap();
+                cfg.CreateMap<Team, TeamViewModel>().ReverseMap();
                 // User
                 cfg.CreateMap<User, UserViewModel>()
                     .ForMember(d => d.RoleName, o => o.MapFrom(s => s.Role != null ? s.Role.Name : string.Empty))

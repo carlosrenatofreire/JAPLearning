@@ -43,6 +43,9 @@
 
 <div class="sidebar-section">
     <p class="sidebar-section-title">Parâmetros</p>
+    <a asp-controller="Teams" asp-action="Index" class="sidebar-item @(active == "teams" ? "active" : "")">
+        <i class="bi bi-people"></i> Equipas
+    </a>
     <a asp-controller="Categories" asp-action="Index" class="sidebar-item @(active == "categories" ? "active" : "")">
         <i class="bi bi-tags"></i> Categorias
     </a>

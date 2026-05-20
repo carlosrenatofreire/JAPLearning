@@ -16,6 +16,7 @@ namespace JAPLearning.Data.Contexts
         public DbSet<Level> Levels { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<Team> Teams { get; set; }
 
         // Entities
         public DbSet<User> Users { get; set; }

@@ -45,6 +45,7 @@ namespace JAPLearning.Mvc.Configurations
             services.AddScoped<ILevelRepository, LevelRepository>();
             services.AddScoped<ISubjectRepository, SubjectRepository>();
             services.AddScoped<ITeacherRepository, TeacherRepository>();
+            services.AddScoped<ITeamRepository, TeamRepository>();
 
             // Entities
             services.AddScoped<IUserRepository, UserRepository>();
@@ -76,6 +77,7 @@ namespace JAPLearning.Mvc.Configurations
             services.AddScoped<ILevelService, LevelService>();
             services.AddScoped<ISubjectService, SubjectService>();
             services.AddScoped<ITeacherService, TeacherService>();
+            services.AddScoped<ITeamService, TeamService>();
 
             // Services - Entities
             services.AddScoped<IUserService, UserService>();

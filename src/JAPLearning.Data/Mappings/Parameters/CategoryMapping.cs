@@ -22,6 +22,10 @@ namespace JAPLearning.Data.Mappings.Parameters
             builder.Property(e => e.Description)
                 .HasColumnType("varchar(255)");
 
+            builder.HasOne(e => e.Team)
+                .WithMany(e => e.Categories)
+                .HasForeignKey(e => e.TeamId);
+
             builder.HasMany(e => e.Courses)
                 .WithOne(e => e.Category)
                 .HasForeignKey(e => e.CategoryId);
