@@ -29,15 +29,26 @@
 
         <div class="md-form-row">
             <label class="md-label">Foto do Professor</label>
-            @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
-            {
-                <div style="margin-bottom:8px;">
-                    <img src="@Model.PhotoUrl" alt="Foto actual" style="width:80px; height:80px; object-fit:cover; border-radius:50%; border:2px solid var(--md-border);" />
-                    <small style="display:block; color:var(--md-text-muted); font-size:11px; margin-top:4px;">Foto actual — envie uma nova para substituir</small>
+            <input type="hidden" asp-for="PhotoUrl" />
+            <div style="display:flex; align-items:center; gap:16px; margin-bottom:10px;">
+                @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
+                {
+                    <img id="photoPreview" src="@Model.PhotoUrl" alt="Foto actual"
+                         style="width:72px; height:72px; object-fit:cover; border-radius:50%; border:2px solid var(--md-border);" />
+                }
+                else
+                {
+                    var initials = string.Join("", (Model.Name ?? "?").Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => w[0].ToString().ToUpper()));
+                    <div id="photoPreview" class="md-avatar" style="width:72px; height:72px; font-size:22px;">@initials</div>
+                }
+                <div>
+                    <input type="file" id="photoInput" name="photo" accept="image/jpeg,image/png,image/webp"
+                           class="md-input" style="padding:6px;" />
+                    <small style="display:block; color:var(--md-text-muted); font-size:11px; margin-top:4px;">
+                        JPG, PNG, WebP — seleccione para substituir a foto actual
+                    </small>
                 </div>
-            }
-            <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" class="md-input" style="padding:6px;" />
-            <small style="color:var(--md-text-muted); font-size:11px;">Formatos aceites: JPG, PNG, WebP (máx. 5 MB)</small>
+            </div>
         </div>
 
         <div class="md-form-row">
@@ -55,3 +66,24 @@
         </div>
     </form>
 </div>
+
+@section Scripts {
+<script>
+    document.getElementById('photoInput')?.addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        const url  = URL.createObjectURL(file);
+        const prev = document.getElementById('photoPreview');
+        if (prev.tagName === 'IMG') {
+            prev.src = url;
+        } else {
+            // substitui o avatar de iniciais por img
+            const img = document.createElement('img');
+            img.id    = 'photoPreview';
+            img.src   = url;
+            img.style = 'width:72px;height:72px;object-fit:cover;border-radius:50%;border:2px solid var(--md-border);';
+            prev.replaceWith(img);
+        }
+    });
+</script>
+}

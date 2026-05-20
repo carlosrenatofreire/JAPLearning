@@ -73,13 +73,17 @@ namespace MundoDev.Mvc.Controllers
             entity.Id = id;
             if (photo != null && photo.Length > 0)
             {
-                // Delete old photo from Cloudinary if exists
                 if (!string.IsNullOrWhiteSpace(vm.PhotoUrl))
                 {
                     var oldPublicId = _cloudinary.ExtractPublicId(vm.PhotoUrl);
                     if (oldPublicId != null) await _cloudinary.DeleteImageAsync(oldPublicId);
                 }
                 entity.PhotoUrl = await _cloudinary.UploadImageAsync(photo, "teachers");
+            }
+            else
+            {
+                // Preserva a foto actual se não foi enviada nova
+                entity.PhotoUrl = vm.PhotoUrl;
             }
             if (!await _service.UpdateAsync(entity)) { AddErrors(); return View(vm); }
             TempData["Success"] = "Professor actualizado com sucesso.";

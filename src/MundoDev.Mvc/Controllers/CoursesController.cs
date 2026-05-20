@@ -6,6 +6,7 @@ using MundoDev.Business.Interfaces.Externals;
 using MundoDev.Business.Interfaces.Internals.Shareds;
 using MundoDev.Business.Interfaces.Services.Entities;
 using MundoDev.Business.Interfaces.Services.Parameters;
+using MundoDev.Business.Interfaces.Services.Relationships;
 using MundoDev.Business.Models.Domains.Entities;
 using MundoDev.Mvc.ViewModels.Entities;
 
@@ -14,24 +15,26 @@ namespace MundoDev.Mvc.Controllers
     [Authorize(Roles = "Administrador,Supervisor")]
     public class CoursesController : BaseController
     {
-        private readonly ICourseService   _service;
-        private readonly ICategoryService _categoryService;
-        private readonly ITeacherService  _teacherService;
-        private readonly ILevelService    _levelService;
-        private readonly ICloudinaryService _cloudinary;
-        private readonly IMapper          _mapper;
+        private readonly ICourseService              _service;
+        private readonly ICategoryService            _categoryService;
+        private readonly ITeacherService             _teacherService;
+        private readonly ILevelService               _levelService;
+        private readonly ICloudinaryService          _cloudinary;
+        private readonly ICourseRequirementService   _requirementService;
+        private readonly IMapper                     _mapper;
 
         public CoursesController(ICourseService service, ICategoryService categoryService,
             ITeacherService teacherService, ILevelService levelService,
-            ICloudinaryService cloudinary,
+            ICloudinaryService cloudinary, ICourseRequirementService requirementService,
             IMapper mapper, INotificator notificator) : base(notificator)
         {
-            _service         = service;
-            _categoryService = categoryService;
-            _teacherService  = teacherService;
-            _levelService    = levelService;
-            _cloudinary      = cloudinary;
-            _mapper          = mapper;
+            _service            = service;
+            _categoryService    = categoryService;
+            _teacherService     = teacherService;
+            _levelService       = levelService;
+            _cloudinary         = cloudinary;
+            _requirementService = requirementService;
+            _mapper             = mapper;
         }
 
         public async Task<IActionResult> Index()
@@ -72,6 +75,7 @@ namespace MundoDev.Mvc.Controllers
             var entity = await _service.GetByIdAsync(id);
             if (entity == null) return NotFound();
             await PopulateDropdownsAsync();
+            await PopulateRequirementsAsync(id);
             return View(_mapper.Map<CourseViewModel>(entity));
         }
 
@@ -108,11 +112,64 @@ namespace MundoDev.Mvc.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // ── Pré-requisitos ──────────────────────────────────────────────────
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddRequirement(Guid courseId, Guid prerequisiteCourseId)
+        {
+            if (prerequisiteCourseId == Guid.Empty)
+            {
+                TempData["Error"] = "Seleccione um curso para adicionar como pré-requisito.";
+                return RedirectToAction(nameof(Edit), new { id = courseId });
+            }
+
+            var added = await _requirementService.AddAsync(courseId, prerequisiteCourseId);
+            TempData[added ? "Success" : "Error"] = added
+                ? "Pré-requisito adicionado com sucesso."
+                : "Pré-requisito já existe ou é inválido.";
+
+            return RedirectToAction(nameof(Edit), new { id = courseId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveRequirement(Guid requirementId, Guid courseId)
+        {
+            await _requirementService.RemoveAsync(requirementId);
+            TempData["Success"] = "Pré-requisito removido.";
+            return RedirectToAction(nameof(Edit), new { id = courseId });
+        }
+
+        // ── Helpers ─────────────────────────────────────────────────────────
+
         private async Task PopulateDropdownsAsync()
         {
             ViewBag.Categories = new SelectList(await _categoryService.GetAllAsync(), "Id", "Name");
             ViewBag.Teachers   = new SelectList(await _teacherService.GetAllAsync(), "Id", "Name");
             ViewBag.Levels     = new SelectList(await _levelService.GetAllAsync(), "Id", "Name");
+        }
+
+        private async Task PopulateRequirementsAsync(Guid courseId)
+        {
+            var requirements = await _requirementService.GetByCourseAsync(courseId);
+            var allCourses   = await _service.GetAllAsync();
+            var coursesById  = allCourses.ToDictionary(c => c.Id);
+
+            // Enriquece a navegação manualmente (o repositório base não faz Include)
+            foreach (var req in requirements)
+                if (coursesById.TryGetValue(req.PrerequisiteCourseId, out var prereq))
+                    req.PrerequisiteCourse = prereq;
+
+            // Cursos disponíveis para adicionar (exclui o próprio e os que já são pré-requisitos)
+            var existingIds = requirements.Select(r => r.PrerequisiteCourseId).ToHashSet();
+            existingIds.Add(courseId);
+
+            ViewBag.Requirements     = requirements;
+            ViewBag.AvailableCourses = new SelectList(
+                allCourses.Where(c => c.IsActived && !existingIds.Contains(c.Id))
+                          .OrderBy(c => c.Title),
+                "Id", "Title");
         }
     }
 }

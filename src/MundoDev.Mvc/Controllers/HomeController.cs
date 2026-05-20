@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using MundoDev.Business.Interfaces.Internals.Shareds;
 using MundoDev.Business.Interfaces.Services.Entities;
 using MundoDev.Business.Interfaces.Services.Parameters;
+using MundoDev.Business.Interfaces.Services.Relationships;
 using MundoDev.Business.Models.Domains.Entities;
 using MundoDev.Mvc.Models;
 using System.Diagnostics;
@@ -22,12 +23,13 @@ namespace MundoDev.Mvc.Controllers
         private readonly IArticleService _articleService;
         private readonly ITopicService _topicService;
         private readonly ILessonService _lessonService;
+        private readonly ICourseRequirementService _requirementService;
 
         public HomeController(IUserService userService, ICourseService courseService,
             IOrderService orderService, ITestimonialService testimonialService,
             IPlanService planService, ICategoryService categoryService,
             IArticleService articleService, ITopicService topicService,
-            ILessonService lessonService,
+            ILessonService lessonService, ICourseRequirementService requirementService,
             INotificator notificator) : base(notificator)
         {
             _userService        = userService;
@@ -39,6 +41,7 @@ namespace MundoDev.Mvc.Controllers
             _articleService     = articleService;
             _topicService       = topicService;
             _lessonService      = lessonService;
+            _requirementService = requirementService;
         }
 
         [AllowAnonymous]
@@ -121,6 +124,7 @@ namespace MundoDev.Mvc.Controllers
 
             var allTopics  = await _topicService.GetAllAsync();
             var allLessons = await _lessonService.GetAllAsync();
+            var allCourses = await _courseService.GetAllAsync();
 
             var topics  = allTopics.Where(t => t.CourseId == id && t.IsActived).OrderBy(t => t.Order).ToList();
             var lessons = allLessons.Where(l => l.CourseId == id && l.IsActived).OrderBy(l => l.Order).ToList();
@@ -129,11 +133,27 @@ namespace MundoDev.Mvc.Controllers
                 .Where(l => l.TimeLesson.HasValue)
                 .Aggregate(TimeSpan.Zero, (sum, l) => sum + l.TimeLesson!.Value);
 
-            ViewBag.Topics        = topics;
-            ViewBag.Lessons       = lessons;
-            ViewBag.TotalDuration = totalDuration;
-            ViewBag.TotalLessons  = lessons.Count;
-            ViewBag.FreePreview   = lessons.Where(l => l.IsFreePreview).ToList();
+            // Pré-requisitos com navegação enriquecida
+            var requirements = await _requirementService.GetByCourseAsync(id);
+            var coursesById  = allCourses.ToDictionary(c => c.Id);
+            foreach (var req in requirements)
+                if (coursesById.TryGetValue(req.PrerequisiteCourseId, out var prereq))
+                    req.PrerequisiteCourse = prereq;
+
+            // Duração por pré-requisito
+            var prereqDurations = requirements.ToDictionary(
+                r => r.PrerequisiteCourseId,
+                r => allLessons
+                    .Where(l => l.CourseId == r.PrerequisiteCourseId && l.IsActived && l.TimeLesson.HasValue)
+                    .Aggregate(TimeSpan.Zero, (s, l) => s + l.TimeLesson!.Value));
+
+            ViewBag.Topics          = topics;
+            ViewBag.Lessons         = lessons;
+            ViewBag.TotalDuration   = totalDuration;
+            ViewBag.TotalLessons    = lessons.Count;
+            ViewBag.FreePreview     = lessons.Where(l => l.IsFreePreview).ToList();
+            ViewBag.Requirements    = requirements;
+            ViewBag.PrereqDurations = prereqDurations;
 
             return View(course);
         }

@@ -98,6 +98,7 @@ namespace MundoDev.Mvc.Configurations
 
             // Services - Relationships
             services.AddScoped<IUserCourseLessonService, UserCourseLessonService>();
+            services.AddScoped<ICourseRequirementService, CourseRequirementService>();
 
             // Services - Auxiliaries
             services.AddScoped<IAuditLogService, AuditLogService>();
