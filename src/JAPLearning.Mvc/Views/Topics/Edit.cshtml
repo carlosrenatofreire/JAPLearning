@@ -1,0 +1,55 @@
+@model JAPLearning.Mvc.ViewModels.Entities.TopicViewModel
+@{
+    ViewData["Title"] = "Editar Tópico";
+}
+@await Html.PartialAsync("_CrudStyles")
+
+<div class="page-header">
+    <div>
+        <h4 class="page-header-title">Editar Tópico</h4>
+        <p class="page-header-sub"><a asp-action="Index" style="color:var(--md-text-muted);">Tópicos</a> <i class="bi bi-chevron-right" style="font-size:10px;"></i> Editar</p>
+    </div>
+</div>
+
+<div class="md-card form-card">
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="md-alert md-alert-danger mb-3"></div>
+
+        <div class="md-form-row">
+            <label asp-for="CourseId" class="md-label">Curso</label>
+            <select asp-for="CourseId" asp-items="ViewBag.Courses" class="md-select">
+                <option value="">Seleccionar curso...</option>
+            </select>
+            <span asp-validation-for="CourseId" class="text-danger" style="font-size:12px;"></span>
+        </div>
+
+        <div class="md-form-row">
+            <label asp-for="Name" class="md-label">Nome</label>
+            <input asp-for="Name" class="md-input" placeholder="Nome do tópico" />
+            <span asp-validation-for="Name" class="text-danger" style="font-size:12px;"></span>
+        </div>
+
+        <div class="md-form-row">
+            <label asp-for="Description" class="md-label">Descrição</label>
+            <textarea asp-for="Description" class="md-input" rows="3" placeholder="Descrição opcional"></textarea>
+        </div>
+
+        <div class="md-form-row">
+            <label asp-for="Order" class="md-label">Ordem</label>
+            <input asp-for="Order" class="md-input" type="number" min="1" style="max-width:120px;" />
+        </div>
+
+        <div class="md-form-row">
+            <div class="md-form-check">
+                <input asp-for="IsActived" type="checkbox" />
+                <label asp-for="IsActived">Activo</label>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-top:8px;">
+            <button type="submit" class="btn-md-primary"><i class="bi bi-check-lg"></i> Guardar</button>
+            <a asp-action="Index" class="btn-md-ghost">Cancelar</a>
+        </div>
+    </form>
+</div>

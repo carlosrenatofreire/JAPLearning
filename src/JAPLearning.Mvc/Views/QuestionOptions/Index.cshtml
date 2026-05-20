@@ -1,0 +1,68 @@
+@model List<JAPLearning.Mvc.ViewModels.Entities.QuestionOptionViewModel>
+@{
+    ViewData["Title"] = "Opções de Questão";
+}
+@await Html.PartialAsync("_CrudStyles")
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert-success-md"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
+}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-header-title">Opções de Questão</h4>
+        <p class="page-header-sub">Gestão de opções de resposta às questões</p>
+    </div>
+    <a asp-action="Create" class="btn-md-primary"><i class="bi bi-plus-lg"></i> Nova Opção</a>
+</div>
+
+<div class="md-card" style="padding:0; overflow:hidden;">
+    <table class="crud-table">
+        <thead>
+            <tr>
+                <th>Opção</th>
+                <th>Questão</th>
+                <th>Correcta</th>
+                <th>Estado</th>
+                <th style="width:100px; text-align:center;">Acções</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td style="color:var(--md-text-primary); font-weight:600;">@item.Name</td>
+                    <td style="color:var(--md-text-muted); font-size:13px;">@item.QuestionId</td>
+                    <td>
+                        @if (item.IsCorrect)
+                        { <span class="badge-active"><i class="bi bi-check-circle-fill"></i> Sim</span> }
+                        else
+                        { <span style="color:var(--md-text-muted); font-size:13px;">Não</span> }
+                    </td>
+                    <td>
+                        @if (item.IsActived) { <span class="badge-active"><i class="bi bi-circle-fill" style="font-size:7px;"></i> Activo</span> }
+                        else { <span class="badge-inactive"><i class="bi bi-circle-fill" style="font-size:7px;"></i> Inactivo</span> }
+                    </td>
+                    <td style="text-align:center;">
+                        <div style="display:flex; gap:6px; justify-content:center;">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn" title="Editar"><i class="bi bi-pencil"></i></a>
+                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="margin:0;"
+                                  onsubmit="return confirm('Eliminar esta opção?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="action-btn danger" title="Eliminar"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="5" style="text-align:center; padding:40px; color:var(--md-text-muted);">
+                    <i class="bi bi-ui-radios" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+                    Nenhuma opção encontrada.
+                </td></tr>
+            }
+        </tbody>
+    </table>
+</div>

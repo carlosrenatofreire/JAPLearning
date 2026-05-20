@@ -1,0 +1,89 @@
+@model List<JAPLearning.Mvc.ViewModels.Entities.TestimonialViewModel>
+@{
+    ViewData["Title"] = "Testemunhos";
+}
+@await Html.PartialAsync("_CrudStyles")
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert-success-md"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
+}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-header-title">Testemunhos</h4>
+        <p class="page-header-sub">Gestão de depoimentos e avaliações</p>
+    </div>
+    <a asp-action="Create" class="btn-md-primary"><i class="bi bi-plus-lg"></i> Novo Testemunho</a>
+</div>
+
+<div class="md-card" style="padding:0; overflow:hidden;">
+    <table class="crud-table">
+        <thead>
+            <tr>
+                <th>Autor</th>
+                <th>Cargo / Papel</th>
+                <th>Localização</th>
+                <th>Avaliação</th>
+                <th>Destaque</th>
+                <th>Estado</th>
+                <th style="width:100px; text-align:center;">Acções</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            @if (!string.IsNullOrEmpty(item.PhotoUrl))
+                            {
+                                <img src="@item.PhotoUrl" alt="@item.AuthorName"
+                                     style="width:32px; height:32px; border-radius:50%; object-fit:cover;" />
+                            }
+                            else
+                            {
+                                <div style="width:32px; height:32px; border-radius:50%; background:var(--md-accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; flex-shrink:0;">
+                                    @item.AuthorName.FirstOrDefault()
+                                </div>
+                            }
+                            <span style="color:var(--md-text-primary); font-weight:600;">@item.AuthorName</span>
+                        </div>
+                    </td>
+                    <td style="color:var(--md-text-muted); font-size:13px;">@item.Role</td>
+                    <td style="font-size:13px;">@item.City, @item.Country</td>
+                    <td>
+                        <span style="color:#f5a623; font-size:14px;">
+                            @for (int i = 0; i < item.Rating; i++) { <i class="bi bi-star-fill"></i> }
+                        </span>
+                    </td>
+                    <td>
+                        @if (item.Featured) { <span class="badge-active"><i class="bi bi-bookmark-star-fill"></i> Sim</span> }
+                        else { <span style="color:var(--md-text-muted); font-size:13px;">—</span> }
+                    </td>
+                    <td>
+                        @if (item.IsActived) { <span class="badge-active"><i class="bi bi-circle-fill" style="font-size:7px;"></i> Activo</span> }
+                        else { <span class="badge-inactive"><i class="bi bi-circle-fill" style="font-size:7px;"></i> Inactivo</span> }
+                    </td>
+                    <td style="text-align:center;">
+                        <div style="display:flex; gap:6px; justify-content:center;">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn" title="Editar"><i class="bi bi-pencil"></i></a>
+                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="margin:0;"
+                                  onsubmit="return confirm('Eliminar este testemunho?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="action-btn danger" title="Eliminar"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="7" style="text-align:center; padding:40px; color:var(--md-text-muted);">
+                    <i class="bi bi-chat-quote" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+                    Nenhum testemunho encontrado.
+                </td></tr>
+            }
+        </tbody>
+    </table>
+</div>

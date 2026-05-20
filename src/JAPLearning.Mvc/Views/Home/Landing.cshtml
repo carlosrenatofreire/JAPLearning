@@ -1,0 +1,531 @@
+@{
+    ViewData["Title"] = "JAPLearning — A fábrica de arquitetos de software em .NET";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+}
+
+<style>
+    .hero {
+        min-height: 65vh;
+        display: flex; align-items: center;
+        position: relative; overflow: visible;
+        padding: 48px 0 40px;
+    }
+    .hero::before {
+        content: '';
+        position: absolute; top: -200px; right: -200px;
+        width: 700px; height: 700px;
+        background: radial-gradient(circle, rgba(232,80,26,0.12) 0%, transparent 65%);
+        pointer-events: none;
+    }
+    .hero::after {
+        content: '';
+        position: absolute; bottom: -150px; left: -150px;
+        width: 500px; height: 500px;
+        background: radial-gradient(circle, rgba(160,31,58,0.08) 0%, transparent 65%);
+        pointer-events: none;
+    }
+    .hero-eyebrow {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: rgba(232,80,26,0.1); border: 1px solid rgba(232,80,26,0.25);
+        border-radius: 20px; padding: 6px 14px;
+        font-size: 12px; font-weight: 700; color: var(--md-accent);
+        text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 24px;
+    }
+    .hero h1 {
+        font-size: clamp(36px, 5vw, 58px); font-weight: 900;
+        line-height: 1.1; margin-bottom: 24px; letter-spacing: -0.02em;
+    }
+    .hero-sub {
+        font-size: 18px; color: var(--md-text-secondary);
+        line-height: 1.7; margin-bottom: 36px; max-width: 520px;
+    }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 48px; }
+    .hero-social-proof { display: flex; align-items: center; gap: 16px; }
+    .hero-avatars { display: flex; }
+    .hero-avatars .md-avatar { width: 34px; height: 34px; font-size: 12px; margin-right: -8px; border: 2px solid var(--md-bg-primary); }
+    .hero-proof-text { font-size: 13px; color: var(--md-text-secondary); }
+    .hero-proof-text strong { color: var(--md-text-primary); }
+
+    /* 5-window cascade */
+    .hero-scene { position: relative; height: 442px; }
+    .hw { position: absolute; width: 288px; height: 350px; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+    .hw-titlebar { display: flex; align-items: center; gap: 7px; padding: 8px 12px; font-size: 11px; color: #94a3b8; flex-shrink: 0; }
+    .hw-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .hw-body { flex: 1; overflow: hidden; }
+    .hw-excel { top:0;   right:232px; z-index:1; background:#141e2e; border:1px solid rgba(99,102,241,0.45); box-shadow:0 8px 40px rgba(0,0,0,0.55); }
+    .hw-excel .hw-titlebar { background:#1a2640; border-bottom:2px solid rgba(99,102,241,0.35); }
+    .hw-c4    { top:22px; right:174px; z-index:2; background:#0c1322; border:1px solid rgba(232,80,26,0.3);  box-shadow:0 8px 40px rgba(0,0,0,0.5); }
+    .hw-c4    .hw-titlebar { background:#111827; border-bottom:1px solid rgba(232,80,26,0.25); }
+    .hw-er    { top:44px; right:116px; z-index:3; background:#0d1a14; border:1px solid rgba(34,197,94,0.35); box-shadow:0 8px 40px rgba(0,0,0,0.48); }
+    .hw-er    .hw-titlebar { background:#0a1510; border-bottom:1px solid rgba(34,197,94,0.25); }
+    .hw-code  { top:66px; right:58px;  z-index:4; background:#1e1e2e; border:1px solid rgba(255,255,255,0.12); box-shadow:0 8px 40px rgba(0,0,0,0.45); }
+    .hw-code  .hw-titlebar { background:#252535; border-bottom:1px solid rgba(255,255,255,0.1); }
+    .hw-dash  { top:88px; right:0;     z-index:5; background:#0f1824; border:1px solid rgba(232,80,26,0.38); box-shadow:0 8px 40px rgba(0,0,0,0.4); }
+    .hw-dash  .hw-titlebar { background:#141e2e; border-bottom:1px solid rgba(232,80,26,0.3); }
+
+    /* ER */
+    .er-body { padding: 10px; font-size: 9px; }
+    .er-entity { background: rgba(34,197,94,0.07); border: 1px solid rgba(34,197,94,0.35); border-radius: 5px; overflow: hidden; margin-bottom: 6px; }
+    .er-entity-header { background: rgba(34,197,94,0.15); padding: 4px 8px; font-size: 9px; font-weight: 700; color: #4ade80; text-align: center; letter-spacing: .04em; }
+    .er-field { display: flex; align-items: center; gap: 5px; padding: 3px 8px; border-top: 1px solid rgba(34,197,94,0.1); color: #94a3b8; font-size: 9px; }
+    .er-pk  { color: #fbbf24; font-size: 8px; font-weight: 700; width: 16px; flex-shrink: 0; }
+    .er-fk  { color: #818cf8; font-size: 8px; font-weight: 700; width: 16px; flex-shrink: 0; }
+
+    /* Sheet */
+    .sheet-grid { font-family: 'Courier New', monospace; font-size: 10px; }
+    .sheet-header-row { display: flex; background: #1a2640; border-bottom: 2px solid rgba(99,102,241,0.3); }
+    .sheet-row { display: flex; border-top: 1px solid rgba(255,255,255,0.07); }
+    .sheet-row:nth-child(even) { background: rgba(255,255,255,0.025); }
+    .sheet-cell-num { width: 20px; min-width: 20px; padding: 4px 4px; color: #64748b; border-right: 2px solid rgba(99,102,241,0.25); text-align: center; background: #1a2640; font-weight: 600; }
+    .sheet-cell { flex: 1; padding: 4px 7px; border-right: 1px solid rgba(255,255,255,0.07); color: #94a3b8; white-space: nowrap; overflow: hidden; }
+    .sheet-cell.col-hdr { color: #cbd5e1; background: #1a2640; text-align: center; font-weight: 700; border-right: 1px solid rgba(99,102,241,0.2); }
+    .sheet-cell.accent { color: #fb923c; font-weight: 600; }
+    .sheet-cell.green  { color: #4ade80; font-weight: 600; }
+    .sheet-cell.red    { color: #f87171; font-weight: 600; }
+    .sheet-cell.bold   { color: #e2e8f0; font-weight: 700; }
+
+    /* C4 */
+    .c4-body { padding: 10px 10px 0; }
+    .c4-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 5px; padding: 5px 7px; text-align: center; color: #cbd5e1; font-size: 9px; line-height: 1.3; }
+    .c4-box.hi { border-color: rgba(232,80,26,0.55); background: rgba(232,80,26,0.08); }
+    .c4-lbl { font-size: 8px; color: #475569; margin-top: 2px; }
+    .c4-arrow { text-align: center; color: #475569; font-size: 13px; line-height: 1.4; }
+
+    /* Code */
+    .hw-code-body { padding: 12px 14px; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.7; }
+    .cc  { color: #546e7a; font-style: italic; }
+    .ck  { color: #c792ea; }
+    .ccl { color: #82aaff; }
+    .cm  { color: #82aaff; }
+    .cs  { color: #c3e88d; }
+
+    /* Dashboard mini */
+    .hw-dash-body { padding: 10px; }
+    .kpi-mini { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 8px; }
+    .kpi-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 5px; padding: 5px 6px; text-align: center; }
+    .kpi-val  { font-size: 13px; font-weight: 800; color: #e2e8f0; display: block; }
+    .kpi-lbl  { font-size: 8px; color: #64748b; }
+    .dash-chart { background: rgba(255,255,255,0.03); border-radius: 5px; padding: 7px 8px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 8px; }
+    .dash-chart-title { font-size: 8px; color: #64748b; margin-bottom: 5px; }
+    .dash-row { display: flex; justify-content: space-between; font-size: 9px; color: #64748b; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+
+    /* Stats & features */
+    .stat-card { background: var(--md-bg-card); border: 1px solid var(--md-border); border-radius: var(--md-radius); padding: 20px; text-align: center; }
+    .stat-number { font-size: 32px; font-weight: 900; background: var(--md-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: block; }
+    .stat-label { font-size: 13px; color: var(--md-text-muted); margin-top: 4px; }
+    .feature-icon { width: 48px; height: 48px; background: rgba(232,80,26,0.1); border: 1px solid rgba(232,80,26,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--md-accent); margin-bottom: 16px; }
+    .md-section { padding: 80px 0; }
+    .md-section-alt { background: var(--md-bg-secondary); }
+
+    /* Testimonials */
+    .testimonials-dot { background: var(--md-border); transition: var(--md-transition); }
+    .testimonials-dot.active { background: var(--md-accent); transform: scale(1.3); }
+    .testimonials-dot:hover { background: var(--md-text-muted); }
+    .testimonials-nav:hover { border-color: var(--md-accent) !important; color: var(--md-accent) !important; }
+    .testimonials-nav:disabled { opacity: 0.4; cursor: not-allowed; }
+    .testimonial-linkedin:hover { color: #0a4d8c !important; transform: translateY(-2px); }
+</style>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="container position-relative" style="z-index:1;">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="hero-eyebrow">
+                    <i class="bi bi-stars"></i> Plataforma de Elite em .NET
+                </div>
+                <h1>
+                    Da planilha ao<br />
+                    <span class="md-gradient-text">sistema corporativo.</span>
+                </h1>
+                <p class="hero-sub">
+                    Aprenda a desenhar arquiteturas reais, tomar decisões estratégicas
+                    e transformar processos caóticos em sistemas robustos com .NET e C4 Model.
+                </p>
+                <div class="hero-actions">
+                    <a asp-controller="Home" asp-action="Plans" class="btn-md-primary" style="font-size:16px; padding:14px 28px;">
+                        Ver Planos <i class="bi bi-arrow-right"></i>
+                    </a>
+                    <a asp-controller="Home" asp-action="Courses" class="btn-md-outline" style="font-size:16px; padding:14px 28px;">
+                        Explorar Projectos
+                    </a>
+                </div>
+                <div class="hero-social-proof">
+                    <div class="hero-avatars">
+                        <div class="md-avatar">AB</div>
+                        <div class="md-avatar" style="background:linear-gradient(135deg,#E8501A,#C8372A);">CF</div>
+                        <div class="md-avatar" style="background:linear-gradient(135deg,#22C55E,#16A34A);">MR</div>
+                        <div class="md-avatar" style="background:linear-gradient(135deg,#F59E0B,#D97706);">LS</div>
+                    </div>
+                    <p class="hero-proof-text">
+                        <strong>+50 profissionais</strong> já formados.<br />
+                        Junte-se a quem quer liderar tecnicamente.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-6" style="overflow:visible;">
+                <div class="hero-scene">
+
+                    <!-- Janela 1: Excel -->
+                    <div class="hw hw-excel">
+                        <div class="hw-titlebar">
+                            <i class="bi bi-file-earmark-excel-fill" style="color:#4ade80;font-size:12px;"></i>
+                            <span>KPIs_2024_Q4.xlsx</span>
+                        </div>
+                        <div class="hw-body">
+                            <div class="sheet-grid">
+                                <div class="sheet-header-row">
+                                    <div class="sheet-cell-num"></div>
+                                    <div class="sheet-cell col-hdr">A</div>
+                                    <div class="sheet-cell col-hdr">B</div>
+                                    <div class="sheet-cell col-hdr">C</div>
+                                </div>
+                                <div class="sheet-row"><div class="sheet-cell-num">1</div><div class="sheet-cell bold">Indicador</div><div class="sheet-cell bold">Meta</div><div class="sheet-cell bold">Real</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">2</div><div class="sheet-cell">Vendas</div><div class="sheet-cell">R$ 50k</div><div class="sheet-cell green">R$ 62k</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">3</div><div class="sheet-cell">Churn</div><div class="sheet-cell">3%</div><div class="sheet-cell red">7,2%</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">4</div><div class="sheet-cell">NPS</div><div class="sheet-cell">70</div><div class="sheet-cell accent">68</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">5</div><div class="sheet-cell">Conversão</div><div class="sheet-cell">12%</div><div class="sheet-cell green">14,8%</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">6</div><div class="sheet-cell">CAC</div><div class="sheet-cell">R$ 120</div><div class="sheet-cell red">R$ 189</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">7</div><div class="sheet-cell">LTV</div><div class="sheet-cell">R$ 800</div><div class="sheet-cell green">R$ 1.040</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">8</div><div class="sheet-cell">Ticket Médio</div><div class="sheet-cell">R$ 97</div><div class="sheet-cell accent">R$ 91</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">9</div><div class="sheet-cell">Retenção</div><div class="sheet-cell">90%</div><div class="sheet-cell green">93%</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">10</div><div class="sheet-cell">MRR</div><div class="sheet-cell">R$ 20k</div><div class="sheet-cell red">R$ 16k</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">11</div><div class="sheet-cell accent">TOTAL</div><div class="sheet-cell"></div><div class="sheet-cell bold">R$ 79k</div></div>
+                                <div class="sheet-row"><div class="sheet-cell-num">12</div><div class="sheet-cell"></div><div class="sheet-cell"></div><div class="sheet-cell"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Janela 2: C4 -->
+                    <div class="hw hw-c4">
+                        <div class="hw-titlebar">
+                            <i class="bi bi-diagram-3" style="color:var(--md-accent);font-size:12px;"></i>
+                            <span>C4 Container Diagram</span>
+                        </div>
+                        <div class="hw-body">
+                            <div class="c4-body">
+                                <div style="text-align:center; margin-bottom:4px;">
+                                    <div class="c4-box" style="display:inline-block; min-width:68px;">
+                                        <i class="bi bi-person-fill" style="font-size:14px; color:#94a3b8; display:block;"></i>
+                                        <span style="font-size:9px; font-weight:700; color:#cbd5e1;">Usuário</span>
+                                        <div class="c4-lbl">[Person]</div>
+                                    </div>
+                                </div>
+                                <div class="c4-arrow">↓</div>
+                                <div style="border:1px dashed rgba(232,80,26,0.45); border-radius:7px; padding:6px; margin-bottom:4px;">
+                                    <div style="font-size:8px; font-weight:700; color:var(--md-accent); text-align:center; margin-bottom:5px; letter-spacing:.04em;">API APPLICATION</div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-bottom:5px;">
+                                        <div class="c4-box hi">Interface<br/>Web<div class="c4-lbl">[MVC]</div></div>
+                                        <div class="c4-box hi">API<br/>.NET Core<div class="c4-lbl">[REST]</div></div>
+                                    </div>
+                                    <div class="c4-arrow" style="font-size:11px; margin-bottom:4px;">↓</div>
+                                    <div class="c4-box" style="font-size:9px; text-align:center;">
+                                        <i class="bi bi-database" style="font-size:11px; margin-right:3px;"></i>Banco de Dados
+                                        <div class="c4-lbl">[SQL Server]</div>
+                                    </div>
+                                </div>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+                                    <div class="c4-box" style="font-size:9px;">Database<br/>Service<div class="c4-lbl">[EF Core]</div></div>
+                                    <div class="c4-box" style="font-size:9px;">Serviço de<br/>Notificação<div class="c4-lbl">[Events]</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Janela 3: ER -->
+                    <div class="hw hw-er">
+                        <div class="hw-titlebar">
+                            <i class="bi bi-diagram-2" style="color:#4ade80;font-size:12px;"></i>
+                            <span>KpiSystem.dbdiagram</span>
+                        </div>
+                        <div class="hw-body">
+                            <div class="er-body">
+                                <div class="er-entity">
+                                    <div class="er-entity-header">INDICATOR</div>
+                                    <div class="er-field"><span class="er-pk">PK</span><span>Id</span><span style="margin-left:auto;color:#475569;">uuid</span></div>
+                                    <div class="er-field"><span class="er-pk" style="color:transparent;">·</span><span>Name</span><span style="margin-left:auto;color:#475569;">varchar</span></div>
+                                    <div class="er-field"><span class="er-fk">FK</span><span>CategoryId</span><span style="margin-left:auto;color:#475569;">uuid</span></div>
+                                    <div class="er-field"><span class="er-pk" style="color:transparent;">·</span><span>GoalValue</span><span style="margin-left:auto;color:#475569;">decimal</span></div>
+                                    <div class="er-field"><span class="er-pk" style="color:transparent;">·</span><span>CreatedAt</span><span style="margin-left:auto;color:#475569;">datetime</span></div>
+                                </div>
+                                <div style="display:grid; grid-template-columns:1fr 14px 1fr; align-items:start; gap:4px;">
+                                    <div class="er-entity">
+                                        <div class="er-entity-header">CATEGORY</div>
+                                        <div class="er-field"><span class="er-pk">PK</span><span>Id</span></div>
+                                        <div class="er-field"><span class="er-pk" style="color:transparent;">·</span><span>Name</span></div>
+                                        <div class="er-field"><span class="er-pk" style="color:transparent;">·</span><span>Color</span></div>
+                                    </div>
+                                    <div style="display:flex; flex-direction:column; align-items:center; padding-top:20px; gap:18px;">
+                                        <span style="color:#34d399; font-size:11px;">⟷</span>
+                                        <span style="color:#34d399; font-size:11px;">⟷</span>
+                                    </div>
+                                    <div class="er-entity">
+                                        <div class="er-entity-header">IND_LOG</div>
+                                        <div class="er-field"><span class="er-pk">PK</span><span>Id</span></div>
+                                        <div class="er-field"><span class="er-fk">FK</span><span>IndId</span></div>
+                                        <div class="er-field"><span class="er-pk" style="color:transparent;">·</span><span>Value</span></div>
+                                        <div class="er-field"><span class="er-pk" style="color:transparent;">·</span><span>Date</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Janela 4: Code -->
+                    <div class="hw hw-code">
+                        <div class="hw-titlebar">
+                            <svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+                                <path fill="#68217A" d="M17 2L7 11 3 7 1 8v8l2 1 4-4 10 9 6-3V5l-6-3zM3 14.5l-1-.5v-4l1-.5v5zm14 1L10 12l7-3.5v7z"/>
+                            </svg>
+                            <span>IndicatorService.cs</span>
+                        </div>
+                        <div class="hw-body">
+                            <div class="hw-code-body">
+                                <div><span class="cc">// Negócio → Arquitetura → Código</span></div>
+                                <div><span class="ck">public class</span> <span class="ccl">IndicatorService</span></div>
+                                <div>&nbsp;&nbsp;: <span class="ccl">IIndicatorService</span></div>
+                                <div>{</div>
+                                <div>&nbsp;&nbsp;<span class="ck">private readonly</span> <span class="ccl">IUnitOfWork</span> _uow;</div>
+                                <div>&nbsp;&nbsp;<span class="ck">private readonly</span> <span class="ccl">INotifierService</span> _notifier;</div>
+                                <div>&nbsp;</div>
+                                <div>&nbsp;&nbsp;<span class="ck">public async</span> <span class="ccl">Task</span> <span class="cm">AddAsync</span>(<span class="ccl">IndicatorDto</span> dto)</div>
+                                <div>&nbsp;&nbsp;{</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">if</span> (!dto.<span class="cm">IsValid</span>()) {</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_notifier.<span class="cm">Handle</span>(<span class="cs">"Dados inválidos"</span>);</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">return</span>;</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">await</span> _uow.<span class="cm">Commit</span>();</div>
+                                <div>&nbsp;&nbsp;}</div>
+                                <div>}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Janela 5: Dashboard -->
+                    <div class="hw hw-dash">
+                        <div class="hw-titlebar">
+                            <div class="hw-dot" style="background:#ff5f57;"></div>
+                            <div class="hw-dot" style="background:#ffbd2e;"></div>
+                            <div class="hw-dot" style="background:#28ca41;"></div>
+                            <span style="margin-left:4px;">Painel de Gestão</span>
+                        </div>
+                        <div class="hw-body">
+                            <div class="hw-dash-body">
+                                <div class="kpi-mini">
+                                    <div class="kpi-card"><span class="kpi-val" style="color:#4ade80;">74</span><span class="kpi-lbl">NPS</span></div>
+                                    <div class="kpi-card"><span class="kpi-val">83k</span><span class="kpi-lbl">MRR</span></div>
+                                    <div class="kpi-card"><span class="kpi-val" style="color:#f87171;">7.2%</span><span class="kpi-lbl">Churn</span></div>
+                                </div>
+                                <div class="dash-chart">
+                                    <div class="dash-chart-title">Evolução dos Indicadores</div>
+                                    <svg viewBox="0 0 228 56" style="width:100%; height:50px; display:block;">
+                                        <defs><linearGradient id="dg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8501a" stop-opacity="0.35"/><stop offset="100%" stop-color="#e8501a" stop-opacity="0"/></linearGradient></defs>
+                                        <polygon points="0,56 0,44 38,36 76,40 114,24 152,28 190,16 228,10 228,56" fill="url(#dg1)"/>
+                                        <polyline points="0,44 38,36 76,40 114,24 152,28 190,16 228,10" fill="none" stroke="#e8501a" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                                        <circle cx="114" cy="24" r="2.5" fill="#e8501a"/>
+                                        <circle cx="228" cy="10" r="2.5" fill="#4ade80"/>
+                                    </svg>
+                                </div>
+                                <div class="dash-row"><span>Receita Total</span><span style="color:#4ade80;">R$ 62.4k</span></div>
+                                <div class="dash-row"><span>Ticket Médio</span><span style="color:#fb923c;">R$ 91</span></div>
+                                <div class="dash-row"><span>Retenção</span><span style="color:#4ade80;">93%</span></div>
+                                <div class="dash-row"><span>CAC</span><span style="color:#f87171;">R$ 189</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats -->
+<section class="md-section md-section-alt">
+    <div class="container">
+        <div class="row g-3 justify-content-center">
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <span class="stat-number">+50</span>
+                    <p class="stat-label">Profissionais Formados</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <span class="stat-number">25+</span>
+                    <p class="stat-label">Anos de Experiência</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <span class="stat-number">100%</span>
+                    <p class="stat-label">Foco em .NET</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <span class="stat-number">C4</span>
+                    <p class="stat-label">Model desde o Dia 1</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Metodologia -->
+<section class="md-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <p style="text-transform:uppercase; letter-spacing:.1em; font-size:13px; font-weight:700; color:var(--md-accent); margin-bottom:12px;">Metodologia</p>
+            <h2 class="md-section-title">Como aprendemos aqui</h2>
+            <p style="color:var(--md-text-secondary); max-width:520px; margin:0 auto;">
+                Não ensinamos sintaxe. Ensinamos o raciocínio de quem resolve problemas reais em empresas reais.
+            </p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="md-card h-100">
+                    <div class="feature-icon"><i class="bi bi-table"></i></div>
+                    <h5 style="font-weight:700; margin-bottom:10px;">1. Ponto de Partida Real</h5>
+                    <p style="font-size:14px; color:var(--md-text-secondary); margin:0;">
+                        Começamos com planilhas e processos reais. O aluno entende o caos antes de desenhar a solução.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="md-card h-100">
+                    <div class="feature-icon"><i class="bi bi-diagram-3"></i></div>
+                    <h5 style="font-weight:700; margin-bottom:10px;">2. Arquitetura Primeiro</h5>
+                    <p style="font-size:14px; color:var(--md-text-secondary); margin:0;">
+                        Diagramas C4 (Níveis 1, 2 e 3) e modelo de dados antes de uma linha de código.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="md-card h-100">
+                    <div class="feature-icon"><i class="bi bi-code-slash"></i></div>
+                    <h5 style="font-weight:700; margin-bottom:10px;">3. Código com Propósito</h5>
+                    <p style="font-size:14px; color:var(--md-text-secondary); margin:0;">
+                        Cada decisão técnica é justificada. Trade-offs, custos e padrões corporativos em .NET.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Depoimentos -->
+<section class="md-section md-section-alt">
+    <div class="container">
+        <div class="text-center mb-5">
+            <p style="text-transform:uppercase; letter-spacing:.1em; font-size:13px; font-weight:700; color:var(--md-accent); margin-bottom:12px;">Depoimentos</p>
+            <h2 class="md-section-title">O que dizem os alunos</h2>
+            <p style="color:var(--md-text-secondary); max-width:480px; margin:0 auto;">
+                Profissionais do Brasil e de Portugal que transformaram suas carreiras com a JAPLearning.
+            </p>
+        </div>
+
+        <!-- Depoimentos dinâmicos do banco de dados -->
+        @if (ViewBag.Testimonials != null && ((IEnumerable<dynamic>)ViewBag.Testimonials).Any())
+        {
+            <div class="row g-4">
+                @foreach (var t in (IEnumerable<dynamic>)ViewBag.Testimonials)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="md-card h-100" style="display:flex; flex-direction:column; gap:16px;">
+                            <div style="display:flex; gap:4px; color:#F59E0B; font-size:14px;">
+                                @for (int i = 0; i < (int)(t.Rating ?? 5); i++)
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                            </div>
+                            <p style="font-size:14px; color:var(--md-text-secondary); line-height:1.8; flex:1; margin:0;">
+                                "@t.Quote"
+                            </p>
+                            <div style="display:flex; align-items:center; gap:12px; padding-top:12px; border-top:1px solid var(--md-border);">
+                                @if (!string.IsNullOrWhiteSpace((string)t.PhotoUrl))
+                                {
+                                    <img src="@t.PhotoUrl" alt="@t.AuthorName" style="width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+                                }
+                                else
+                                {
+                                    <div class="md-avatar" style="width:42px;height:42px;font-size:14px;flex-shrink:0;">
+                                        @(string.Join("", ((string)t.AuthorName).Split(' ').Take(2).Select(w => w[0].ToString().ToUpper())))
+                                    </div>
+                                }
+                                <div>
+                                    <p style="font-weight:700; font-size:13px; margin:0; color:var(--md-text-primary);">@t.AuthorName</p>
+                                    <p style="font-size:12px; color:var(--md-text-muted); margin:0;">@t.Role · @t.City</p>
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace((string)t.LinkedinUrl))
+                                {
+                                    <a href="@t.LinkedinUrl" target="_blank" rel="noopener noreferrer" class="testimonial-linkedin" style="margin-left:auto; color:#0A66C2; font-size:22px; flex-shrink:0; transition:var(--md-transition);">
+                                        <i class="bi bi-linkedin"></i>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- Fallback estático -->
+            <div id="testimonials-page-1" class="testimonials-page row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="md-card h-100" style="display:flex; flex-direction:column; gap:16px;">
+                        <div style="display:flex; gap:4px; color:#F59E0B; font-size:14px;"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                        <p style="font-size:14px; color:var(--md-text-secondary); line-height:1.8; flex:1; margin:0;">"O Carlos tem uma habilidade rara: transforma conceitos complexos de arquitetura em algo prático e aplicável. Depois do curso consegui minha primeira posição como Tech Lead."</p>
+                        <div style="display:flex; align-items:center; gap:12px; padding-top:12px; border-top:1px solid var(--md-border);">
+                            <div class="md-avatar" style="width:42px;height:42px;font-size:14px;flex-shrink:0;">DF</div>
+                            <div>
+                                <p style="font-weight:700; font-size:13px; margin:0; color:var(--md-text-primary);">Denilson Ferreira</p>
+                                <p style="font-size:12px; color:var(--md-text-muted); margin:0;">Full Stack Senior Developer · Vila Nova de Gaia</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="md-card h-100" style="display:flex; flex-direction:column; gap:16px;">
+                        <div style="display:flex; gap:4px; color:#F59E0B; font-size:14px;"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                        <p style="font-size:14px; color:var(--md-text-secondary); line-height:1.8; flex:1; margin:0;">"Finalmente um curso que ensina a pensar antes de codificar. O C4 Model mudou completamente a forma como projeto sistemas. Recomendo a qualquer sénior que queira evoluir."</p>
+                        <div style="display:flex; align-items:center; gap:12px; padding-top:12px; border-top:1px solid var(--md-border);">
+                            <div class="md-avatar" style="width:42px;height:42px;font-size:14px;flex-shrink:0;">TF</div>
+                            <div>
+                                <p style="font-weight:700; font-size:13px; margin:0; color:var(--md-text-primary);">Tiago Ferreira</p>
+                                <p style="font-size:12px; color:var(--md-text-muted); margin:0;">Software Architect · Lisboa</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="md-card h-100" style="display:flex; flex-direction:column; gap:16px;">
+                        <div style="display:flex; gap:4px; color:#F59E0B; font-size:14px;"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                        <p style="font-size:14px; color:var(--md-text-secondary); line-height:1.8; flex:1; margin:0;">"Estava presa no título de Desenvolvedora Plena há 3 anos. Após aplicar a metodologia nos meus projetos, fui promovida em menos de 6 meses."</p>
+                        <div style="display:flex; align-items:center; gap:12px; padding-top:12px; border-top:1px solid var(--md-border);">
+                            <div class="md-avatar" style="width:42px;height:42px;font-size:14px;flex-shrink:0;background:linear-gradient(135deg,#E8501A,#C8372A);">CR</div>
+                            <div>
+                                <p style="font-weight:700; font-size:13px; margin:0; color:var(--md-text-primary);">Camila Rocha</p>
+                                <p style="font-size:12px; color:var(--md-text-muted); margin:0;">Arquiteta de Software · Curitiba</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="md-section md-section-alt">
+    <div class="container text-center">
+        <h2 class="md-section-title">Pronto para dar o próximo passo?</h2>
+        <p style="color:var(--md-text-secondary); font-size:17px; max-width:480px; margin:12px auto 32px;">
+            Pare de ser apenas mais um dev. Torne-se o profissional que as empresas procuram.
+        </p>
+        <a asp-controller="Account" asp-action="Login" class="btn-md-primary" style="font-size:16px; padding:14px 32px;">
+            Começar Agora <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+</section>

@@ -1,0 +1,90 @@
+@model JAPLearning.Mvc.ViewModels.Entities.QuestionViewModel
+@{
+    ViewData["Title"] = "Editar Questão";
+}
+@await Html.PartialAsync("_CrudStyles")
+
+<div class="page-header">
+    <div>
+        <h4 class="page-header-title">Editar Questão</h4>
+        <p class="page-header-sub"><a asp-action="Index" style="color:var(--md-accent);">Questões</a> / Editar</p>
+    </div>
+</div>
+
+<div style="display:flex; gap:24px; flex-wrap:wrap; align-items:flex-start;">
+    <div class="md-card" style="flex:1; min-width:400px;">
+        <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="validation-summary"></div>
+
+            <div class="mb-3">
+                <label class="md-label">Lição</label>
+                <select asp-for="LessonId" asp-items="ViewBag.Lessons" class="md-input"></select>
+            </div>
+
+            <div class="mb-3">
+                <label class="md-label">Questão <span class="text-danger">*</span></label>
+                <input asp-for="Name" class="md-input" />
+            </div>
+
+            <div class="mb-3">
+                <label class="md-label">Descrição / Contexto</label>
+                <textarea asp-for="Description" class="md-input" rows="2"></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label class="md-form-check">
+                    <input asp-for="IsActived" type="checkbox" />
+                    <span>Activa</span>
+                </label>
+            </div>
+
+            <div style="display:flex; gap:12px;">
+                <button type="submit" class="btn-md-primary"><i class="bi bi-check-lg"></i> Guardar</button>
+                <a asp-action="Index" class="btn-md-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+    @if (Model.Options.Any())
+    {
+        <div class="md-card" style="min-width:320px; max-width:420px;">
+            <h6 style="color:var(--md-text-primary); margin-bottom:16px; font-size:14px; font-weight:600;">
+                <i class="bi bi-list-check"></i> Opções de Resposta
+            </h6>
+            @foreach (var opt in Model.Options)
+            {
+                <div style="display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--md-border);">
+                    @if (opt.IsCorrect)
+                    {
+                        <i class="bi bi-check-circle-fill" style="color:#4caf82; flex-shrink:0;"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-circle" style="color:var(--md-text-muted); flex-shrink:0;"></i>
+                    }
+                    <span style="color:var(--md-text-primary); font-size:14px; flex:1;">@opt.Name</span>
+                    <a asp-controller="QuestionOptions" asp-action="Edit" asp-route-id="@opt.Id"
+                       class="action-btn" title="Editar opção" style="padding:4px 8px;">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                </div>
+            }
+            <div style="margin-top:14px;">
+                <a asp-controller="QuestionOptions" asp-action="Create" class="btn-md-secondary" style="font-size:13px; padding:6px 14px;">
+                    <i class="bi bi-plus"></i> Adicionar Opção
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="md-card" style="min-width:280px; text-align:center; padding:32px;">
+            <i class="bi bi-list-check" style="font-size:28px; color:var(--md-text-muted); display:block; margin-bottom:10px;"></i>
+            <p style="color:var(--md-text-muted); font-size:13px; margin-bottom:16px;">Ainda sem opções de resposta.</p>
+            <a asp-controller="QuestionOptions" asp-action="Create" class="btn-md-primary" style="font-size:13px;">
+                <i class="bi bi-plus"></i> Adicionar Opção
+            </a>
+        </div>
+    }
+</div>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — JAPLearning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/mundodev.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" />
+    @await RenderSectionAsync("Styles", required: false)
+    <style>
+        body { margin: 0; }
+
+        /* ── App Shell ──────────────────────────────────────── */
+        .app-shell { display: flex; min-height: 100vh; }
+
+        /* ── Sidebar ────────────────────────────────────────── */
+        .app-sidebar {
+            width: 240px;
+            background: var(--md-bg-sidebar);
+            border-right: 1px solid var(--md-border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            z-index: 100;
+            overflow-y: auto;
+        }
+        .sidebar-brand {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid var(--md-border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+        .sidebar-brand .brand-icon {
+            width: 30px; height: 30px;
+            background: var(--md-gradient);
+            border-radius: 7px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 13px; color: #fff;
+        }
+        .sidebar-brand .brand-name {
+            font-size: 16px; font-weight: 800;
+            color: var(--md-text-primary);
+        }
+        .sidebar-brand .brand-name span { color: var(--md-accent); }
+
+        .sidebar-nav { padding: 16px 12px; flex: 1; }
+        .sidebar-section { margin-bottom: 24px; }
+        .sidebar-section-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--md-text-muted);
+            padding: 0 10px;
+            margin-bottom: 6px;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: var(--md-radius-sm);
+            color: var(--md-text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--md-transition);
+            margin-bottom: 2px;
+        }
+        .sidebar-item i { font-size: 16px; flex-shrink: 0; }
+        .sidebar-item:hover { background: rgba(255,255,255,0.05); color: var(--md-text-primary); }
+        .sidebar-item.active {
+            background: rgba(232,80,26,0.12);
+            color: var(--md-accent);
+        }
+        .sidebar-item.active i { color: var(--md-accent); }
+
+        .sidebar-footer {
+            padding: 16px 12px;
+            border-top: 1px solid var(--md-border);
+        }
+
+        /* ── Topbar ─────────────────────────────────────────── */
+        .topbar-right { display: flex; align-items: center; gap: 4px; }
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: var(--md-radius-sm);
+            transition: var(--md-transition);
+            text-decoration: none;
+            height: 56px;
+        }
+        .topbar-user:hover { background: rgba(255,255,255,0.05); }
+        .topbar-user-info { display: flex; flex-direction: column; justify-content: center; line-height: 1.25; }
+        .topbar-user-name { font-size: 13px; font-weight: 600; color: var(--md-text-primary); white-space: nowrap; }
+        .topbar-user-role { font-size: 11px; color: var(--md-text-muted); }
+        .topbar-logout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px; height: 36px;
+            border-radius: var(--md-radius-sm);
+            color: var(--md-danger);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: var(--md-transition);
+            font-size: 16px;
+        }
+        .topbar-logout:hover { background: rgba(220,53,69,0.12); color: var(--md-danger); }
+
+        /* ── Main ───────────────────────────────────────────── */
+        .app-main {
+            margin-left: 240px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .app-topbar {
+            height: 56px;
+            background: rgba(13,13,26,0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--md-border);
+            display: flex;
+            align-items: center;
+            padding: 0 28px;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .app-topbar-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--md-text-primary);
+            flex: 1;
+        }
+        .app-content { padding: 32px 28px; flex: 1; }
+
+        /* ── Hamburger ──────────────────────────────────────── */
+        .topbar-hamburger {
+            display: none;
+            background: none;
+            border: 1px solid var(--md-border);
+            border-radius: var(--md-radius-sm);
+            padding: 6px 10px;
+            color: var(--md-text-primary);
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            margin-right: 4px;
+        }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+        .sidebar-overlay.show { display: block; }
+
+        @@media (max-width: 768px) {
+            .app-sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+            .app-sidebar.open { transform: translateX(0); }
+            .app-main { margin-left: 0; }
+            .topbar-hamburger { display: inline-flex; align-items: center; justify-content: center; }
+            .topbar-user-info { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <div class="app-shell">
+
+        <!-- Sidebar -->
+        <aside class="app-sidebar" id="appSidebar">
+            <a class="sidebar-brand" asp-controller="Home" asp-action="Index">
+                <div class="brand-icon">&lt;/&gt;</div>
+                <span class="brand-name">Mundo<span>Dev</span></span>
+            </a>
+            <nav class="sidebar-nav">
+                @await Html.PartialAsync("_Sidebar")
+            </nav>
+            <div class="sidebar-footer"></div>
+        </aside>
+
+        <!-- Main -->
+        <div class="app-main">
+            <div class="app-topbar">
+                <button class="topbar-hamburger" onclick="toggleSidebar()">
+                    <i class="bi bi-list" id="sidebarToggleIcon"></i>
+                </button>
+                <span class="app-topbar-title">@(ViewData["Title"] ?? "JAPLearning")</span>
+                <div class="topbar-right">
+                    @{
+                        var fullName   = User.Identity?.Name ?? "";
+                        var initials   = string.Join("", fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                              .Take(2).Select(w => w[0].ToString().ToUpper()));
+                        var roleName   = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
+                        var subLabel   = ViewBag.PlanName as string ?? roleName;
+                        var photoUrl   = User.FindFirst("PhotoUrl")?.Value;
+                    }
+                    <a asp-controller="Student" asp-action="PersonalData" class="topbar-user" style="text-decoration:none;">
+                        @if (!string.IsNullOrWhiteSpace(photoUrl))
+                        {
+                            <img src="@photoUrl" alt="@fullName" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+                        }
+                        else
+                        {
+                            <div class="md-avatar" style="width:32px;height:32px;font-size:12px;flex-shrink:0;">@initials</div>
+                        }
+                        <div class="topbar-user-info">
+                            <p class="topbar-user-name" style="margin:0;">@fullName</p>
+                            <p class="topbar-user-role" style="margin:0;">@subLabel</p>
+                        </div>
+                        <i class="bi bi-chevron-down" style="font-size:11px; color:var(--md-text-muted);"></i>
+                    </a>
+                    <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;" id="logoutForm">
+                        <button type="button" class="topbar-logout" title="Sair" onclick="mdConfirmLogout()"
+                                style="width:auto; padding:0 12px; gap:6px; display:flex; align-items:center; font-size:13px; font-weight:600;">
+                            <i class="bi bi-box-arrow-right" style="font-size:15px;"></i>
+                            <span>Sair</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="app-content">
+                @RenderBody()
+            </div>
+        </div>
+
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('table.crud-table').each(function () {
+                var $tbl = $(this);
+                // Ignora tabelas com linha de estado vazio (colspan)
+                var cells = $tbl.find('tbody tr:first-child td');
+                if (cells.length === 1 && cells.attr('colspan')) return;
+
+                $tbl.DataTable({
+                    pageLength: 25,
+                    lengthChange: false,
+                    columnDefs: [
+                        { orderable: false, targets: -1 }   // coluna Acções não ordenável
+                    ],
+                    dom: '<"dt-header"f>t<"dt-footer"<"dt-info"i><"dt-pages"p>>',
+                    language: {
+                        search:           '',
+                        searchPlaceholder: 'Pesquisar...',
+                        info:             'Mostrando _START_ a _END_ de _TOTAL_ registos',
+                        infoEmpty:        'Sem registos',
+                        infoFiltered:     '(filtrado de _MAX_ registos)',
+                        paginate: {
+                            first:    '«',
+                            last:     '»',
+                            next:     'Próximo',
+                            previous: 'Anterior'
+                        },
+                        zeroRecords: 'Nenhum registo encontrado',
+                        emptyTable:  'Nenhum registo disponível'
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('appSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const icon    = document.getElementById('sidebarToggleIcon');
+            const isOpen  = sidebar.classList.toggle('open');
+            overlay.classList.toggle('show', isOpen);
+            icon.className = isOpen ? 'bi bi-x-lg' : 'bi bi-list';
+        }
+        function closeSidebar() {
+            document.getElementById('appSidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('show');
+            document.getElementById('sidebarToggleIcon').className = 'bi bi-list';
+        }
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- ── Modal de confirmação global ─────────────────────────────── -->
+    <div id="mdConfirmModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:10000; align-items:center; justify-content:center;">
+        <div style="background:var(--md-bg-card,#16162a); border:1px solid var(--md-border,rgba(255,255,255,0.08)); border-radius:14px; padding:36px 32px 28px; max-width:400px; width:90%; text-align:center; box-shadow:0 24px 72px rgba(0,0,0,0.6); animation:mdModalIn .18s ease;">
+            <div id="mdModalIcon" style="width:68px; height:68px; border-radius:50%; border:3px solid #f59e0b; display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px;">
+                <i class="bi bi-exclamation-lg" style="font-size:34px; color:#f59e0b;"></i>
+            </div>
+            <h5 id="mdModalTitle" style="color:var(--md-text-primary,#fff); font-size:18px; font-weight:700; margin:0 0 8px;">Tem certeza?</h5>
+            <p id="mdModalMessage" style="color:var(--md-text-muted,rgba(255,255,255,0.5)); font-size:14px; margin:0 0 28px; line-height:1.5;"></p>
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button id="mdModalCancelBtn" onclick="mdModalClose()"
+                        style="flex:1; max-width:160px; padding:10px 0; border-radius:var(--md-radius-sm,8px); background:transparent; border:1px solid var(--md-border,rgba(255,255,255,0.12)); color:var(--md-text-secondary,rgba(255,255,255,0.7)); font-size:14px; font-weight:600; cursor:pointer; transition:background .15s;">
+                    Cancelar
+                </button>
+                <button id="mdModalConfirmBtn"
+                        style="flex:1; max-width:160px; padding:10px 0; border-radius:var(--md-radius-sm,8px); background:var(--md-danger,#dc3545); border:none; color:#fff; font-size:14px; font-weight:600; cursor:pointer; transition:opacity .15s;">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+    <style>
+        @@keyframes globalSpin { to { transform: rotate(360deg); } }
+        @@keyframes mdModalIn { from { transform:scale(.92); opacity:0; } to { transform:scale(1); opacity:1; } }
+        #mdModalCancelBtn:hover { background:rgba(255,255,255,0.06) !important; }
+        #mdModalConfirmBtn:hover { opacity:.85; }
+    </style>
+
+    <!-- Overlay global de loading para forms CRUD -->
+    <div id="globalLoadingOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center; flex-direction:column; gap:16px;">
+        <div style="width:52px; height:52px; border:4px solid rgba(255,255,255,0.2); border-top-color:#fff; border-radius:50%; animation:globalSpin .7s linear infinite;"></div>
+        <span style="color:#fff; font-size:14px; font-weight:600; letter-spacing:.03em;">A guardar...</span>
+    </div>
+
+    <script>
+        // ── Modal helpers ──────────────────────────────────────────────
+        var _mdCallback = null;
+
+        function mdModalOpen(title, message, confirmLabel, confirmColor, callback) {
+            document.getElementById('mdModalTitle').textContent   = title;
+            document.getElementById('mdModalMessage').textContent = message;
+            var btn = document.getElementById('mdModalConfirmBtn');
+            btn.textContent = confirmLabel || 'Confirmar';
+            btn.style.background = confirmColor || 'var(--md-danger,#dc3545)';
+            _mdCallback = callback;
+            btn.onclick = function () { var cb = _mdCallback; mdModalClose(); if (cb) cb(); };
+            var modal = document.getElementById('mdConfirmModal');
+            modal.style.display = 'flex';
+        }
+
+        function mdModalClose() {
+            document.getElementById('mdConfirmModal').style.display = 'none';
+            _mdCallback = null;
+        }
+
+        // Fechar ao clicar fora do card
+        document.getElementById('mdConfirmModal').addEventListener('click', function (e) {
+            if (e.target === this) mdModalClose();
+        });
+
+        // ── Logout ─────────────────────────────────────────────────────
+        function mdConfirmLogout() {
+            mdModalOpen(
+                'Terminar sessão',
+                'Tem certeza que deseja sair da sua conta?',
+                'Sim, sair',
+                'var(--md-danger,#dc3545)',
+                function () { document.getElementById('logoutForm').submit(); }
+            );
+        }
+
+        // ── Auto-attach a todos os botões de eliminar dos CRUDs ────────
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Delete buttons: intercepta qualquer form cujo único submit btn seja action-btn danger
+            document.querySelectorAll('form').forEach(function (form) {
+                var deleteBtn = form.querySelector('button.action-btn.danger[type="submit"]');
+                if (!deleteBtn) return;
+
+                // Converte para type="button" para evitar submit nativo
+                deleteBtn.type = 'button';
+                form.onsubmit   = null;
+
+                deleteBtn.addEventListener('click', function () {
+                    mdModalOpen(
+                        'Eliminar registo',
+                        'Esta acção é irreversível. Deseja mesmo continuar?',
+                        'Sim, eliminar',
+                        'var(--md-danger,#dc3545)',
+                        function () { form.submit(); }
+                    );
+                });
+            });
+
+            // Loading overlay: auto-attach a forms com btn-md-primary
+            document.querySelectorAll('form').forEach(function (form) {
+                if (!form.querySelector('button.btn-md-primary[type="submit"]')) return;
+                form.addEventListener('submit', function () {
+                    if (!form.checkValidity()) return;
+                    document.getElementById('globalLoadingOverlay').style.display = 'flex';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

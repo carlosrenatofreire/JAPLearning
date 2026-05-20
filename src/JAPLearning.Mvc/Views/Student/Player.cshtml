@@ -1,0 +1,131 @@
+@model JAPLearning.Mvc.ViewModels.Student.PlayerViewModel
+@{
+    ViewData["Title"]      = Model.CurrentLesson.Name;
+    ViewData["CourseName"] = Model.Course.Title;
+    ViewData["Progress"]   = Model.ProgressPercent.ToString();
+    Layout = "~/Views/Shared/_LayoutPlayer.cshtml";
+}
+
+@section PlayerNav {
+    @foreach (var group in Model.Topics)
+    {
+        <div class="player-module">
+            <div class="player-module-header">
+                <span>@group.Topic.Name</span>
+                <i class="bi bi-chevron-down"></i>
+            </div>
+            <div>
+                @foreach (var lesson in group.Lessons)
+                {
+                    var isActive    = lesson.Id == Model.CurrentLesson.Id;
+                    var isCompleted = Model.CompletedLessonIds.Contains(lesson.Id);
+                    var cssClass    = isActive ? "active" : (isCompleted ? "completed" : "");
+                    var iconClass   = isActive ? "bi bi-play-fill" : (isCompleted ? "bi bi-check" : "");
+
+                    <a asp-action="Player"
+                       asp-route-courseId="@Model.Course.Id"
+                       asp-route-lessonId="@lesson.Id"
+                       class="player-lesson @cssClass">
+                        <div class="player-lesson-icon">
+                            @if (!string.IsNullOrEmpty(iconClass))
+                            {
+                                <i class="@iconClass"></i>
+                            }
+                        </div>
+                        <div class="player-lesson-info">
+                            <p class="player-lesson-title">@lesson.Name</p>
+                            @if (lesson.TimeLesson.HasValue)
+                            {
+                                <p class="player-lesson-duration">@lesson.TimeLesson.Value.ToString(@"mm\:ss")</p>
+                            }
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+    }
+}
+
+<!-- Breadcrumb -->
+<div class="player-breadcrumb">
+    <a asp-action="MyCourses">Meus Cursos</a>
+    <span>/</span>
+    <a asp-action="Player" asp-route-courseId="@Model.Course.Id">@Model.Course.Title</a>
+    <span>/</span>
+    <span>@Model.CurrentLesson.Name</span>
+</div>
+
+<!-- Lesson Header -->
+<div class="player-lesson-header">
+    <h1 style="font-size:20px; font-weight:800; margin:0; color:var(--md-text-primary);">
+        @Model.CurrentLesson.Name
+    </h1>
+    @if (!Model.IsCurrentLessonCompleted)
+    {
+        <form asp-action="CompleteLesson" method="post" style="flex-shrink:0;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="lessonId"  value="@Model.CurrentLesson.Id" />
+            <input type="hidden" name="courseId"  value="@Model.Course.Id" />
+            <button type="submit" class="btn-md-success" style="font-size:13px; padding:8px 18px;">
+                <i class="bi bi-check-lg"></i> Concluir Aula
+            </button>
+        </form>
+    }
+    else
+    {
+        <span class="badge-active" style="flex-shrink:0; padding:8px 14px;">
+            <i class="bi bi-check-circle-fill"></i> Aula Concluída
+        </span>
+    }
+</div>
+
+<!-- Video -->
+<div class="player-video-wrap">
+    @if (!string.IsNullOrEmpty(Model.EmbedUrl))
+    {
+        <iframe src="@Model.EmbedUrl"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+    }
+    else
+    {
+        <div class="player-video-placeholder">
+            <i class="bi bi-camera-video-off" style="font-size:48px;"></i>
+            <span>Vídeo não disponível</span>
+        </div>
+    }
+</div>
+
+<!-- Description -->
+@if (!string.IsNullOrWhiteSpace(Model.CurrentLesson.Description))
+{
+    <div class="player-resources">
+        <h4 class="player-resources-title">Sobre esta Aula</h4>
+        <p class="player-resources-desc">@Model.CurrentLesson.Description</p>
+    </div>
+}
+
+<!-- Navigation buttons -->
+@{
+    var allLessonIds = Model.Topics.SelectMany(t => t.Lessons).Select(l => l.Id).ToList();
+    var currentIndex = allLessonIds.IndexOf(Model.CurrentLesson.Id);
+    var prevLessonId = currentIndex > 0 ? allLessonIds[currentIndex - 1] : (Guid?)null;
+    var nextLessonId = currentIndex >= 0 && currentIndex + 1 < allLessonIds.Count ? allLessonIds[currentIndex + 1] : (Guid?)null;
+}
+<div style="display:flex; gap:12px; margin-top:32px; padding-top:24px; border-top:1px solid var(--md-border);">
+    @if (prevLessonId.HasValue)
+    {
+        <a asp-action="Player" asp-route-courseId="@Model.Course.Id" asp-route-lessonId="@prevLessonId"
+           class="btn-md-ghost" style="gap:6px;">
+            <i class="bi bi-chevron-left"></i> Aula Anterior
+        </a>
+    }
+    <div style="flex:1;"></div>
+    @if (nextLessonId.HasValue)
+    {
+        <a asp-action="Player" asp-route-courseId="@Model.Course.Id" asp-route-lessonId="@nextLessonId"
+           class="btn-md-primary" style="gap:6px;">
+            Próxima Aula <i class="bi bi-chevron-right"></i>
+        </a>
+    }
+</div>

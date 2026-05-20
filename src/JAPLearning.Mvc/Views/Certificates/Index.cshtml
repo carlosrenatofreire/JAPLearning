@@ -1,0 +1,51 @@
+@model List<JAPLearning.Mvc.ViewModels.Entities.CertificateViewModel>
+@{
+    ViewData["Title"] = "Certificados";
+}
+@await Html.PartialAsync("_CrudStyles")
+
+<div class="page-header">
+    <div>
+        <h4 class="page-header-title">Certificados</h4>
+        <p class="page-header-sub">Registo de certificados emitidos aos alunos</p>
+    </div>
+</div>
+
+<div class="md-card" style="padding:0; overflow:hidden;">
+    <table class="crud-table">
+        <thead>
+            <tr>
+                <th>Utilizador</th>
+                <th>Curso</th>
+                <th>Data Conclusão</th>
+                <th>Código Validação</th>
+                <th style="width:80px; text-align:center;">Detalhes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td style="color:var(--md-text-primary); font-weight:600;">@item.UserFullName</td>
+                    <td><span class="md-badge md-badge-info">@item.CourseTitle</span></td>
+                    <td>@item.CompletedDate.ToString("dd/MM/yyyy")</td>
+                    <td style="font-family:monospace; font-size:12px; color:var(--md-text-muted);">
+                        @(item.ValidationCode ?? "—")
+                    </td>
+                    <td style="text-align:center;">
+                        <a asp-action="Details" asp-route-id="@item.Id" class="action-btn" title="Ver detalhes">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="5" style="text-align:center; padding:40px; color:var(--md-text-muted);">
+                    <i class="bi bi-award" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+                    Nenhum certificado emitido ainda.
+                </td></tr>
+            }
+        </tbody>
+    </table>
+</div>

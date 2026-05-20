@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.8">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Mappings\Auxiliaries\" />
+    <Folder Include="Mappings\Entities\" />
+    <Folder Include="Mappings\Parameters\" />
+    <Folder Include="Mappings\Relationships\" />
+    <Folder Include="Migrations\" />
+    <Folder Include="Repositories\Auxiliaries\" />
+    <Folder Include="Repositories\Entities\" />
+    <Folder Include="Repositories\Parameters\" />
+    <Folder Include="Repositories\Relationships\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JAPLearning.Business\JAPLearning.Business.csproj" />
+  </ItemGroup>
+
+</Project>

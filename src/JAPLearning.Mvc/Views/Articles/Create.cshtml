@@ -1,0 +1,81 @@
+@model JAPLearning.Mvc.ViewModels.Entities.ArticleViewModel
+@{
+    ViewData["Title"] = "Novo Artigo";
+}
+@await Html.PartialAsync("_CrudStyles")
+
+<div class="page-header">
+    <div>
+        <h4 class="page-header-title">Novo Artigo</h4>
+        <p class="page-header-sub"><a asp-action="Index" style="color:var(--md-accent);">Artigos</a> / Criar</p>
+    </div>
+</div>
+
+<div class="md-card" style="max-width:860px;">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="validation-summary"></div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-8">
+                <label class="md-label">Nome <span class="text-danger">*</span></label>
+                <input asp-for="Name" class="md-input" placeholder="Título do artigo" />
+                <span asp-validation-for="Name" class="field-error"></span>
+            </div>
+            <div class="col-md-4">
+                <label class="md-label">Assunto <span class="text-danger">*</span></label>
+                <select asp-for="SubjectId" asp-items="ViewBag.Subjects" class="md-input">
+                    <option value="">— Seleccionar —</option>
+                </select>
+                <span asp-validation-for="SubjectId" class="field-error"></span>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="md-label">Autor</label>
+                <input asp-for="Author" class="md-input" placeholder="Nome do autor" />
+            </div>
+            <div class="col-md-3">
+                <label class="md-label">Data de Publicação</label>
+                <input asp-for="PublishDate" type="date" class="md-input" />
+            </div>
+            <div class="col-md-3">
+                <label class="md-label">Tempo de Leitura (min)</label>
+                <input asp-for="ReadingTime" type="number" class="md-input" placeholder="ex: 5" min="1" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="md-label">Slug (URL)</label>
+            <input asp-for="Slug" class="md-input" placeholder="Deixar em branco para gerar automaticamente" />
+        </div>
+
+        <div class="mb-3">
+            <label class="md-label">Imagem de Capa (URL)</label>
+            <input asp-for="CoverImage" class="md-input" placeholder="https://..." />
+        </div>
+
+        <div class="mb-3">
+            <label class="md-label">Descrição</label>
+            <textarea asp-for="Description" class="md-input" rows="2" placeholder="Resumo breve do artigo"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="md-label">Conteúdo</label>
+            <textarea asp-for="Content" class="md-input" rows="8" placeholder="Corpo do artigo..."></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label class="md-form-check">
+                <input asp-for="IsActived" type="checkbox" />
+                <span>Activo</span>
+            </label>
+        </div>
+
+        <div style="display:flex; gap:12px;">
+            <button type="submit" class="btn-md-primary"><i class="bi bi-check-lg"></i> Guardar</button>
+            <a asp-action="Index" class="btn-md-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>

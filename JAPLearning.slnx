@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/1 - Front-end/">
+    <Project Path="src/JAPLearning.Mvc/JAPLearning.Mvc.csproj" />
+  </Folder>
+  <Folder Name="/2 - Back-end/">
+    <Project Path="src/JAPLearning.Business/JAPLearning.Business.csproj" />
+    <Project Path="src/JAPLearning.Data/JAPLearning.Data.csproj" />
+    <Project Path="src/JAPLearning.Helper/JAPLearning.Helper.csproj" />
+  </Folder>
+  <Folder Name="/3 - Tests/">
+    <Project Path="src/JAPLearning.Tests/JAPLearning.Tests.csproj" />
+  </Folder>
+</Solution>

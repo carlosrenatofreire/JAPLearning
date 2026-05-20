@@ -41,7 +41,8 @@
       "Bash(git commit -m 'fix: change PlanViewModel.Promotion from bool? to bool for checkbox asp-for compatibility *)",
       "Bash(git commit -m 'fix: persist auth cookie 24h by default \\(30d with RememberMe\\) *)",
       "Bash(git commit -m 'feat: add course catalog + categories explorer to student area *)",
-      "Bash(dotnet add *)"
+      "Bash(dotnet add *)",
+      "Bash(xargs sed -i 's/MundoDev/JAPLearning/g')"
     ]
   }
 }
