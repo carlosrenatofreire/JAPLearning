@@ -16,7 +16,6 @@ namespace JAPLearning.Data.Contexts
         public DbSet<Level> Levels { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
-        public DbSet<OrderStatus> OrderStatuses { get; set; }
 
         // Entities
         public DbSet<User> Users { get; set; }
@@ -28,9 +27,6 @@ namespace JAPLearning.Data.Contexts
         public DbSet<Question> Questions { get; set; }
         public DbSet<QuestionOption> QuestionOptions { get; set; }
         public DbSet<Testimonial> Testimonials { get; set; }
-        public DbSet<Plan> Plans { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<Payment> Payments { get; set; }
 
         // Relationships
         public DbSet<RolePermission> RolePermissions { get; set; }

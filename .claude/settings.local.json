@@ -42,7 +42,14 @@
       "Bash(git commit -m 'fix: persist auth cookie 24h by default \\(30d with RememberMe\\) *)",
       "Bash(git commit -m 'feat: add course catalog + categories explorer to student area *)",
       "Bash(dotnet add *)",
-      "Bash(xargs sed -i 's/MundoDev/JAPLearning/g')"
+      "Bash(xargs sed -i 's/MundoDev/JAPLearning/g')",
+      "Bash(git rm *)",
+      "Bash(echo \".claude/worktrees/\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\JAPLearning\\\\src\\\\JAPLearning.Mvc\\\\ViewModels\\\\Account\" -Recurse)",
+      "Bash(Get-ChildItem -Path \"C:\\\\JAPLearning\" -Recurse -Directory -Filter \"src\")",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(xargs grep -l \"CreateMap.*Order\\\\|CreateMap.*Payment\")",
+      "Bash(xargs grep -l \"Order\\\\|Payment\")"
     ]
   }
 }

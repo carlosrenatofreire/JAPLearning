@@ -26,8 +26,6 @@ namespace JAPLearning.Business.Models.Domains.Entities
         public bool IsDeleted { get; set; }
 
         public Role Role { get; set; } = null!;
-        public ICollection<Order> Orders { get; set; } = new List<Order>();
-        public ICollection<Payment> Payments { get; set; } = new List<Payment>();
         public ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();
         public ICollection<UserCourseLesson> UserCourseLessons { get; set; } = new List<UserCourseLesson>();
         public ICollection<UserLessonTest> UserLessonTests { get; set; } = new List<UserLessonTest>();

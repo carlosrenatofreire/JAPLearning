@@ -16,9 +16,7 @@ namespace JAPLearning.Mvc.Controllers
     {
         private readonly IUserService _userService;
         private readonly ICourseService _courseService;
-        private readonly IOrderService _orderService;
         private readonly ITestimonialService _testimonialService;
-        private readonly IPlanService _planService;
         private readonly ICategoryService _categoryService;
         private readonly IArticleService _articleService;
         private readonly ITopicService _topicService;
@@ -26,17 +24,14 @@ namespace JAPLearning.Mvc.Controllers
         private readonly ICourseRequirementService _requirementService;
 
         public HomeController(IUserService userService, ICourseService courseService,
-            IOrderService orderService, ITestimonialService testimonialService,
-            IPlanService planService, ICategoryService categoryService,
+            ITestimonialService testimonialService, ICategoryService categoryService,
             IArticleService articleService, ITopicService topicService,
             ILessonService lessonService, ICourseRequirementService requirementService,
             INotificator notificator) : base(notificator)
         {
             _userService        = userService;
             _courseService      = courseService;
-            _orderService       = orderService;
             _testimonialService = testimonialService;
-            _planService        = planService;
             _categoryService    = categoryService;
             _articleService     = articleService;
             _topicService       = topicService;
@@ -72,12 +67,9 @@ namespace JAPLearning.Mvc.Controllers
 
             var users   = await _userService.GetAllAsync();
             var courses = await _courseService.GetAllAsync();
-            var orders  = await _orderService.GetAllAsync();
 
             ViewBag.TotalUsers    = users.Count;
             ViewBag.ActiveCourses = courses.Count(c => c.IsActived);
-            ViewBag.TotalOrders   = orders.Count;
-            ViewBag.TotalRevenue  = orders.Sum(o => o.Value);
 
             return View();
         }
@@ -107,13 +99,6 @@ namespace JAPLearning.Mvc.Controllers
                                           .GroupBy(c => c.CategoryId)
                                           .ToDictionary(g => g.Key, g => g.Count());
             return View(categories.Where(c => c.IsActived).OrderBy(c => c.Name).ToList());
-        }
-
-        [AllowAnonymous]
-        public async Task<IActionResult> Plans()
-        {
-            var plans = await _planService.GetAllAsync();
-            return View(plans.Where(p => p.IsActived).OrderBy(p => p.Price).ToList());
         }
 
         [AllowAnonymous]

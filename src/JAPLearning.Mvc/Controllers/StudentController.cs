@@ -23,7 +23,6 @@ namespace JAPLearning.Mvc.Controllers
         private readonly ITopicService              _topicService;
         private readonly ILessonService             _lessonService;
         private readonly ICertificateService        _certificateService;
-        private readonly IOrderService              _orderService;
         private readonly IUserCourseLessonService   _userCourseLessonService;
         private readonly ICategoryService           _categoryService;
         private readonly ICloudinaryService         _cloudinary;
@@ -35,7 +34,6 @@ namespace JAPLearning.Mvc.Controllers
             ITopicService topicService,
             ILessonService lessonService,
             ICertificateService certificateService,
-            IOrderService orderService,
             IUserCourseLessonService userCourseLessonService,
             ICategoryService categoryService,
             ICloudinaryService cloudinary,
@@ -47,7 +45,6 @@ namespace JAPLearning.Mvc.Controllers
             _topicService            = topicService;
             _lessonService           = lessonService;
             _certificateService      = certificateService;
-            _orderService            = orderService;
             _userCourseLessonService = userCourseLessonService;
             _categoryService         = categoryService;
             _cloudinary              = cloudinary;
@@ -118,10 +115,6 @@ namespace JAPLearning.Mvc.Controllers
             var allCourses   = await _courseService.GetAllAsync();
             var certificates = await _certificateService.GetAllAsync();
             var userCerts    = certificates.Where(c => c.UserId == userId).ToList();
-            var userOrders   = (await _orderService.GetAllAsync())
-                                   .Where(o => o.UserId == userId)
-                                   .OrderByDescending(o => o.CreatedDate)
-                                   .ToList();
 
             // Build per-course progress
             var completedLessonIds = userProgress
@@ -159,8 +152,6 @@ namespace JAPLearning.Mvc.Controllers
                 });
             }
 
-            var activeOrder = userOrders.FirstOrDefault(o => o.IsActived);
-
             var vm = new StudentDashboardViewModel
             {
                 FirstName           = user.FirstName,
@@ -168,8 +159,7 @@ namespace JAPLearning.Mvc.Controllers
                 CoursesCompleted    = courseProgressList.Count(c => c.IsCompleted),
                 CertificatesCount   = userCerts.Count,
                 TotalWatchedSeconds = userProgress.Sum(x => x.WatchedSeconds ?? 0),
-                InProgressCourses   = courseProgressList.Where(c => !c.IsCompleted).Take(5).ToList(),
-                ActiveOrder         = activeOrder != null ? _mapper.Map<OrderViewModel>(activeOrder) : null
+                InProgressCourses   = courseProgressList.Where(c => !c.IsCompleted).Take(5).ToList()
             };
 
             return View(vm);
@@ -351,24 +341,6 @@ namespace JAPLearning.Mvc.Controllers
                 .ToList();
 
             var vm = userCerts.Select(c => _mapper.Map<CertificateViewModel>(c)).ToList();
-            return View(vm);
-        }
-
-        // ─── My Orders ───────────────────────────────────────────────────────
-
-        [HttpGet]
-        public async Task<IActionResult> MyOrders()
-        {
-            ViewData["ActiveMenu"] = "my-orders";
-            ViewData["Title"]      = "Meus Pedidos";
-
-            var userId = GetCurrentUserId();
-            var orders = (await _orderService.GetAllAsync())
-                .Where(o => o.UserId == userId)
-                .OrderByDescending(o => o.CreatedDate)
-                .ToList();
-
-            var vm = orders.Select(o => _mapper.Map<OrderViewModel>(o)).ToList();
             return View(vm);
         }
 

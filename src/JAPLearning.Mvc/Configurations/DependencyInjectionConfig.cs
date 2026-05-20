@@ -45,7 +45,6 @@ namespace JAPLearning.Mvc.Configurations
             services.AddScoped<ILevelRepository, LevelRepository>();
             services.AddScoped<ISubjectRepository, SubjectRepository>();
             services.AddScoped<ITeacherRepository, TeacherRepository>();
-            services.AddScoped<IOrderStatusRepository, OrderStatusRepository>();
 
             // Entities
             services.AddScoped<IUserRepository, UserRepository>();
@@ -57,9 +56,6 @@ namespace JAPLearning.Mvc.Configurations
             services.AddScoped<IQuestionRepository, QuestionRepository>();
             services.AddScoped<IQuestionOptionRepository, QuestionOptionRepository>();
             services.AddScoped<ITestimonialRepository, TestimonialRepository>();
-            services.AddScoped<IPlanRepository, PlanRepository>();
-            services.AddScoped<IOrderRepository, OrderRepository>();
-            services.AddScoped<IPaymentRepository, PaymentRepository>();
 
             // Relationships
             services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
@@ -80,7 +76,6 @@ namespace JAPLearning.Mvc.Configurations
             services.AddScoped<ILevelService, LevelService>();
             services.AddScoped<ISubjectService, SubjectService>();
             services.AddScoped<ITeacherService, TeacherService>();
-            services.AddScoped<IOrderStatusService, OrderStatusService>();
 
             // Services - Entities
             services.AddScoped<IUserService, UserService>();
@@ -92,9 +87,6 @@ namespace JAPLearning.Mvc.Configurations
             services.AddScoped<IQuestionService, QuestionService>();
             services.AddScoped<IQuestionOptionService, QuestionOptionService>();
             services.AddScoped<ITestimonialService, TestimonialService>();
-            services.AddScoped<IPlanService, PlanService>();
-            services.AddScoped<IOrderService, OrderService>();
-            services.AddScoped<IPaymentService, PaymentService>();
 
             // Services - Relationships
             services.AddScoped<IUserCourseLessonService, UserCourseLessonService>();

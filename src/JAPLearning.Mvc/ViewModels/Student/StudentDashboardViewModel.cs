@@ -1,5 +1,3 @@
-using JAPLearning.Mvc.ViewModels.Entities;
-
 namespace JAPLearning.Mvc.ViewModels.Student
 {
     public class StudentDashboardViewModel
@@ -16,8 +14,5 @@ namespace JAPLearning.Mvc.ViewModels.Student
 
         // Continue watching
         public List<CourseProgressViewModel> InProgressCourses { get; set; } = new();
-
-        // Active order/plan
-        public OrderViewModel? ActiveOrder { get; set; }
     }
 }

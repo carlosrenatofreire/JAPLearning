@@ -19,8 +19,6 @@ namespace JAPLearning.Mvc.Configurations
                 cfg.CreateMap<Level, LevelViewModel>().ReverseMap();
                 cfg.CreateMap<Subject, SubjectViewModel>().ReverseMap();
                 cfg.CreateMap<Teacher, TeacherViewModel>().ReverseMap();
-                cfg.CreateMap<OrderStatus, OrderStatusViewModel>().ReverseMap();
-
                 // User
                 cfg.CreateMap<User, UserViewModel>()
                     .ForMember(d => d.RoleName, o => o.MapFrom(s => s.Role != null ? s.Role.Name : string.Empty))
@@ -30,8 +28,6 @@ namespace JAPLearning.Mvc.Configurations
 
                 cfg.CreateMap<UserViewModel, User>()
                     .ForMember(d => d.Role, o => o.Ignore())
-                    .ForMember(d => d.Orders, o => o.Ignore())
-                    .ForMember(d => d.Payments, o => o.Ignore())
                     .ForMember(d => d.Certificates, o => o.Ignore())
                     .ForMember(d => d.UserCourseLessons, o => o.Ignore())
                     .ForMember(d => d.UserLessonTests, o => o.Ignore())
@@ -81,10 +77,6 @@ namespace JAPLearning.Mvc.Configurations
                 cfg.CreateMap<ArticleViewModel, Article>()
                     .ForMember(d => d.Subject, o => o.Ignore());
 
-                // Plan (bidirectional)
-                cfg.CreateMap<Plan, PlanViewModel>().ReverseMap()
-                    .ForMember(d => d.Orders, o => o.Ignore());
-
                 // Certificate
                 cfg.CreateMap<Certificate, CertificateViewModel>()
                     .ForMember(d => d.UserFullName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"))
@@ -112,28 +104,6 @@ namespace JAPLearning.Mvc.Configurations
                 // Testimonial
                 cfg.CreateMap<Testimonial, TestimonialViewModel>().ReverseMap()
                     .ForMember(d => d.User, o => o.Ignore());
-
-                // Plan — handled above with reverse mapping
-
-                // Order
-                cfg.CreateMap<Order, OrderViewModel>()
-                    .ForMember(d => d.UserFullName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"))
-                    .ForMember(d => d.PlanName, o => o.MapFrom(s => s.Plan.Name))
-                    .ForMember(d => d.StatusName, o => o.MapFrom(s => s.Status.Name));
-
-                cfg.CreateMap<OrderViewModel, Order>()
-                    .ForMember(d => d.User, o => o.Ignore())
-                    .ForMember(d => d.Plan, o => o.Ignore())
-                    .ForMember(d => d.Status, o => o.Ignore())
-                    .ForMember(d => d.Payments, o => o.Ignore());
-
-                // Payment
-                cfg.CreateMap<Payment, PaymentViewModel>()
-                    .ForMember(d => d.UserFullName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"));
-
-                cfg.CreateMap<PaymentViewModel, Payment>()
-                    .ForMember(d => d.User, o => o.Ignore())
-                    .ForMember(d => d.Order, o => o.Ignore());
 
                 // AuditLog
                 cfg.CreateMap<AuditLog, AuditLogViewModel>();
