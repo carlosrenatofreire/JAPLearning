@@ -20,7 +20,7 @@ namespace JAPLearning.Mvc.Configurations
             {
                 options.ServiceToken = token;
                 options.Project      = "jap-learning";
-                options.Config       = builder.Environment.IsProduction() ? "prd" : "dev";
+                options.Config       = builder.Environment.IsProduction() ? "prd" : "dev_personal";
             });
 
             var root = (IConfigurationRoot)builder.Configuration;
