@@ -16,17 +16,20 @@ namespace JAPLearning.Mvc.Controllers
     {
         private readonly IUserService       _service;
         private readonly IRoleService       _roleService;
+        private readonly ITeamService       _teamService;
         private readonly ICloudinaryService _cloudinary;
         private readonly IMapper            _mapper;
 
         public UsersController(IUserService service, IRoleService roleService,
-            ICloudinaryService cloudinary, IMapper mapper, INotificator notificator)
+            ITeamService teamService, ICloudinaryService cloudinary,
+            IMapper mapper, INotificator notificator)
             : base(notificator)
         {
-            _service    = service;
-            _roleService = roleService;
-            _cloudinary = cloudinary;
-            _mapper     = mapper;
+            _service     = service;
+            _roleService  = roleService;
+            _teamService  = teamService;
+            _cloudinary  = cloudinary;
+            _mapper      = mapper;
         }
 
         public async Task<IActionResult> Index()
@@ -40,7 +43,7 @@ namespace JAPLearning.Mvc.Controllers
         public async Task<IActionResult> Create()
         {
             ViewData["ActiveMenu"] = "users";
-            await PopulateRolesAsync();
+            await PopulateDropdownsAsync();
             return View(new UserViewModel { IsActived = true });
         }
 
@@ -52,14 +55,14 @@ namespace JAPLearning.Mvc.Controllers
             if (string.IsNullOrWhiteSpace(vm.Password))
                 ModelState.AddModelError("Password", "A senha é obrigatória para novos utilizadores.");
 
-            if (!ModelState.IsValid) { await PopulateRolesAsync(); return View(vm); }
+            if (!ModelState.IsValid) { await PopulateDropdownsAsync(); return View(vm); }
 
             var entity = _mapper.Map<User>(vm);
             entity.Id = Guid.NewGuid();
             entity.Password = BCrypt.Net.BCrypt.HashPassword(vm.Password);
             entity.CreatedDate = DateTime.UtcNow;
 
-            if (!await _service.AddAsync(entity)) { AddErrors(); await PopulateRolesAsync(); return View(vm); }
+            if (!await _service.AddAsync(entity)) { AddErrors(); await PopulateDropdownsAsync(); return View(vm); }
             TempData["Success"] = "Utilizador criado com sucesso.";
             return RedirectToAction(nameof(Index));
         }
@@ -70,7 +73,7 @@ namespace JAPLearning.Mvc.Controllers
             ViewData["ActiveMenu"] = "users";
             var entity = await _service.GetByIdAsync(id);
             if (entity == null) return NotFound();
-            await PopulateRolesAsync();
+            await PopulateDropdownsAsync();
             return View(_mapper.Map<UserViewModel>(entity));
         }
 
@@ -83,7 +86,7 @@ namespace JAPLearning.Mvc.Controllers
             ModelState.Remove("Password");
             ModelState.Remove("ConfirmPassword");
 
-            if (!ModelState.IsValid) { await PopulateRolesAsync(); return View(vm); }
+            if (!ModelState.IsValid) { await PopulateDropdownsAsync(); return View(vm); }
 
             var existing = await _service.GetByIdAsync(id);
 
@@ -111,7 +114,7 @@ namespace JAPLearning.Mvc.Controllers
                 entity.PhotoUrl = existing?.PhotoUrl;
             }
 
-            if (!await _service.UpdateAsync(entity)) { AddErrors(); await PopulateRolesAsync(); return View(vm); }
+            if (!await _service.UpdateAsync(entity)) { AddErrors(); await PopulateDropdownsAsync(); return View(vm); }
             TempData["Success"] = "Utilizador actualizado com sucesso.";
             return RedirectToAction(nameof(Index));
         }
@@ -126,10 +129,13 @@ namespace JAPLearning.Mvc.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task PopulateRolesAsync()
+        private async Task PopulateDropdownsAsync()
         {
             var roles = await _roleService.GetAllAsync();
             ViewBag.Roles = new SelectList(roles, "Id", "Name");
+
+            var teams = await _teamService.GetAllAsync();
+            ViewBag.Teams = new SelectList(teams.Where(t => t.IsActived), "Id", "Name");
         }
     }
 }
