@@ -11,6 +11,11 @@ namespace JAPLearning.Mvc.ViewModels.Entities
         public Guid RoleId { get; set; }
         public string RoleName { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Equipa é obrigatória.")]
+        [Display(Name = "Equipa")]
+        public Guid TeamId { get; set; }
+        public string TeamName { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "Nome é obrigatório.")]
         [MaxLength(100)]
         [Display(Name = "Nome")]

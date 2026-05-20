@@ -7,7 +7,8 @@
       "launchBrowser": true,
       "applicationUrl": "http://localhost:5062",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SQLSERVER__CONNECTIONSTRING": "Data Source=10.147.20.1\\SQLEXPRESS,64500;Initial Catalog=DEV_JAPLEARNING;User Id=sa;Password=Password.123;Encrypt=False;TrustServerCertificate=True;MultipleActiveResultSets=True"
       }
     },
     "https": {
@@ -16,7 +17,8 @@
       "launchBrowser": true,
       "applicationUrl": "https://localhost:7214;http://localhost:5062",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SQLSERVER__CONNECTIONSTRING": "Data Source=10.147.20.1\\SQLEXPRESS,64500;Initial Catalog=DEV_JAPLEARNING;User Id=sa;Password=Password.123;Encrypt=False;TrustServerCertificate=True;MultipleActiveResultSets=True"
       }
     }
   }
