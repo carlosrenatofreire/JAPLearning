@@ -86,8 +86,19 @@ namespace JAPLearning.Mvc.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Courses(Guid? teamId = null)
         {
-            var teams = await _teamService.GetAllAsync();
-            ViewBag.Teams = teams.Where(t => t.IsActived).OrderBy(t => t.Name).ToList();
+            var teams      = await _teamService.GetAllAsync();
+            var categories = await _categoryService.GetAllAsync();
+            var courses    = await _courseService.GetAllAsync();
+
+            // Apenas equipas com pelo menos uma categoria activa que tenha cursos activos
+            var teamIdsWithContent = categories
+                .Where(c => c.IsActived && courses.Any(co => co.IsActived && co.CategoryId == c.Id))
+                .Select(c => c.TeamId)
+                .ToHashSet();
+
+            ViewBag.Teams = teams
+                .Where(t => t.IsActived && teamIdsWithContent.Contains(t.Id))
+                .OrderBy(t => t.Name).ToList();
 
             if (teamId == null)
                 return View(new List<Course>());
@@ -95,7 +106,6 @@ namespace JAPLearning.Mvc.Controllers
             var selectedTeam = teams.FirstOrDefault(t => t.Id == teamId);
             if (selectedTeam == null) return View(new List<Course>());
 
-            var categories = await _categoryService.GetAllAsync();
             var teamCatIds = categories.Where(c => c.IsActived && c.TeamId == teamId)
                                        .Select(c => c.Id).ToHashSet();
 
@@ -103,7 +113,6 @@ namespace JAPLearning.Mvc.Controllers
             ViewBag.Categories   = categories.Where(c => c.IsActived && c.TeamId == teamId)
                                              .OrderBy(c => c.Name).ToList();
 
-            var courses = await _courseService.GetAllAsync();
             return View(courses.Where(c => c.IsActived && teamCatIds.Contains(c.CategoryId))
                                .OrderBy(c => c.Title).ToList());
         }
