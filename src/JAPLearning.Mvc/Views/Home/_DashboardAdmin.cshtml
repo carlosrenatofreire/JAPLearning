@@ -47,10 +47,10 @@
 <div class="welcome-banner">
     <div>
         <h3 style="font-weight:800; margin-bottom:4px;">Olá, @firstName! 👋</h3>
-        <p style="color:var(--md-text-secondary); margin:0; font-size:14px;">Bem-vindo ao painel de gestão JAPLearning.</p>
+        <p style="color:var(--md-text-secondary); margin:0; font-size:14px;">Bem-vindo ao painel de gestão JAP Learning.</p>
     </div>
     <a asp-controller="Courses" asp-action="Create" class="btn-md-primary">
-        <i class="bi bi-plus-lg"></i> Novo Curso
+        <i class="bi bi-plus-lg"></i> Nova Formação
     </a>
 </div>
 
@@ -62,7 +62,7 @@
                 <i class="bi bi-people"></i>
             </div>
             <div class="kpi-value">@ViewBag.TotalUsers</div>
-            <div class="kpi-label">Utilizadores</div>
+            <div class="kpi-label">Colaboradores</div>
         </div>
     </div>
     <div class="col-6 col-lg-3">
@@ -71,25 +71,25 @@
                 <i class="bi bi-collection-play"></i>
             </div>
             <div class="kpi-value">@ViewBag.ActiveCourses</div>
-            <div class="kpi-label">Cursos Activos</div>
+            <div class="kpi-label">Formações Activas</div>
         </div>
     </div>
     <div class="col-6 col-lg-3">
         <div class="kpi-card">
             <div class="kpi-icon" style="background:rgba(245,158,11,0.12); color:var(--md-warning);">
-                <i class="bi bi-bag-check"></i>
+                <i class="bi bi-patch-check"></i>
             </div>
-            <div class="kpi-value">@ViewBag.TotalOrders</div>
-            <div class="kpi-label">Pedidos</div>
+            <div class="kpi-value">@(ViewBag.TotalCertificates ?? 0)</div>
+            <div class="kpi-label">Certificados Emitidos</div>
         </div>
     </div>
     <div class="col-6 col-lg-3">
         <div class="kpi-card">
             <div class="kpi-icon" style="background:rgba(232,80,26,0.12); color:var(--md-accent);">
-                <i class="bi bi-cash-stack"></i>
+                <i class="bi bi-people-fill"></i>
             </div>
-            <div class="kpi-value">@(((decimal)(ViewBag.TotalRevenue ?? 0m)).ToString("C0", new System.Globalization.CultureInfo("pt-BR")))</div>
-            <div class="kpi-label">Receita Total</div>
+            <div class="kpi-value">@(ViewBag.TotalTeams ?? 0)</div>
+            <div class="kpi-label">Equipas</div>
         </div>
     </div>
 </div>
@@ -104,7 +104,7 @@
                     <div class="kpi-icon mb-0" style="background:rgba(99,102,241,0.12); color:#818CF8; flex-shrink:0;">
                         <i class="bi bi-person-plus"></i>
                     </div>
-                    <span style="font-size:14px; font-weight:600;">Novo Utilizador</span>
+                    <span style="font-size:14px; font-weight:600;">Novo Colaborador</span>
                 </a>
             </div>
             <div class="col-6">
@@ -112,7 +112,7 @@
                     <div class="kpi-icon mb-0" style="background:rgba(34,197,94,0.12); color:var(--md-success); flex-shrink:0;">
                         <i class="bi bi-collection-play"></i>
                     </div>
-                    <span style="font-size:14px; font-weight:600;">Novo Curso</span>
+                    <span style="font-size:14px; font-weight:600;">Nova Formação</span>
                 </a>
             </div>
             <div class="col-6">
@@ -124,11 +124,11 @@
                 </a>
             </div>
             <div class="col-6">
-                <a asp-controller="Plans" asp-action="Create" class="md-card-sm d-flex align-items-center gap-3 text-decoration-none" style="color:var(--md-text-primary);">
+                <a asp-controller="Teams" asp-action="Create" class="md-card-sm d-flex align-items-center gap-3 text-decoration-none" style="color:var(--md-text-primary);">
                     <div class="kpi-icon mb-0" style="background:rgba(232,80,26,0.12); color:var(--md-accent); flex-shrink:0;">
-                        <i class="bi bi-patch-check"></i>
+                        <i class="bi bi-people-fill"></i>
                     </div>
-                    <span style="font-size:14px; font-weight:600;">Novo Plano</span>
+                    <span style="font-size:14px; font-weight:600;">Nova Equipa</span>
                 </a>
             </div>
         </div>
@@ -140,11 +140,11 @@
         <div class="md-card" style="padding:16px;">
             @{
                 var modules = new[] {
-                    ("Utilizadores", "bi-people", "users"),
-                    ("Cursos", "bi-collection-play", "courses"),
-                    ("Artigos", "bi-file-earmark-text", "articles"),
-                    ("Planos", "bi-patch-check", "plans"),
-                    ("Pedidos", "bi-bag-check", "orders"),
+                    ("Colaboradores",  "bi-people",           "Users"),
+                    ("Formações",      "bi-collection-play",  "Courses"),
+                    ("Equipas",        "bi-people-fill",      "Teams"),
+                    ("Categorias",     "bi-layers",           "Categories"),
+                    ("Artigos",        "bi-file-earmark-text","Articles"),
                 };
             }
             @foreach (var (name, icon, ctrl) in modules)
@@ -152,7 +152,7 @@
                 <div class="activity-row">
                     <i class="bi @icon" style="color:var(--md-accent); font-size:16px; flex-shrink:0;"></i>
                     <span style="flex:1; color:var(--md-text-secondary);">@name</span>
-                    <a asp-controller="@(char.ToUpper(ctrl[0]) + ctrl.Substring(1))" asp-action="Index" class="btn-md-ghost" style="padding:4px 10px; font-size:12px;">
+                    <a asp-controller="@ctrl" asp-action="Index" class="btn-md-ghost" style="padding:4px 10px; font-size:12px;">
                         Ver <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>

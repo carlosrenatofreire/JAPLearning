@@ -69,9 +69,12 @@ namespace JAPLearning.Mvc.Controllers
 
             var users   = await _userService.GetAllAsync();
             var courses = await _courseService.GetAllAsync();
+            var teams   = await _teamService.GetAllAsync();
 
-            ViewBag.TotalUsers    = users.Count;
-            ViewBag.ActiveCourses = courses.Count(c => c.IsActived);
+            ViewBag.TotalUsers         = users.Count;
+            ViewBag.ActiveCourses      = courses.Count(c => c.IsActived);
+            ViewBag.TotalTeams         = teams.Count(t => t.IsActived);
+            ViewBag.TotalCertificates  = users.Sum(u => u.Certificates?.Count ?? 0);
 
             return View();
         }
