@@ -109,30 +109,7 @@ namespace JAPLearning.Mvc.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> Areas(Guid? teamId = null)
-        {
-            var teams = await _teamService.GetAllAsync();
-            ViewBag.Teams = teams.Where(t => t.IsActived).OrderBy(t => t.Name).ToList();
-
-            if (teamId == null)
-                return View(new List<JAPLearning.Business.Models.Domains.Parameters.Category>());
-
-            var selectedTeam = teams.FirstOrDefault(t => t.Id == teamId);
-            if (selectedTeam == null)
-                return View(new List<JAPLearning.Business.Models.Domains.Parameters.Category>());
-
-            ViewBag.SelectedTeam = selectedTeam;
-
-            var categories = await _categoryService.GetAllAsync();
-            var courses    = await _courseService.GetAllAsync();
-            var filtered   = categories.Where(c => c.IsActived && c.TeamId == teamId)
-                                       .OrderBy(c => c.Name).ToList();
-
-            ViewBag.CoursesCount = courses.Where(c => c.IsActived)
-                                          .GroupBy(c => c.CategoryId)
-                                          .ToDictionary(g => g.Key, g => g.Count());
-            return View(filtered);
-        }
+        public IActionResult Areas() => RedirectToAction("Courses");
 
         [AllowAnonymous]
         public async Task<IActionResult> CourseDetail(Guid id)
