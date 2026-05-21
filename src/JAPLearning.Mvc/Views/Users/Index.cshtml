@@ -24,6 +24,7 @@
                 <th>Nome</th>
                 <th>E-mail</th>
                 <th>Perfil</th>
+                <th>Equipa</th>
                 <th>Estado</th>
                 <th>Criado em</th>
                 <th style="width:100px; text-align:center;">Acções</th>
@@ -51,7 +52,18 @@
                     </td>
                     <td>@item.Email</td>
                     <td>
-                        <span class="md-badge md-badge-info">@item.RoleName</span>
+                        @if (!string.IsNullOrWhiteSpace(item.RoleName))
+                        {
+                            <span class="md-badge md-badge-info">@item.RoleName</span>
+                        }
+                        else { <span style="color:var(--md-text-muted); font-size:12px;">—</span> }
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(item.TeamName))
+                        {
+                            <span class="md-badge" style="background:rgba(99,102,241,0.12); color:#818CF8; border:1px solid rgba(99,102,241,0.25);">@item.TeamName</span>
+                        }
+                        else { <span style="color:var(--md-text-muted); font-size:12px;">—</span> }
                     </td>
                     <td>
                         @if (item.IsActived)
@@ -82,7 +94,7 @@
             }
             @if (!Model.Any())
             {
-                <tr><td colspan="6" style="text-align:center; padding:40px; color:var(--md-text-muted);">
+                <tr><td colspan="7" style="text-align:center; padding:40px; color:var(--md-text-muted);">
                     <i class="bi bi-inbox" style="font-size:32px; display:block; margin-bottom:8px;"></i>
                     Nenhum utilizador encontrado.
                 </td></tr>
