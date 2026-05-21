@@ -1,7 +1,8 @@
 @model List<JAPLearning.Business.Models.Domains.Entities.Article>
 @{
-    ViewData["Title"] = "Blog";
+    ViewData["Title"] = "Artigos";
     Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+    var subjects = ViewBag.Subjects as List<JAPLearning.Business.Models.Domains.Parameters.Subject> ?? new();
 }
 
 <style>
@@ -30,17 +31,26 @@
         font-size: 13px; color: var(--md-text-secondary);
         line-height: 1.7; margin-bottom: 16px; flex: 1;
     }
+    .filter-btn {
+        padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600;
+        border: 1px solid var(--md-border); background: transparent;
+        color: var(--md-text-secondary); cursor: pointer; transition: var(--md-transition);
+    }
+    .filter-btn:hover, .filter-btn.active {
+        border-color: var(--md-accent); color: var(--md-accent);
+        background: rgba(232,80,26,0.08);
+    }
 </style>
 
 <!-- Hero -->
 <section class="blog-hero">
     <div class="container">
-        <span class="md-badge md-badge-accent mb-3 d-inline-block">Blog</span>
+        <span class="md-badge md-badge-accent mb-3 d-inline-block">Artigos</span>
         <h1 style="font-size:40px; font-weight:900; margin-bottom:16px;">
             Artigos & <span class="md-gradient-text">Conteúdo</span>
         </h1>
         <p style="color:var(--md-text-secondary); font-size:17px; max-width:540px; line-height:1.7; margin:0;">
-            Arquitectura de software, boas práticas .NET e estratégias para evoluir na sua carreira técnica.
+            Conteúdo prático partilhado pelas equipas do Grupo JAP para o teu desenvolvimento profissional.
         </p>
     </div>
 </section>
@@ -57,10 +67,24 @@
         }
         else
         {
-            <div class="row g-4">
+            <!-- Filtros por assunto -->
+            @if (subjects.Any())
+            {
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:32px;">
+                    <span style="font-size:13px; color:var(--md-text-muted); font-weight:600;">Assunto:</span>
+                    <button class="filter-btn active" data-subject="all">Todos</button>
+                    @foreach (var s in subjects)
+                    {
+                        <button class="filter-btn" data-subject="@s.Id">@s.Name</button>
+                    }
+                </div>
+            }
+
+            <div id="articles-grid" class="row g-4">
                 @foreach (var article in Model)
                 {
-                    <div class="col-sm-6 col-lg-4">
+                    var subjectId = article.Subject?.Id.ToString() ?? "";
+                    <div class="col-sm-6 col-lg-4 article-item" data-subject="@subjectId">
                         <div class="article-card">
                             @if (!string.IsNullOrWhiteSpace(article.CoverImage))
                             {
@@ -105,6 +129,33 @@
                     </div>
                 }
             </div>
+            <div id="articles-empty" style="display:none; text-align:center; padding:60px 0; color:var(--md-text-muted);">
+                <i class="bi bi-search" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+                Nenhum artigo encontrado neste assunto.
+            </div>
         }
     </div>
 </section>
+
+@section Scripts {
+<script>
+    (function () {
+        const btns  = document.querySelectorAll('.filter-btn[data-subject]');
+        const items = document.querySelectorAll('.article-item');
+        const empty = document.getElementById('articles-empty');
+        if (!btns.length) return;
+
+        btns.forEach(btn => btn.addEventListener('click', function () {
+            const filter = this.dataset.subject;
+            btns.forEach(b => b.classList.toggle('active', b === this));
+            let visible = 0;
+            items.forEach(item => {
+                const match = filter === 'all' || item.dataset.subject === filter;
+                item.style.display = match ? '' : 'none';
+                if (match) visible++;
+            });
+            if (empty) empty.style.display = visible === 0 ? 'block' : 'none';
+        }));
+    })();
+</script>
+}

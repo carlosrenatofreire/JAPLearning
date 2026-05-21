@@ -157,7 +157,14 @@ namespace JAPLearning.Mvc.Controllers
         public async Task<IActionResult> Blog()
         {
             var articles = await _articleService.GetAllAsync();
-            return View(articles.Where(a => a.IsActived).OrderByDescending(a => a.PublishDate).ToList());
+            var active   = articles.Where(a => a.IsActived).OrderByDescending(a => a.PublishDate).ToList();
+            ViewBag.Subjects = active
+                .Where(a => a.Subject != null)
+                .Select(a => a.Subject!)
+                .DistinctBy(s => s.Id)
+                .OrderBy(s => s.Name)
+                .ToList();
+            return View(active);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
