@@ -18,6 +18,7 @@ namespace JAPLearning.Mvc.Controllers
         private readonly ICourseService _courseService;
         private readonly ITestimonialService _testimonialService;
         private readonly ICategoryService _categoryService;
+        private readonly ITeamService _teamService;
         private readonly IArticleService _articleService;
         private readonly ITopicService _topicService;
         private readonly ILessonService _lessonService;
@@ -25,7 +26,7 @@ namespace JAPLearning.Mvc.Controllers
 
         public HomeController(IUserService userService, ICourseService courseService,
             ITestimonialService testimonialService, ICategoryService categoryService,
-            IArticleService articleService, ITopicService topicService,
+            ITeamService teamService, IArticleService articleService, ITopicService topicService,
             ILessonService lessonService, ICourseRequirementService requirementService,
             INotificator notificator) : base(notificator)
         {
@@ -33,6 +34,7 @@ namespace JAPLearning.Mvc.Controllers
             _courseService      = courseService;
             _testimonialService = testimonialService;
             _categoryService    = categoryService;
+            _teamService        = teamService;
             _articleService     = articleService;
             _topicService       = topicService;
             _lessonService      = lessonService;
@@ -82,23 +84,54 @@ namespace JAPLearning.Mvc.Controllers
 
         // ── Páginas públicas de catálogo ──────────────────────────────────
         [AllowAnonymous]
-        public async Task<IActionResult> Courses()
+        public async Task<IActionResult> Courses(Guid? teamId = null)
         {
-            var courses    = await _courseService.GetAllAsync();
+            var teams = await _teamService.GetAllAsync();
+            ViewBag.Teams = teams.Where(t => t.IsActived).OrderBy(t => t.Name).ToList();
+
+            if (teamId == null)
+                return View(new List<Course>());
+
+            var selectedTeam = teams.FirstOrDefault(t => t.Id == teamId);
+            if (selectedTeam == null) return View(new List<Course>());
+
             var categories = await _categoryService.GetAllAsync();
-            ViewBag.Categories = categories.Where(c => c.IsActived).OrderBy(c => c.Name).ToList();
-            return View(courses.Where(c => c.IsActived).OrderBy(c => c.Title).ToList());
+            var teamCatIds = categories.Where(c => c.IsActived && c.TeamId == teamId)
+                                       .Select(c => c.Id).ToHashSet();
+
+            ViewBag.SelectedTeam = selectedTeam;
+            ViewBag.Categories   = categories.Where(c => c.IsActived && c.TeamId == teamId)
+                                             .OrderBy(c => c.Name).ToList();
+
+            var courses = await _courseService.GetAllAsync();
+            return View(courses.Where(c => c.IsActived && teamCatIds.Contains(c.CategoryId))
+                               .OrderBy(c => c.Title).ToList());
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> Areas()
+        public async Task<IActionResult> Areas(Guid? teamId = null)
         {
+            var teams = await _teamService.GetAllAsync();
+            ViewBag.Teams = teams.Where(t => t.IsActived).OrderBy(t => t.Name).ToList();
+
+            if (teamId == null)
+                return View(new List<JAPLearning.Business.Models.Domains.Parameters.Category>());
+
+            var selectedTeam = teams.FirstOrDefault(t => t.Id == teamId);
+            if (selectedTeam == null)
+                return View(new List<JAPLearning.Business.Models.Domains.Parameters.Category>());
+
+            ViewBag.SelectedTeam = selectedTeam;
+
             var categories = await _categoryService.GetAllAsync();
             var courses    = await _courseService.GetAllAsync();
+            var filtered   = categories.Where(c => c.IsActived && c.TeamId == teamId)
+                                       .OrderBy(c => c.Name).ToList();
+
             ViewBag.CoursesCount = courses.Where(c => c.IsActived)
                                           .GroupBy(c => c.CategoryId)
                                           .ToDictionary(g => g.Key, g => g.Count());
-            return View(categories.Where(c => c.IsActived).OrderBy(c => c.Name).ToList());
+            return View(filtered);
         }
 
         [AllowAnonymous]

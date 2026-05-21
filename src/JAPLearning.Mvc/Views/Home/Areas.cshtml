@@ -1,8 +1,10 @@
 @model List<JAPLearning.Business.Models.Domains.Parameters.Category>
 @{
-    ViewData["Title"] = "Áreas de Conhecimento";
-    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+    var selectedTeam = ViewBag.SelectedTeam as JAPLearning.Business.Models.Domains.Parameters.Team;
+    var teams        = ViewBag.Teams as List<JAPLearning.Business.Models.Domains.Parameters.Team> ?? new();
     var coursesCount = ViewBag.CoursesCount as Dictionary<Guid, int> ?? new();
+    ViewData["Title"] = selectedTeam != null ? $"Categorias — {selectedTeam.Name}" : "Categorias de Formação";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
 }
 
 <style>
@@ -19,34 +21,79 @@
         display: flex; align-items: center; justify-content: center;
         font-size: 24px; color: var(--md-accent);
     }
+    .team-card {
+        background: var(--md-bg-card); border: 1px solid var(--md-border);
+        border-radius: var(--md-radius); padding: 32px 28px;
+        transition: var(--md-transition); display: block; text-decoration: none;
+    }
+    .team-card:hover { border-color: rgba(232,80,26,0.4); transform: translateY(-2px); }
 </style>
 
 <!-- Hero -->
 <section class="areas-hero">
     <div class="container">
-        <span class="md-badge md-badge-accent mb-3 d-inline-block">Áreas</span>
-        <h1 style="font-size:40px; font-weight:900; margin-bottom:16px;">
-            Áreas de <span class="md-gradient-text">Conhecimento</span>
-        </h1>
-        <p style="color:var(--md-text-secondary); font-size:17px; max-width:560px; line-height:1.7; margin:0;">
-            Explore as diferentes vertentes da arquitetura de software que abordamos na JAPLearning.
-        </p>
+        @if (selectedTeam != null)
+        {
+            <div style="margin-bottom:10px;">
+                <a asp-action="Areas" style="font-size:13px; color:var(--md-text-muted); text-decoration:none;">
+                    <i class="bi bi-chevron-left"></i> Todas as equipas
+                </a>
+            </div>
+            <span class="md-badge md-badge-accent mb-3 d-inline-block">Categorias</span>
+            <h1 style="font-size:40px; font-weight:900; margin-bottom:16px;">
+                <span class="md-gradient-text">@selectedTeam.Name</span>
+            </h1>
+            <p style="color:var(--md-text-secondary); font-size:17px; max-width:560px; line-height:1.7; margin:0;">
+                @(selectedTeam.Description ?? "Categorias de formação disponíveis para esta equipa.")
+            </p>
+        }
+        else
+        {
+            <span class="md-badge md-badge-accent mb-3 d-inline-block">Categorias</span>
+            <h1 style="font-size:40px; font-weight:900; margin-bottom:16px;">
+                Categorias de <span class="md-gradient-text">Formação</span>
+            </h1>
+            <p style="color:var(--md-text-secondary); font-size:17px; max-width:560px; line-height:1.7; margin:0;">
+                Selecciona a tua equipa para ver as categorias de formação disponíveis.
+            </p>
+        }
     </div>
 </section>
 
 <section style="padding:0 0 80px;">
     <div class="container">
-        @if (!Model.Any())
+        @if (selectedTeam == null)
+        {
+            <!-- Selecção de equipa -->
+            <div class="row g-4">
+                @foreach (var team in teams)
+                {
+                    <div class="col-sm-6 col-lg-4">
+                        <a asp-action="Areas" asp-route-teamId="@team.Id" class="team-card">
+                            <div class="area-icon" style="margin-bottom:16px;"><i class="bi bi-people-fill"></i></div>
+                            <h5 style="font-weight:800; margin-bottom:6px; color:var(--md-text-primary);">@team.Name</h5>
+                            @if (!string.IsNullOrWhiteSpace(team.Description))
+                            {
+                                <p style="font-size:13px; color:var(--md-text-secondary); line-height:1.5; margin-bottom:16px;">@team.Description</p>
+                            }
+                            <span style="font-size:13px; color:var(--md-accent); font-weight:600; margin-top:auto;">
+                                Ver categorias <i class="bi bi-arrow-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        else if (!Model.Any())
         {
             <div style="text-align:center; padding:80px 0; color:var(--md-text-muted);">
                 <i class="bi bi-grid" style="font-size:48px; display:block; margin-bottom:16px;"></i>
-                <p style="font-size:16px;">Nenhuma área disponível no momento.</p>
+                <p style="font-size:16px;">Nenhuma categoria disponível para esta equipa.</p>
             </div>
         }
         else
         {
-            <!-- Ícones por ordem -->
-            var icons = new[] { "bi-diagram-3", "bi-code-slash", "bi-database", "bi-cloud", "bi-shield-check", "bi-cpu", "bi-layers", "bi-gear", "bi-graph-up", "bi-puzzle" };
+            var icons = new[] { "bi-collection-play", "bi-layers", "bi-people", "bi-graph-up", "bi-shield-check", "bi-cpu", "bi-gear", "bi-book", "bi-puzzle", "bi-lightbulb" };
             <div class="row g-4">
                 @for (int i = 0; i < Model.Count; i++)
                 {
@@ -69,9 +116,9 @@
                             </div>
                             <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto;">
                                 <span style="font-size:12px; color:var(--md-text-muted);">
-                                    <i class="bi bi-collection"></i> @count @(count == 1 ? "curso" : "cursos")
+                                    <i class="bi bi-collection"></i> @count @(count == 1 ? "formação" : "formações")
                                 </span>
-                                <a asp-controller="Home" asp-action="Courses"
+                                <a asp-controller="Home" asp-action="Courses" asp-route-teamId="@selectedTeam.Id"
                                    style="font-size:13px; color:var(--md-accent); text-decoration:none; font-weight:600;">
                                     Explorar <i class="bi bi-arrow-right"></i>
                                 </a>
@@ -87,12 +134,12 @@
 <!-- CTA -->
 <section style="background:var(--md-bg-secondary); padding:64px 0; border-top:1px solid var(--md-border);">
     <div class="container text-center">
-        <h2 style="font-size:28px; font-weight:900; margin-bottom:12px;">Domine todas as áreas</h2>
+        <h2 style="font-size:28px; font-weight:900; margin-bottom:12px;">Pronto para começar?</h2>
         <p style="color:var(--md-text-secondary); font-size:15px; max-width:400px; margin:0 auto 24px;">
-            Com a assinatura JAPLearning tem acesso a todos os cursos de todas as áreas.
+            Acede à plataforma e explora todas as formações disponíveis para a tua equipa.
         </p>
-        <a asp-controller="Home" asp-action="Plans" class="btn-md-primary" style="padding:12px 28px;">
-            Ver Planos <i class="bi bi-arrow-right"></i>
+        <a asp-controller="Account" asp-action="Login" class="btn-md-primary" style="padding:12px 28px;">
+            Entrar na Plataforma <i class="bi bi-arrow-right"></i>
         </a>
     </div>
 </section>

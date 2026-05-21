@@ -1,8 +1,10 @@
 @model List<JAPLearning.Business.Models.Domains.Entities.Course>
 @{
-    ViewData["Title"] = "Projetos de Arquitetura e Desenvolvimento";
+    var selectedTeam = ViewBag.SelectedTeam as JAPLearning.Business.Models.Domains.Parameters.Team;
+    var teams        = ViewBag.Teams as List<JAPLearning.Business.Models.Domains.Parameters.Team> ?? new();
+    var categories   = ViewBag.Categories as List<JAPLearning.Business.Models.Domains.Parameters.Category> ?? new();
+    ViewData["Title"] = selectedTeam != null ? $"Formações — {selectedTeam.Name}" : "Catálogo de Formações";
     Layout = "~/Views/Shared/_LayoutPublic.cshtml";
-    var categories = ViewBag.Categories as List<JAPLearning.Business.Models.Domains.Parameters.Category> ?? new();
 }
 
 <style>
@@ -75,33 +77,84 @@
 <div class="container">
     <div class="page-header">
         <p style="color:var(--md-accent); font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px;">Catálogo</p>
-        <h1 style="font-size:38px; font-weight:900; margin-bottom:12px;">Projetos de Arquitetura e Desenvolvimento</h1>
-        <p style="color:var(--md-text-secondary); font-size:16px; max-width:640px; margin:0;">
-            Fundamentos sólidos, projetos reais de arquitetura e técnicas modernas de desenvolvimento —
-            tudo o que precisa para se tornar um arquiteto .NET de referência.
-        </p>
-    </div>
-
-    <!-- Filtros -->
-    <div class="filter-bar">
-        <span style="font-size:13px; color:var(--md-text-muted); font-weight:600;">Filtrar:</span>
-        <button class="filter-btn" data-filter="all">Todos</button>
-        @foreach (var cat in categories)
+        @if (selectedTeam != null)
         {
-            <button class="filter-btn" data-filter="@cat.Id">@cat.Name</button>
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+                <a asp-action="Courses" style="font-size:13px; color:var(--md-text-muted); text-decoration:none;">
+                    <i class="bi bi-chevron-left"></i> Todas as equipas
+                </a>
+            </div>
+            <h1 style="font-size:38px; font-weight:900; margin-bottom:12px;">
+                Formações — <span class="md-gradient-text">@selectedTeam.Name</span>
+            </h1>
+            <p style="color:var(--md-text-secondary); font-size:16px; max-width:640px; margin:0;">
+                @(selectedTeam.Description ?? "Formações disponíveis para esta equipa.")
+            </p>
+        }
+        else
+        {
+            <h1 style="font-size:38px; font-weight:900; margin-bottom:12px;">Catálogo de Formações</h1>
+            <p style="color:var(--md-text-secondary); font-size:16px; max-width:640px; margin:0;">
+                Selecciona a tua equipa para ver as formações disponíveis.
+            </p>
         }
     </div>
 
-    <!-- Grid -->
-    @if (!Model.Any())
+    @if (selectedTeam == null)
     {
-        <div style="text-align:center; padding:80px 0; color:var(--md-text-muted);">
-            <i class="bi bi-collection" style="font-size:48px; display:block; margin-bottom:16px;"></i>
-            <p style="font-size:16px;">Nenhum projeto disponível no momento.</p>
+        <!-- Selecção de Equipa -->
+        <div class="row g-4 mb-5">
+            @foreach (var team in teams)
+            {
+                <div class="col-sm-6 col-lg-4">
+                    <a asp-action="Courses" asp-route-teamId="@team.Id"
+                       style="text-decoration:none; display:block; background:var(--md-bg-card); border:1px solid var(--md-border);
+                              border-radius:var(--md-radius); padding:32px 28px; transition:var(--md-transition);"
+                       onmouseover="this.style.borderColor='rgba(232,80,26,0.4)'; this.style.transform='translateY(-2px)';"
+                       onmouseout="this.style.borderColor=''; this.style.transform='';">
+                        <div style="width:52px; height:52px; border-radius:14px; background:rgba(232,80,26,0.1);
+                                    border:1px solid rgba(232,80,26,0.2); display:flex; align-items:center;
+                                    justify-content:center; font-size:24px; color:var(--md-accent); margin-bottom:16px;">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <h5 style="font-weight:800; margin-bottom:6px; color:var(--md-text-primary);">@team.Name</h5>
+                        @if (!string.IsNullOrWhiteSpace(team.Description))
+                        {
+                            <p style="font-size:13px; color:var(--md-text-secondary); margin-bottom:16px; line-height:1.5;">@team.Description</p>
+                        }
+                        <span style="font-size:13px; color:var(--md-accent); font-weight:600;">
+                            Ver formações <i class="bi bi-arrow-right"></i>
+                        </span>
+                    </a>
+                </div>
+            }
         </div>
     }
     else
     {
+        <!-- Filtros por categoria -->
+        @if (categories.Any())
+        {
+            <div class="filter-bar">
+                <span style="font-size:13px; color:var(--md-text-muted); font-weight:600;">Categoria:</span>
+                <button class="filter-btn active" data-filter="all">Todas</button>
+                @foreach (var cat in categories)
+                {
+                    <button class="filter-btn" data-filter="@cat.Id">@cat.Name</button>
+                }
+            </div>
+        }
+
+        <!-- Grid de formações -->
+        @if (!Model.Any())
+        {
+            <div style="text-align:center; padding:80px 0; color:var(--md-text-muted);">
+                <i class="bi bi-collection" style="font-size:48px; display:block; margin-bottom:16px;"></i>
+                <p style="font-size:16px;">Nenhuma formação disponível para esta equipa.</p>
+            </div>
+        }
+        else
+        {
         <div id="project-grid" class="row g-4 mb-5">
             @foreach (var course in Model)
             {
@@ -173,12 +226,12 @@
                 </div>
             }
         </div>
-    }
-
-    <div id="filter-empty" class="filter-empty">
-        <i class="bi bi-search" style="font-size:32px; display:block; margin-bottom:8px;"></i>
-        Nenhum projeto encontrado nesta categoria.
-    </div>
+        <div id="filter-empty" class="filter-empty">
+            <i class="bi bi-search" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+            Nenhuma formação encontrada nesta categoria.
+        </div>
+        } @* fim else sem cursos *@
+    } @* fim else equipa seleccionada *@
 </div>
 
 @section Scripts {
