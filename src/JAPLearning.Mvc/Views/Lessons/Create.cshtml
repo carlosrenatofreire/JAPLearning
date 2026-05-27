@@ -11,30 +11,42 @@
     </div>
 </div>
 
-<div class="md-card" style="max-width:780px;">
+<div class="md-card">
     <form asp-action="Create" method="post">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="ModelOnly" class="md-alert md-alert-danger mb-3"></div>
 
         <div class="row g-3">
-            <div class="col-md-6">
+
+            <!-- Equipa | Formação | Tópico -->
+            <div class="col-md-3">
                 <div class="md-form-row">
-                    <label asp-for="CourseId" class="md-label">Curso</label>
-                    <select asp-for="CourseId" asp-items="ViewBag.Courses" class="md-select" id="courseSelect" onchange="loadTopics(this.value)">
-                        <option value="">Seleccionar curso...</option>
+                    <label class="md-label">Equipa</label>
+                    <select id="teamFilter" asp-items="ViewBag.Teams" class="md-select">
+                        <option value="">Seleccionar equipa...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="md-form-row">
+                    <label asp-for="CourseId" class="md-label">Formação</label>
+                    <select asp-for="CourseId" class="md-select" id="courseSelect" disabled>
+                        <option value="">Seleccionar equipa primeiro...</option>
                     </select>
                     <span asp-validation-for="CourseId" class="text-danger" style="font-size:12px;"></span>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="md-form-row">
                     <label asp-for="TopicId" class="md-label">Tópico</label>
-                    <select asp-for="TopicId" asp-items="ViewBag.Topics" class="md-select" id="topicSelect">
-                        <option value="">Seleccionar tópico...</option>
+                    <select asp-for="TopicId" class="md-select" id="topicSelect" disabled>
+                        <option value="">Seleccionar formação primeiro...</option>
                     </select>
                     <span asp-validation-for="TopicId" class="text-danger" style="font-size:12px;"></span>
                 </div>
             </div>
+
+            <!-- Nome | Ordem -->
             <div class="col-md-8">
                 <div class="md-form-row">
                     <label asp-for="Name" class="md-label">Nome</label>
@@ -48,12 +60,16 @@
                     <input asp-for="Order" class="md-input" type="number" min="1" />
                 </div>
             </div>
+
+            <!-- Descrição -->
             <div class="col-12">
                 <div class="md-form-row">
                     <label asp-for="Description" class="md-label">Descrição</label>
                     <textarea asp-for="Description" class="md-input" rows="2" placeholder="Descrição opcional"></textarea>
                 </div>
             </div>
+
+            <!-- URL Vídeo | Duração -->
             <div class="col-md-6">
                 <div class="md-form-row">
                     <label asp-for="Video" class="md-label">URL do Vídeo</label>
@@ -66,6 +82,8 @@
                     <input asp-for="TimeLesson" class="md-input" placeholder="00:05:30" />
                 </div>
             </div>
+
+            <!-- Checkboxes -->
             <div class="col-12">
                 <div class="row g-2">
                     <div class="col-md-4">
@@ -76,18 +94,13 @@
                     </div>
                     <div class="col-md-4">
                         <div class="md-form-check">
-                            <input asp-for="IsFreePreview" type="checkbox" />
-                            <label asp-for="IsFreePreview">Preview Gratuito</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="md-form-check">
                             <input asp-for="IsTest" type="checkbox" />
                             <label asp-for="IsTest">É Teste/Quiz</label>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
 
         <div style="display:flex; gap:12px; margin-top:24px;">
@@ -99,20 +112,67 @@
 
 @section Scripts {
 <script>
-    function loadTopics(courseId) {
-        const select = document.getElementById('topicSelect');
-        select.innerHTML = '<option value="">A carregar...</option>';
-        if (!courseId) { select.innerHTML = '<option value="">Seleccionar tópico...</option>'; return; }
-        fetch('/Topics/GetByCourse?courseId=' + courseId)
-            .then(r => r.json())
-            .then(data => {
-                select.innerHTML = '<option value="">Seleccionar tópico...</option>';
-                data.forEach(t => {
-                    const opt = document.createElement('option');
-                    opt.value = t.id; opt.text = t.name;
-                    select.appendChild(opt);
+    (function () {
+        const teamSel   = document.getElementById('teamFilter');
+        const courseSel = document.getElementById('courseSelect');
+        const topicSel  = document.getElementById('topicSelect');
+
+        function loadTopics(courseId) {
+            topicSel.innerHTML = '<option value="">A carregar...</option>';
+            topicSel.disabled  = true;
+            fetch('/Topics/GetByCourse?courseId=' + courseId)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        topicSel.innerHTML = '<option value="">Sem tópicos nesta formação</option>';
+                        return;
+                    }
+                    topicSel.innerHTML = '<option value="">Seleccionar tópico...</option>';
+                    data.forEach(t => {
+                        const opt = document.createElement('option');
+                        opt.value = t.id; opt.text = t.name;
+                        topicSel.appendChild(opt);
+                    });
+                    topicSel.disabled = false;
                 });
-            });
-    }
+        }
+
+        courseSel.addEventListener('change', function () {
+            if (!this.value) {
+                topicSel.innerHTML = '<option value="">Seleccionar formação primeiro...</option>';
+                topicSel.disabled  = true;
+                return;
+            }
+            loadTopics(this.value);
+        });
+
+        teamSel.addEventListener('change', function () {
+            const teamId = this.value;
+            // Reset dependents
+            courseSel.innerHTML = '<option value="">Seleccionar equipa primeiro...</option>';
+            courseSel.disabled  = true;
+            topicSel.innerHTML  = '<option value="">Seleccionar formação primeiro...</option>';
+            topicSel.disabled   = true;
+
+            if (!teamId) return;
+
+            courseSel.innerHTML = '<option value="">A carregar...</option>';
+            fetch('/Lessons/GetCoursesByTeam?teamId=' + teamId)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        courseSel.innerHTML = '<option value="">Sem formações nesta equipa</option>';
+                        return;
+                    }
+                    courseSel.innerHTML = '<option value="">Seleccionar formação...</option>';
+                    data.forEach(c => {
+                        const opt = document.createElement('option');
+                        opt.value = c.value; opt.text = c.text;
+                        courseSel.appendChild(opt);
+                    });
+                    courseSel.disabled = false;
+                });
+        });
+    })();
 </script>
 }

@@ -1,3 +1,4 @@
+@inject Microsoft.Extensions.Configuration.IConfiguration _config
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -27,10 +28,11 @@
             position: fixed;
             top: 0; left: 0; bottom: 0;
             z-index: 100;
-            overflow-y: auto;
+            overflow: hidden;
         }
         .sidebar-brand {
-            padding: 20px 20px 16px;
+            height: 56px;
+            padding: 0 20px;
             border-bottom: 1px solid var(--md-border);
             display: flex;
             align-items: center;
@@ -51,7 +53,7 @@
         }
         .sidebar-brand .brand-name span { color: var(--md-accent); }
 
-        .sidebar-nav { padding: 16px 12px; flex: 1; }
+        .sidebar-nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
         .sidebar-section { margin-bottom: 24px; }
         .sidebar-section-title {
             font-size: 10px;
@@ -84,8 +86,19 @@
         .sidebar-item.active i { color: var(--md-accent); }
 
         .sidebar-footer {
-            padding: 16px 12px;
+            height: 32px;
+            padding: 0 12px;
             border-top: 1px solid var(--md-border);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar-version {
+            font-size: 11px;
+            color: var(--md-text-muted);
+            opacity: 0.6;
+            margin: 0;
         }
 
         /* ── Topbar ─────────────────────────────────────────── */
@@ -193,7 +206,9 @@
             <nav class="sidebar-nav">
                 @await Html.PartialAsync("_Sidebar")
             </nav>
-            <div class="sidebar-footer"></div>
+            <div class="sidebar-footer">
+                <p class="sidebar-version">v@(_config["AppVersion"] ?? "1.0.0")</p>
+            </div>
         </aside>
 
         <!-- Main -->

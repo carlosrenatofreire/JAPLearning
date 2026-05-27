@@ -1,6 +1,6 @@
 @model List<JAPLearning.Mvc.ViewModels.Student.CourseProgressViewModel>
 @{
-    ViewData["Title"]      = "Meus Cursos";
+    ViewData["Title"]      = "Minhas Formações";
     ViewData["ActiveMenu"] = "my-courses";
     Layout = "~/Views/Shared/_LayoutApp.cshtml";
 }
@@ -31,8 +31,8 @@
 
 <div class="page-header">
     <div>
-        <h4 class="page-header-title">Meus Cursos</h4>
-        <p class="page-header-sub">Cursos em que tem progresso</p>
+        <h4 class="page-header-title">Minhas Formações</h4>
+        <p class="page-header-sub">Formações em que tem progresso</p>
     </div>
 </div>
 
@@ -76,7 +76,7 @@ else
 {
     <div style="text-align:center; padding:60px; color:var(--md-text-muted);">
         <i class="bi bi-collection-play" style="font-size:48px; display:block; margin-bottom:16px;"></i>
-        <p style="font-size:16px; font-weight:600; margin:0 0 8px;">Nenhum curso iniciado</p>
+        <p style="font-size:16px; font-weight:600; margin:0 0 8px;">Nenhuma formação iniciada</p>
         <p style="font-size:14px; margin:0;">Comece uma aula para ver o seu progresso aqui.</p>
     </div>
 }

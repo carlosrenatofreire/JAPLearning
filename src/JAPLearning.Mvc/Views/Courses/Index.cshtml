@@ -1,6 +1,7 @@
 @model List<JAPLearning.Mvc.ViewModels.Entities.CourseViewModel>
 @{
-    ViewData["Title"] = "Cursos";
+    ViewData["Title"] = "Formações";
+    var courseDurations = ViewBag.CourseDurations as Dictionary<Guid, TimeSpan> ?? new();
 }
 @await Html.PartialAsync("_CrudStyles")
 
@@ -11,10 +12,10 @@
 
 <div class="page-header">
     <div>
-        <h4 class="page-header-title">Cursos</h4>
-        <p class="page-header-sub">Gestão do catálogo de cursos</p>
+        <h4 class="page-header-title">Formações</h4>
+        <p class="page-header-sub">Gestão do catálogo de formações</p>
     </div>
-    <a asp-action="Create" class="btn-md-primary"><i class="bi bi-plus-lg"></i> Novo Curso</a>
+    <a asp-action="Create" class="btn-md-primary"><i class="bi bi-plus-lg"></i> Nova Formação</a>
 </div>
 
 <div class="md-card" style="padding:0; overflow:hidden;">
@@ -22,9 +23,12 @@
         <thead>
             <tr>
                 <th>Título</th>
+                <th style="width:90px; text-align:center;">Duração</th>
+                <th>Equipa</th>
                 <th>Categoria</th>
                 <th>Professor</th>
                 <th>Nível</th>
+                <th style="width:70px; text-align:center;">Breve</th>
                 <th>Estado</th>
                 <th style="width:100px; text-align:center;">Acções</th>
             </tr>
@@ -49,9 +53,25 @@
                             <span>@item.Title</span>
                         </div>
                     </td>
+                    @{
+                        var hasDur = courseDurations.TryGetValue(item.Id, out var dur) && dur > TimeSpan.Zero;
+                        var durTxt = hasDur
+                            ? (dur.TotalHours >= 1 ? $"{(int)dur.TotalHours}h {dur.Minutes:D2}min" : $"{(int)dur.TotalMinutes}min")
+                            : "—";
+                    }
+                    <td style="text-align:center; font-size:12px; color:var(--md-text-muted); font-variant-numeric:tabular-nums; white-space:nowrap;">
+                        @if (hasDur) { <i class="bi bi-clock" style="margin-right:3px;"></i> }@durTxt
+                    </td>
+                    <td><span class="md-badge md-badge-secondary">@item.TeamName</span></td>
                     <td>@item.CategoryName</td>
                     <td>@item.TeacherName</td>
                     <td><span class="md-badge md-badge-warning">@item.LevelName</span></td>
+                    <td style="text-align:center;">
+                        @if (item.IsBrief)
+                        {
+                            <span class="md-badge" style="background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3);">Sim</span>
+                        }
+                    </td>
                     <td>
                         @if (item.IsActived) { <span class="badge-active"><i class="bi bi-circle-fill" style="font-size:7px;"></i> Activo</span> }
                         else { <span class="badge-inactive"><i class="bi bi-circle-fill" style="font-size:7px;"></i> Inactivo</span> }
@@ -60,7 +80,7 @@
                         <div style="display:flex; gap:6px; justify-content:center;">
                             <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn" title="Editar"><i class="bi bi-pencil"></i></a>
                             <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="margin:0;"
-                                  onsubmit="return confirm('Eliminar este curso?')">
+                                  onsubmit="return confirm('Eliminar esta formação?')">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="action-btn danger" title="Eliminar"><i class="bi bi-trash"></i></button>
                             </form>
@@ -70,11 +90,33 @@
             }
             @if (!Model.Any())
             {
-                <tr><td colspan="6" style="text-align:center; padding:40px; color:var(--md-text-muted);">
+                <tr><td colspan="9" style="text-align:center; padding:40px; color:var(--md-text-muted);">
                     <i class="bi bi-collection-play" style="font-size:32px; display:block; margin-bottom:8px;"></i>
-                    Nenhum curso encontrado.
+                    Nenhuma formação encontrada.
                 </td></tr>
             }
         </tbody>
     </table>
 </div>
+
+@section Scripts {
+<script>
+    (function () {
+        const overlay = document.getElementById('globalLoadingOverlay');
+
+        // Loading ao clicar em Editar
+        document.querySelectorAll('a.action-btn').forEach(function (link) {
+            link.addEventListener('click', function () {
+                overlay.style.display = 'flex';
+            });
+        });
+
+        // Loading ao confirmar Eliminar
+        document.querySelectorAll('form[action*="Delete"]').forEach(function (form) {
+            form.addEventListener('submit', function () {
+                overlay.style.display = 'flex';
+            });
+        });
+    })();
+</script>
+}

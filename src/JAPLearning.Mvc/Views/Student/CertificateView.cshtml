@@ -1,0 +1,273 @@
+@model JAPLearning.Mvc.ViewModels.Entities.CertificateViewModel
+@{
+    Layout = null; // standalone page — no app shell
+    ViewData["Title"] = "Certificado — " + Model.CourseTitle;
+}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #f4f1eb;
+            font-family: 'Georgia', serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 32px 16px;
+        }
+
+        /* ── Certificate paper ─────────────────────────────── */
+        .cert-paper {
+            background: #fffdf7;
+            width: 860px;
+            max-width: 100%;
+            padding: 60px 70px;
+            position: relative;
+            box-shadow: 0 8px 48px rgba(0,0,0,0.18);
+        }
+
+        /* outer border */
+        .cert-paper::before {
+            content: '';
+            position: absolute;
+            inset: 16px;
+            border: 2px solid #c8a84b;
+            pointer-events: none;
+        }
+
+        /* inner border */
+        .cert-paper::after {
+            content: '';
+            position: absolute;
+            inset: 22px;
+            border: 1px solid rgba(200,168,75,0.4);
+            pointer-events: none;
+        }
+
+        /* ── Header ────────────────────────────────────────── */
+        .cert-header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .cert-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 900;
+            color: #1a0f00;
+            letter-spacing: -0.5px;
+            font-family: 'Arial Black', sans-serif;
+        }
+
+        .cert-logo span { color: #e8501a; }
+
+        .cert-logo-dot {
+            width: 34px; height: 34px;
+            background: #e8501a;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .cert-divider {
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #c8a84b, transparent);
+            margin: 20px auto 0;
+        }
+
+        /* ── Title block ───────────────────────────────────── */
+        .cert-title-block { text-align: center; margin-bottom: 32px; }
+
+        .cert-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .18em;
+            color: #c8a84b;
+            font-family: 'Arial', sans-serif;
+            margin-bottom: 10px;
+        }
+
+        .cert-title {
+            font-size: 36px;
+            font-weight: 400;
+            color: #1a0f00;
+            line-height: 1.2;
+        }
+
+        /* ── Body text ─────────────────────────────────────── */
+        .cert-body { text-align: center; margin-bottom: 28px; }
+
+        .cert-body p {
+            font-size: 14px;
+            color: #5a4a3a;
+            line-height: 1.7;
+        }
+
+        .cert-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a0f00;
+            border-bottom: 1.5px solid #c8a84b;
+            display: inline-block;
+            padding-bottom: 4px;
+            margin: 12px 0;
+        }
+
+        .cert-course {
+            font-size: 18px;
+            font-style: italic;
+            color: #3a2a1a;
+            margin: 8px 0 4px;
+        }
+
+        .cert-score {
+            display: inline-block;
+            background: rgba(200,168,75,0.12);
+            border: 1px solid rgba(200,168,75,0.5);
+            border-radius: 6px;
+            padding: 6px 18px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #8a6a10;
+            font-family: 'Arial', sans-serif;
+            margin-top: 8px;
+        }
+
+        /* ── Footer ────────────────────────────────────────── */
+        .cert-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(200,168,75,0.3);
+            font-size: 12px;
+            color: #8a7a6a;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .cert-footer-item { text-align: center; }
+        .cert-footer-item strong { display: block; font-size: 13px; color: #3a2a1a; margin-top: 4px; }
+
+        /* ── Watermark seal ────────────────────────────────── */
+        .cert-seal {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 3px solid rgba(200,168,75,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(200,168,75,0.20);
+            font-size: 48px;
+            pointer-events: none;
+        }
+
+        /* ── Print button (hidden in print) ────────────────── */
+        .cert-print-bar {
+            text-align: center;
+            margin-top: 28px;
+        }
+
+        .btn-print {
+            padding: 10px 28px;
+            background: #e8501a;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-print:hover { background: #c83e10; }
+
+        @@media print {
+            body { background: #fff; padding: 0; }
+            .cert-paper { box-shadow: none; }
+            .cert-print-bar { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div>
+    <!-- Certificate paper -->
+    <div class="cert-paper">
+
+        <!-- Watermark -->
+        <div class="cert-seal"><i class="bi bi-award-fill"></i></div>
+
+        <!-- Header -->
+        <div class="cert-header">
+            <div class="cert-logo">
+                <div class="cert-logo-dot"><i class="bi bi-mortarboard-fill"></i></div>
+                JAP <span>Learning</span>
+            </div>
+            <div class="cert-divider"></div>
+        </div>
+
+        <!-- Title -->
+        <div class="cert-title-block">
+            <p class="cert-label">Certificado de Conclusão</p>
+            <h1 class="cert-title">Certificate of Completion</h1>
+        </div>
+
+        <!-- Body -->
+        <div class="cert-body">
+            <p>Certificamos que</p>
+            <div class="cert-name">@Model.UserFullName</div>
+            <p>concluiu com aproveitamento a formação</p>
+            <p class="cert-course">@Model.CourseTitle</p>
+            <div class="cert-score">
+                <i class="bi bi-patch-check-fill" style="color:#c8a84b;"></i>
+                Nota final: @Model.ScorePercent%
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="cert-footer">
+            <div class="cert-footer-item">
+                <span>Data de conclusão</span>
+                <strong>@Model.CompletedDate.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-PT"))</strong>
+            </div>
+            <div class="cert-footer-item">
+                <span>Código de validação</span>
+                <strong style="font-family:monospace; letter-spacing:.1em;">@Model.ValidationCode</strong>
+            </div>
+            <div class="cert-footer-item">
+                <span>Emitido por</span>
+                <strong>JAP Learning Platform</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print button (hidden when printing) -->
+    <div class="cert-print-bar">
+        <button class="btn-print" onclick="window.print()">
+            <i class="bi bi-printer-fill"></i> Guardar / Imprimir PDF
+        </button>
+    </div>
+</div>
+
+</body>
+</html>

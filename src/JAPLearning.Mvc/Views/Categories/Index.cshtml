@@ -12,7 +12,7 @@
 <div class="page-header">
     <div>
         <h4 class="page-header-title">Categorias</h4>
-        <p class="page-header-sub">Gestão de categorias de cursos</p>
+        <p class="page-header-sub">Gestão de categorias de formações</p>
     </div>
     <a asp-action="Create" class="btn-md-primary"><i class="bi bi-plus-lg"></i> Nova Categoria</a>
 </div>
@@ -22,8 +22,8 @@
         <thead>
             <tr>
                 <th>Nome</th>
+                <th>Equipa</th>
                 <th>Subtítulo</th>
-                <th>Descrição</th>
                 <th>Estado</th>
                 <th style="width:100px; text-align:center;">Acções</th>
             </tr>
@@ -33,8 +33,14 @@
             {
                 <tr>
                     <td style="color:var(--md-text-primary); font-weight:600;">@item.Name</td>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(item.TeamName))
+                        {
+                            <span class="md-badge" style="background:rgba(99,102,241,0.12); color:#818CF8; border:1px solid rgba(99,102,241,0.25);">@item.TeamName</span>
+                        }
+                        else { <span style="color:var(--md-text-muted); font-size:12px;">—</span> }
+                    </td>
                     <td style="color:var(--md-text-muted); font-size:13px;">@(item.Subtitle ?? "—")</td>
-                    <td>@(item.Description ?? "—")</td>
                     <td>
                         @if (item.IsActived)
                         {
@@ -71,5 +77,3 @@
         </tbody>
     </table>
 </div>
-
-@* colspan actualizado para 5 colunas *@

@@ -12,7 +12,7 @@
 </div>
 
 <div class="md-card" style="max-width:860px;">
-    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -51,8 +51,24 @@
         </div>
 
         <div class="mb-3">
-            <label class="md-label">Imagem de Capa (URL)</label>
-            <input asp-for="CoverImage" class="md-input" />
+            <label class="md-label">Imagem de Capa</label>
+            <div id="coverPreviewWrap" style="margin-bottom:8px;">
+                @if (!string.IsNullOrWhiteSpace(Model.CoverImage))
+                {
+                    <img id="coverPreview" src="@Model.CoverImage" alt="Capa"
+                         style="width:180px; height:100px; object-fit:cover; border-radius:6px; border:2px solid var(--md-border);" />
+                    <small id="coverLabel" style="display:block; color:var(--md-text-muted); font-size:11px; margin-top:4px;">Imagem actual — seleccione nova para substituir</small>
+                }
+                else
+                {
+                    <img id="coverPreview" src="" alt="Preview"
+                         style="width:180px; height:100px; object-fit:cover; border-radius:6px; border:2px solid var(--md-border); display:none;" />
+                    <small id="coverLabel" style="display:none; color:var(--md-text-muted); font-size:11px; margin-top:4px;">Pré-visualização</small>
+                }
+            </div>
+            <input type="hidden" asp-for="CoverImage" />
+            <input type="file" id="coverImageFile" name="coverImageFile" accept="image/jpeg,image/png,image/webp" class="md-input" style="padding:6px;" />
+            <small style="color:var(--md-text-muted); font-size:11px;">Formatos aceites: JPG, PNG, WebP — dimensão recomendada: 1200×630 px</small>
         </div>
 
         <div class="mb-3">
@@ -78,3 +94,18 @@
         </div>
     </form>
 </div>
+
+@section Scripts {
+<script>
+    document.getElementById('coverImageFile').addEventListener('change', function () {
+        const file  = this.files[0];
+        if (!file) return;
+        const img   = document.getElementById('coverPreview');
+        const label = document.getElementById('coverLabel');
+        img.src = URL.createObjectURL(file);
+        img.style.display   = 'block';
+        label.style.display = 'block';
+        label.textContent   = 'Nova imagem seleccionada';
+    });
+</script>
+}

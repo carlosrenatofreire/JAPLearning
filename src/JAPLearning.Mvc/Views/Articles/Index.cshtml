@@ -21,6 +21,7 @@
     <table class="crud-table">
         <thead>
             <tr>
+                <th style="width:64px;"></th>
                 <th>Nome</th>
                 <th>Assunto</th>
                 <th>Autor</th>
@@ -34,6 +35,20 @@
             @foreach (var item in Model)
             {
                 <tr>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(item.CoverImage))
+                        {
+                            <img src="@item.CoverImage" alt="@item.Name"
+                                 style="width:52px; height:36px; object-fit:cover; border-radius:5px; border:1px solid var(--md-border); display:block;" />
+                        }
+                        else
+                        {
+                            <div style="width:52px; height:36px; border-radius:5px; background:var(--md-border);
+                                        display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <i class="bi bi-newspaper" style="font-size:14px; color:var(--md-text-muted);"></i>
+                            </div>
+                        }
+                    </td>
                     <td style="color:var(--md-text-primary); font-weight:600;">@item.Name</td>
                     <td><span class="md-badge md-badge-info">@item.SubjectName</span></td>
                     <td>@(item.Author ?? "—")</td>
@@ -57,7 +72,7 @@
             }
             @if (!Model.Any())
             {
-                <tr><td colspan="7" style="text-align:center; padding:40px; color:var(--md-text-muted);">
+                <tr><td colspan="8" style="text-align:center; padding:40px; color:var(--md-text-muted);">
                     <i class="bi bi-newspaper" style="font-size:32px; display:block; margin-bottom:8px;"></i>
                     Nenhum artigo encontrado.
                 </td></tr>

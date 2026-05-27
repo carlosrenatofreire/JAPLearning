@@ -1,49 +1,98 @@
 @model JAPLearning.Mvc.ViewModels.Entities.CourseViewModel
 @using JAPLearning.Business.Models.Domains.Relationships
+@using JAPLearning.Business.Models.Domains.Parameters
 @{
-    ViewData["Title"] = "Editar Curso";
+    ViewData["Title"] = "Editar Formação";
     var requirements     = ViewBag.Requirements     as List<CourseRequirement> ?? new();
     var availableCourses = ViewBag.AvailableCourses as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+    var categoriesFull   = ViewBag.CategoriesFull   as List<Category> ?? new();
+    var selectedTeamId   = ViewBag.SelectedTeamId   as Guid?;
 }
 @await Html.PartialAsync("_CrudStyles")
 
 <div class="page-header">
     <div>
-        <h4 class="page-header-title">Editar Curso</h4>
-        <p class="page-header-sub"><a asp-action="Index" style="color:var(--md-text-muted);">Cursos</a> <i class="bi bi-chevron-right" style="font-size:10px;"></i> Editar</p>
+        <h4 class="page-header-title">Editar Formação</h4>
+        <p class="page-header-sub"><a asp-action="Index" style="color:var(--md-text-muted);">Formações</a> <i class="bi bi-chevron-right" style="font-size:10px;"></i> Editar</p>
     </div>
 </div>
 
-<div class="md-card" style="max-width:780px;">
+<div class="md-card">
+
+    <!-- ── Form principal ────────────────────────────────────────────── -->
     <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" id="courseForm">
         @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Thumbnail" />
+        <input type="hidden" asp-for="CreatedDate" />
         <div asp-validation-summary="ModelOnly" class="md-alert md-alert-danger mb-3"></div>
 
         <div class="row g-3">
-            <div class="col-12">
+
+            <!-- Título + Nota de Aprovação -->
+            <div class="col-md-8">
                 <div class="md-form-row">
                     <label asp-for="Title" class="md-label">Título</label>
-                    <input asp-for="Title" class="md-input" placeholder="Título do curso" />
+                    <input asp-for="Title" class="md-input" placeholder="Título da formação" />
                     <span asp-validation-for="Title" class="text-danger" style="font-size:12px;"></span>
                 </div>
             </div>
-            <div class="col-12">
+            <div class="col-md-4">
+                <div class="md-form-row">
+                    <label asp-for="PassingScore" class="md-label">Nota de Aprovação (%)</label>
+                    <input asp-for="PassingScore" class="md-input" type="number" min="0" max="100" />
+                </div>
+            </div>
+
+            <!-- Subtítulo + Nível -->
+            <div class="col-md-8">
                 <div class="md-form-row">
                     <label asp-for="Subtitle" class="md-label">Subtítulo</label>
                     <input asp-for="Subtitle" class="md-input" placeholder="Subtítulo opcional" />
                 </div>
             </div>
+            <div class="col-md-4">
+                <div class="md-form-row">
+                    <label asp-for="LevelId" class="md-label">Nível</label>
+                    <select asp-for="LevelId" asp-items="ViewBag.Levels" class="md-select">
+                        <option value="">Seleccionar...</option>
+                    </select>
+                    <span asp-validation-for="LevelId" class="text-danger" style="font-size:12px;"></span>
+                </div>
+            </div>
+
+            <!-- Descrição -->
             <div class="col-12">
                 <div class="md-form-row">
                     <label asp-for="Description" class="md-label">Descrição</label>
-                    <textarea asp-for="Description" class="md-input" rows="3" placeholder="Descrição do curso"></textarea>
+                    <textarea asp-for="Description" class="md-input" rows="3" placeholder="Descrição da formação"></textarea>
+                </div>
+            </div>
+
+            <!-- Equipa | Categoria | Professor -->
+            <div class="col-md-4">
+                <div class="md-form-row">
+                    <label class="md-label">Equipa</label>
+                    <select id="teamFilter" asp-items="ViewBag.Teams" class="md-select">
+                        <option value="">Seleccionar equipa...</option>
+                    </select>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="md-form-row">
                     <label asp-for="CategoryId" class="md-label">Categoria</label>
-                    <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="md-select">
-                        <option value="">Seleccionar...</option>
+                    <select asp-for="CategoryId" id="categorySelect" class="md-select">
+                        <option value="">Seleccionar categoria...</option>
+                        @foreach (var cat in categoriesFull)
+                        {
+                            if (cat.Id == Model.CategoryId)
+                            {
+                                <option value="@cat.Id" data-team="@cat.TeamId" selected="selected">@cat.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@cat.Id" data-team="@cat.TeamId">@cat.Name</option>
+                            }
+                        }
                     </select>
                     <span asp-validation-for="CategoryId" class="text-danger" style="font-size:12px;"></span>
                 </div>
@@ -57,151 +106,173 @@
                     <span asp-validation-for="TeacherId" class="text-danger" style="font-size:12px;"></span>
                 </div>
             </div>
-            <div class="col-md-4">
+
+            <!-- Thumbnail + Activo -->
+            <div class="col-md-6">
                 <div class="md-form-row">
-                    <label asp-for="LevelId" class="md-label">Nível</label>
-                    <select asp-for="LevelId" asp-items="ViewBag.Levels" class="md-select">
-                        <option value="">Seleccionar...</option>
-                    </select>
-                    <span asp-validation-for="LevelId" class="text-danger" style="font-size:12px;"></span>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="md-form-row">
-                    <label asp-for="PassingScore" class="md-label">Nota de Aprovação (%)</label>
-                    <input asp-for="PassingScore" class="md-input" type="number" min="0" max="100" />
-                </div>
-            </div>
-
-            <!-- ── Pré-requisitos (inline) ────────────────────────────── -->
-            <div class="col-12">
-                <div style="border-top:1px solid var(--md-border); padding-top:20px;">
-                    <p class="md-label" style="margin-bottom:4px;">Pré-requisitos</p>
-                    <p style="font-size:12px; color:var(--md-text-muted); margin-bottom:14px;">
-                        Cursos que o aluno deve concluir antes de aceder a este projecto.
-                    </p>
-
-                    @if (TempData["Error"] != null)
-                    {
-                        <div class="alert-danger-md mb-3"><i class="bi bi-exclamation-circle-fill"></i> @TempData["Error"]</div>
-                    }
-
-                    <!-- Lista actual -->
-                    @if (requirements.Any())
-                    {
-                        <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:14px;">
-                            @foreach (var req in requirements)
-                            {
-                                var title  = req.PrerequisiteCourse?.Title ?? "—";
-                                var abbr   = string.Join("", title.Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                                                 .Take(2).Select(w => w[0].ToString().ToUpper()));
-                                var isFree = req.PrerequisiteCourse?.IsFree == true;
-
-                                <div style="display:flex; align-items:center; gap:10px; padding:10px 12px;
-                                            background:var(--md-bg-secondary); border:1px solid var(--md-border);
-                                            border-radius:var(--md-radius-sm);">
-                                    @if (!string.IsNullOrWhiteSpace(req.PrerequisiteCourse?.Thumbnail))
-                                    {
-                                        <img src="@req.PrerequisiteCourse.Thumbnail" alt="@title"
-                                             style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0;" />
-                                    }
-                                    else
-                                    {
-                                        <div style="width:36px;height:36px;border-radius:6px;flex-shrink:0;
-                                                    background:linear-gradient(135deg,#6366F1,#8B5CF6);
-                                                    display:flex;align-items:center;justify-content:center;
-                                                    font-size:12px;font-weight:800;color:#fff;">@abbr</div>
-                                    }
-                                    <div style="flex:1;min-width:0;">
-                                        <p style="font-weight:600;font-size:13px;margin:0;color:var(--md-text-primary);
-                                                  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@title</p>
-                                        @if (isFree) { <span style="font-size:11px;color:var(--md-success);">Gratuito</span> }
-                                    </div>
-                                    <form asp-action="RemoveRequirement" method="post" style="margin:0;">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="requirementId" value="@req.Id" />
-                                        <input type="hidden" name="courseId"      value="@Model.Id" />
-                                        <button type="submit" class="action-btn danger" title="Remover" style="width:30px;height:30px;">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <p style="font-size:12px;color:var(--md-text-muted);margin-bottom:14px;font-style:italic;">
-                            Nenhum pré-requisito definido.
-                        </p>
-                    }
-
-                    <!-- Adicionar -->
-                    @if (availableCourses != null && availableCourses.Any())
-                    {
-                        <form asp-action="AddRequirement" method="post"
-                              style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="courseId" value="@Model.Id" />
-                            <div style="flex:1;min-width:180px;">
-                                <select name="prerequisiteCourseId" class="md-select" style="height:42px;">
-                                    <option value="">Seleccionar curso...</option>
-                                    @foreach (var item in availableCourses)
-                                    {
-                                        <option value="@item.Value">@item.Text</option>
-                                    }
-                                </select>
-                            </div>
-                            <button type="submit" class="btn-md-primary" style="height:42px;white-space:nowrap;">
-                                <i class="bi bi-plus-lg"></i> Adicionar
-                            </button>
-                        </form>
-                    }
-                </div>
-            </div>
-            <!-- ── /Pré-requisitos ────────────────────────────────────── -->
-
-            <div class="col-md-8">
-                <div class="md-form-row">
-                    <label class="md-label">Thumbnail do Curso</label>
-                    <div id="thumbPreviewWrap" style="margin-bottom:8px;">
+                    <label class="md-label">Thumbnail da Formação</label>
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
                         @if (!string.IsNullOrWhiteSpace(Model.Thumbnail))
                         {
                             <img id="thumbPreview" src="@Model.Thumbnail" alt="Thumbnail"
-                                 style="width:120px; height:80px; object-fit:cover; border-radius:6px; border:2px solid var(--md-border);" />
-                            <small id="thumbLabel" style="display:block; color:var(--md-text-muted); font-size:11px; margin-top:4px;">Thumbnail actual — seleccione nova para substituir</small>
+                                 style="width:80px; height:54px; object-fit:cover; border-radius:6px; border:2px solid var(--md-border); flex-shrink:0;" />
                         }
                         else
                         {
                             <img id="thumbPreview" src="" alt="Preview"
-                                 style="width:120px; height:80px; object-fit:cover; border-radius:6px; border:2px solid var(--md-border); display:none;" />
-                            <small id="thumbLabel" style="display:none; color:var(--md-text-muted); font-size:11px; margin-top:4px;">Pré-visualização</small>
+                                 style="width:80px; height:54px; object-fit:cover; border-radius:6px; border:2px solid var(--md-border); flex-shrink:0; display:none;" />
                         }
+                        <small id="thumbLabel" style="color:var(--md-text-muted); font-size:11px;">
+                            @(string.IsNullOrWhiteSpace(Model.Thumbnail) ? "" : "Thumbnail actual — seleccione nova para substituir")
+                        </small>
                     </div>
                     <input type="file" id="thumbnailInput" name="thumbnail" accept="image/jpeg,image/png,image/webp" class="md-input" style="padding:6px;" />
-                    <small style="color:var(--md-text-muted); font-size:11px;">Formatos aceites: JPG, PNG, WebP — dimensão recomendada: 1200×800 px</small>
+                    <small style="color:var(--md-text-muted); font-size:11px;">JPG, PNG, WebP — 1200×800 px recomendado</small>
                 </div>
             </div>
-            <div class="col-12">
+            <div class="col-md-6" style="display:flex; align-items:flex-end; gap:24px; padding-bottom:4px;">
                 <div class="md-form-check">
                     <input asp-for="IsActived" type="checkbox" />
                     <label asp-for="IsActived">Activo</label>
                 </div>
+                <div class="md-form-check">
+                    <input asp-for="IsBrief" type="checkbox" />
+                    <label asp-for="IsBrief" title="Mostra a formação como 'Em breve' — os utilizadores não conseguem aceder ao detalhe">Em breve</label>
+                </div>
             </div>
+
         </div>
 
-        <div style="display:flex; gap:12px; margin-top:24px;">
-            <button type="submit" class="btn-md-primary">
-                <i class="bi bi-check-lg"></i> Guardar
-            </button>
-            <a asp-action="Index" class="btn-md-ghost">Cancelar</a>
-        </div>
     </form>
+    <!-- ── /Form principal ───────────────────────────────────────────── -->
+
+    <!-- ── Pré-requisitos (fora do form principal) ───────────────────── -->
+    <div style="border-top:1px solid var(--md-border); padding-top:20px; margin-top:28px;">
+        <p class="md-label" style="margin-bottom:4px;">Pré-requisitos</p>
+        <p style="font-size:12px; color:var(--md-text-muted); margin-bottom:14px;">
+            Formações que o aluno deve concluir antes de aceder a este projecto.
+        </p>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert-danger-md mb-3"><i class="bi bi-exclamation-circle-fill"></i> @TempData["Error"]</div>
+        }
+
+        <!-- Lista actual -->
+        @if (requirements.Any())
+        {
+            <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:14px;">
+                @foreach (var req in requirements)
+                {
+                    var title  = req.PrerequisiteCourse?.Title ?? "—";
+                    var abbr   = string.Join("", title.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                     .Take(2).Select(w => w[0].ToString().ToUpper()));
+                    var isFree = req.PrerequisiteCourse?.IsFree == true;
+
+                    <div style="display:flex; align-items:center; gap:10px; padding:10px 12px;
+                                background:var(--md-bg-secondary); border:1px solid var(--md-border);
+                                border-radius:var(--md-radius-sm);">
+                        @if (!string.IsNullOrWhiteSpace(req.PrerequisiteCourse?.Thumbnail))
+                        {
+                            <img src="@req.PrerequisiteCourse.Thumbnail" alt="@title"
+                                 style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0;" />
+                        }
+                        else
+                        {
+                            <div style="width:36px;height:36px;border-radius:6px;flex-shrink:0;
+                                        background:linear-gradient(135deg,#6366F1,#8B5CF6);
+                                        display:flex;align-items:center;justify-content:center;
+                                        font-size:12px;font-weight:800;color:#fff;">@abbr</div>
+                        }
+                        <div style="flex:1;min-width:0;">
+                            <p style="font-weight:600;font-size:13px;margin:0;color:var(--md-text-primary);
+                                      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@title</p>
+                            @if (isFree) { <span style="font-size:11px;color:var(--md-success);">Gratuito</span> }
+                        </div>
+                        <form asp-action="RemoveRequirement" method="post" style="margin:0;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="requirementId" value="@req.Id" />
+                            <input type="hidden" name="courseId"      value="@Model.Id" />
+                            <button type="submit" class="action-btn danger" title="Remover" style="width:30px;height:30px;">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p style="font-size:12px;color:var(--md-text-muted);margin-bottom:14px;font-style:italic;">
+                Nenhum pré-requisito definido.
+            </p>
+        }
+
+        <!-- Adicionar -->
+        @if (availableCourses != null && availableCourses.Any())
+        {
+            <form asp-action="AddRequirement" method="post"
+                  style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="courseId" value="@Model.Id" />
+                <div style="flex:1;min-width:180px;">
+                    <select name="prerequisiteCourseId" class="md-select" style="height:42px;">
+                        <option value="">Seleccionar formação...</option>
+                        @foreach (var item in availableCourses)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="btn-md-primary" style="height:42px;white-space:nowrap;">
+                    <i class="bi bi-plus-lg"></i> Adicionar
+                </button>
+            </form>
+        }
+    </div>
+    <!-- ── /Pré-requisitos ───────────────────────────────────────────── -->
+
+    <!-- ── Botões (associados ao courseForm via atributo form=) ─────── -->
+    <div style="display:flex; gap:12px; margin-top:28px; padding-top:20px; border-top:1px solid var(--md-border);">
+        <button type="submit" form="courseForm" class="btn-md-primary">
+            <i class="bi bi-check-lg"></i> Guardar
+        </button>
+        <a asp-action="Index" class="btn-md-ghost">Cancelar</a>
+    </div>
+
 </div>
 
 
 @section Scripts {
 <script>
+    // Filtro cascata Equipa → Categoria
+    (function () {
+        const teamSel      = document.getElementById('teamFilter');
+        const catSel       = document.getElementById('categorySelect');
+        const allOpts      = Array.from(catSel.querySelectorAll('option[data-team]'));
+        const selectedTeam = '@(selectedTeamId?.ToString() ?? "")';
+
+        if (selectedTeam) teamSel.value = selectedTeam;
+
+        function filterCategories() {
+            const teamId = teamSel.value;
+            allOpts.forEach(opt => {
+                const show = !teamId || opt.dataset.team === teamId;
+                opt.style.display = show ? '' : 'none';
+                if (!show && opt.selected) { opt.selected = false; catSel.value = ''; }
+            });
+        }
+
+        teamSel.addEventListener('change', filterCategories);
+        filterCategories();
+    })();
+
+    // Loading overlay no submit (botão fora do form usa form="courseForm")
+    document.getElementById('courseForm').addEventListener('submit', function () {
+        if (!this.checkValidity()) return;
+        document.getElementById('globalLoadingOverlay').style.display = 'flex';
+    });
+
     // Preview ao seleccionar nova thumbnail
     document.getElementById('thumbnailInput').addEventListener('change', function () {
         const file  = this.files[0];
@@ -209,9 +280,8 @@
         const img   = document.getElementById('thumbPreview');
         const label = document.getElementById('thumbLabel');
         img.src = URL.createObjectURL(file);
-        img.style.display   = 'block';
-        label.style.display = 'block';
-        label.textContent   = 'Nova thumbnail seleccionada';
+        img.style.display = 'block';
+        label.textContent = 'Nova thumbnail seleccionada';
     });
 </script>
 }

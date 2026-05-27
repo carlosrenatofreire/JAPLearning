@@ -1,8 +1,11 @@
 @model List<JAPLearning.Business.Models.Domains.Entities.Course>
 @{
-    var selectedTeam = ViewBag.SelectedTeam as JAPLearning.Business.Models.Domains.Parameters.Team;
-    var teams        = ViewBag.Teams as List<JAPLearning.Business.Models.Domains.Parameters.Team> ?? new();
-    var categories   = ViewBag.Categories as List<JAPLearning.Business.Models.Domains.Parameters.Category> ?? new();
+    var selectedTeam     = ViewBag.SelectedTeam as JAPLearning.Business.Models.Domains.Parameters.Team;
+    var teams            = ViewBag.Teams as List<JAPLearning.Business.Models.Domains.Parameters.Team> ?? new();
+    var categories       = ViewBag.Categories as List<JAPLearning.Business.Models.Domains.Parameters.Category> ?? new();
+    var courseDurations  = ViewBag.CourseDurations as Dictionary<Guid, TimeSpan> ?? new();
+    var teamCourseCounts    = ViewBag.TeamCourseCounts    as Dictionary<Guid, int> ?? new();
+    var teamCategoryCounts  = ViewBag.TeamCategoryCounts  as Dictionary<Guid, int> ?? new();
     ViewData["Title"] = selectedTeam != null ? $"Formações — {selectedTeam.Name}" : "Catálogo de Formações";
     Layout = "~/Views/Shared/_LayoutPublic.cshtml";
 }
@@ -67,11 +70,19 @@
         border-radius: 5px;
         letter-spacing: 0.03em;
     }
-    .project-card-wrap.is-breve .md-course-card { cursor: default; opacity: 0.92; }
-    .project-card-wrap.is-breve .md-course-card:hover { transform: none; box-shadow: none; border-color: var(--md-border); }
-    .project-card-wrap.is-breve .md-course-card:hover .md-course-card-thumb img { transform: none; }
+    .project-card-wrap.is-breve .md-course-card { opacity: 0.92; }
     .filter-empty { text-align: center; padding: 60px 20px; color: var(--md-text-muted); display: none; }
     .filter-empty.show { display: block; }
+    .course-description {
+        font-size: 12px;
+        color: var(--md-text-muted);
+        line-height: 1.5;
+        margin: 0 0 10px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
 </style>
 
 <div class="container">
@@ -109,22 +120,51 @@
                 <div class="col-sm-6 col-lg-4">
                     <a asp-action="Courses" asp-route-teamId="@team.Id"
                        style="text-decoration:none; display:block; background:var(--md-bg-card); border:1px solid var(--md-border);
-                              border-radius:var(--md-radius); padding:32px 28px; transition:var(--md-transition);"
+                              border-radius:var(--md-radius); padding:28px; transition:var(--md-transition); overflow:hidden;"
                        onmouseover="this.style.borderColor='rgba(232,80,26,0.4)'; this.style.transform='translateY(-2px)';"
                        onmouseout="this.style.borderColor=''; this.style.transform='';">
-                        <div style="width:52px; height:52px; border-radius:14px; background:rgba(232,80,26,0.1);
-                                    border:1px solid rgba(232,80,26,0.2); display:flex; align-items:center;
-                                    justify-content:center; font-size:24px; color:var(--md-accent); margin-bottom:16px;">
-                            <i class="bi bi-people-fill"></i>
-                        </div>
+                        @if (!string.IsNullOrWhiteSpace(team.Thumbnail))
+                        {
+                            <div style="width:100%; height:120px; border-radius:8px; overflow:hidden; margin-bottom:16px;">
+                                <img src="@team.Thumbnail" alt="@team.Name"
+                                     style="width:100%; height:100%; object-fit:fill; display:block; transition:transform .4s ease;"
+                                     onmouseover="this.style.transform='scale(1.04)'"
+                                     onmouseout="this.style.transform=''" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div style="width:52px; height:52px; border-radius:14px; background:rgba(232,80,26,0.1);
+                                        border:1px solid rgba(232,80,26,0.2); display:flex; align-items:center;
+                                        justify-content:center; font-size:24px; color:var(--md-accent); margin-bottom:16px;">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                        }
                         <h5 style="font-weight:800; margin-bottom:6px; color:var(--md-text-primary);">@team.Name</h5>
                         @if (!string.IsNullOrWhiteSpace(team.Description))
                         {
-                            <p style="font-size:13px; color:var(--md-text-secondary); margin-bottom:16px; line-height:1.5;">@team.Description</p>
+                            <p style="font-size:13px; color:var(--md-text-secondary); margin-bottom:16px; line-height:1.5;
+                                      display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;">@team.Description</p>
                         }
-                        <span style="font-size:13px; color:var(--md-accent); font-weight:600;">
-                            Ver formações <i class="bi bi-arrow-right"></i>
-                        </span>
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:12px; border-top:1px solid var(--md-border);">
+                            @{
+                                var count   = teamCourseCounts.TryGetValue(team.Id, out var n) ? n : 0;
+                                var catCount = teamCategoryCounts.TryGetValue(team.Id, out var nc) ? nc : 0;
+                            }
+                            <div style="display:flex; align-items:center; gap:14px;">
+                                <span style="font-size:12px; color:var(--md-text-muted); display:flex; align-items:center; gap:5px;">
+                                    <i class="bi bi-tag-fill" style="color:var(--md-accent);"></i>
+                                    @catCount @(catCount == 1 ? "categoria" : "categorias")
+                                </span>
+                                <span style="font-size:12px; color:var(--md-text-muted); display:flex; align-items:center; gap:5px;">
+                                    <i class="bi bi-collection-fill" style="color:var(--md-accent);"></i>
+                                    @count @(count == 1 ? "formação" : "formações")
+                                </span>
+                            </div>
+                            <span style="font-size:13px; color:var(--md-accent); font-weight:600;">
+                                Ver formações <i class="bi bi-arrow-right"></i>
+                            </span>
+                        </div>
                     </a>
                 </div>
             }
@@ -160,14 +200,16 @@
             {
                 var hasDetail   = true; // todos têm detalhe público
                 var isFree      = course.IsFree;
-                var statusClass = isFree ? "mpv" : (course.IsBrief ? "breve" : "mpv");
-                var statusLabel = isFree ? "Grátis" : (course.IsBrief ? "Breve" : "Disponível");
+                var statusClass = isFree ? "mpv" : "breve";
+                var statusLabel = isFree ? "Grátis" : "Breve";
+                var showBadge   = isFree || course.IsBrief;
                 var catName     = course.Category?.Name ?? "";
                 var totalLessons = 0; // sem contagem aqui, pois não carregamos lições na listagem
 
-                <div class="col-md-6 col-lg-4 project-card-wrap" data-category="@course.CategoryId">
+                <div class="col-md-6 col-lg-4 project-card-wrap @(course.IsBrief ? "is-breve" : "")" data-category="@course.CategoryId">
                     <a asp-controller="Home" asp-action="CourseDetail" asp-route-id="@course.Id"
-                       class="md-course-card">
+                       class="md-course-card"
+                       style="@(course.IsBrief ? "pointer-events:none; cursor:default;" : "")">
                         <div class="md-course-card-thumb" style="position:relative; overflow:hidden;">
                             @if (!string.IsNullOrWhiteSpace(course.Thumbnail))
                             {
@@ -181,7 +223,7 @@
                                     <i class="bi bi-code-slash"></i>
                                 </div>
                             }
-                            <span class="status-badge @statusClass">@statusLabel</span>
+                            @if (showBadge) { <span class="status-badge @statusClass">@statusLabel</span> }
                         </div>
                         <div class="md-course-card-body">
                             <div class="d-flex justify-content-between align-items-start mb-2">
@@ -199,26 +241,44 @@
                             <p class="md-course-card-title">@course.Title</p>
                             @if (!string.IsNullOrWhiteSpace(course.Subtitle))
                             {
-                                <p style="font-size:13px; color:var(--md-text-muted); line-height:1.5; margin:0 0 12px;">@course.Subtitle</p>
+                                <p style="font-size:13px; color:var(--md-text-secondary); line-height:1.5; margin:0 0 6px; font-weight:500;">@course.Subtitle</p>
                             }
-                            <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--md-border); display:flex; align-items:center; gap:8px;">
-                                @if (course.Teacher != null)
-                                {
-                                    @if (!string.IsNullOrWhiteSpace(course.Teacher.PhotoUrl))
+                            @if (!string.IsNullOrWhiteSpace(course.Description))
+                            {
+                                <p class="course-description">@course.Description</p>
+                            }
+                            <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--md-border); display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    @if (course.Teacher != null)
                                     {
-                                        <img src="@course.Teacher.PhotoUrl" alt="@course.Teacher.Name"
-                                             style="width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+                                        @if (!string.IsNullOrWhiteSpace(course.Teacher.PhotoUrl))
+                                        {
+                                            <img src="@course.Teacher.PhotoUrl" alt="@course.Teacher.Name"
+                                                 style="width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+                                        }
+                                        else
+                                        {
+                                            var ti = string.Join("", course.Teacher.Name.Split(' ').Take(2).Select(w => w[0].ToString().ToUpper()));
+                                            <div class="md-avatar" style="width:26px;height:26px;font-size:10px;flex-shrink:0;">@ti</div>
+                                        }
+                                        <span style="font-size:12px; color:var(--md-text-muted);">@course.Teacher.Name</span>
                                     }
-                                    else
+                                </div>
+                                @{
+                                    var hasDuration = courseDurations.TryGetValue(course.Id, out var dur) && dur > TimeSpan.Zero;
+                                    if (hasDuration)
                                     {
-                                        var ti = string.Join("", course.Teacher.Name.Split(' ').Take(2).Select(w => w[0].ToString().ToUpper()));
-                                        <div class="md-avatar" style="width:26px;height:26px;font-size:10px;flex-shrink:0;">@ti</div>
+                                        var durDisplay = dur.TotalHours >= 1
+                                            ? $"{(int)dur.TotalHours}h {dur.Minutes:D2}min"
+                                            : $"{(int)dur.TotalMinutes}min";
+                                        <span style="font-size:12px; color:var(--md-text-muted); display:flex; align-items:center; gap:4px; white-space:nowrap;">
+                                            <i class="bi bi-clock"></i> @durDisplay
+                                        </span>
                                     }
-                                    <span style="font-size:12px; color:var(--md-text-muted);">@course.Teacher.Name</span>
-                                }
-                                @if (isFree)
-                                {
-                                    <span class="md-badge md-badge-success" style="margin-left:auto;">Grátis</span>
+                                    else if (isFree)
+                                    {
+                                        <span class="md-badge md-badge-success">Grátis</span>
+                                    }
                                 }
                             </div>
                         </div>
@@ -233,6 +293,7 @@
         } @* fim else sem cursos *@
     } @* fim else equipa seleccionada *@
 </div>
+
 
 @section Scripts {
 <script>
@@ -266,5 +327,7 @@
         const initial = (location.hash || '').replace('#', '');
         applyFilter(initial || 'all');
     })();
+
+
 </script>
 }

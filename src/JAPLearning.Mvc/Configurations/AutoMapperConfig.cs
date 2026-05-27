@@ -43,9 +43,10 @@ namespace JAPLearning.Mvc.Configurations
 
                 // Course
                 cfg.CreateMap<Course, CourseViewModel>()
-                    .ForMember(d => d.CategoryName, o => o.MapFrom(s => s.Category.Name))
-                    .ForMember(d => d.TeacherName, o => o.MapFrom(s => s.Teacher.Name))
-                    .ForMember(d => d.LevelName, o => o.MapFrom(s => s.Level.Name));
+                    .ForMember(d => d.CategoryName, o => o.MapFrom(s => s.Category != null ? s.Category.Name : string.Empty))
+                    .ForMember(d => d.TeamName,     o => o.MapFrom(s => s.Category != null && s.Category.Team != null ? s.Category.Team.Name : string.Empty))
+                    .ForMember(d => d.TeacherName,  o => o.MapFrom(s => s.Teacher != null ? s.Teacher.Name : string.Empty))
+                    .ForMember(d => d.LevelName,    o => o.MapFrom(s => s.Level != null ? s.Level.Name : string.Empty));
 
                 cfg.CreateMap<CourseViewModel, Course>()
                     .ForMember(d => d.Category, o => o.Ignore())
@@ -58,7 +59,8 @@ namespace JAPLearning.Mvc.Configurations
 
                 // Topic
                 cfg.CreateMap<Topic, TopicViewModel>()
-                    .ForMember(d => d.CourseName, o => o.MapFrom(s => s.Course.Title));
+                    .ForMember(d => d.CourseName, o => o.MapFrom(s => s.Course != null ? s.Course.Title : string.Empty))
+                    .ForMember(d => d.TeamName,   o => o.MapFrom(s => s.Course != null && s.Course.Category != null && s.Course.Category.Team != null ? s.Course.Category.Team.Name : string.Empty));
 
                 cfg.CreateMap<TopicViewModel, Topic>()
                     .ForMember(d => d.Course, o => o.Ignore())
@@ -66,8 +68,9 @@ namespace JAPLearning.Mvc.Configurations
 
                 // Lesson
                 cfg.CreateMap<Lesson, LessonViewModel>()
-                    .ForMember(d => d.CourseTitle, o => o.MapFrom(s => s.Course.Title))
-                    .ForMember(d => d.TopicName, o => o.MapFrom(s => s.Topic.Name));
+                    .ForMember(d => d.CourseTitle, o => o.MapFrom(s => s.Course != null ? s.Course.Title : string.Empty))
+                    .ForMember(d => d.TeamName,    o => o.MapFrom(s => s.Course != null && s.Course.Category != null && s.Course.Category.Team != null ? s.Course.Category.Team.Name : string.Empty))
+                    .ForMember(d => d.TopicName,   o => o.MapFrom(s => s.Topic != null ? s.Topic.Name : string.Empty));
 
                 cfg.CreateMap<LessonViewModel, Lesson>()
                     .ForMember(d => d.Course, o => o.Ignore())
@@ -94,7 +97,9 @@ namespace JAPLearning.Mvc.Configurations
 
                 // Question
                 cfg.CreateMap<Question, QuestionViewModel>()
-                    .ForMember(d => d.LessonName, o => o.MapFrom(s => s.Lesson.Name));
+                    .ForMember(d => d.LessonName, o => o.MapFrom(s => s.Lesson != null ? s.Lesson.Name : string.Empty))
+                    .ForMember(d => d.CourseName,  o => o.MapFrom(s => s.Lesson != null && s.Lesson.Course != null ? s.Lesson.Course.Title : string.Empty))
+                    .ForMember(d => d.TeamName,    o => o.MapFrom(s => s.Lesson != null && s.Lesson.Course != null && s.Lesson.Course.Category != null && s.Lesson.Course.Category.Team != null ? s.Lesson.Course.Category.Team.Name : string.Empty));
 
                 cfg.CreateMap<QuestionViewModel, Question>()
                     .ForMember(d => d.Lesson, o => o.Ignore())
@@ -102,7 +107,11 @@ namespace JAPLearning.Mvc.Configurations
                     .ForMember(d => d.UserLessonQuestions, o => o.Ignore());
 
                 // QuestionOption
-                cfg.CreateMap<QuestionOption, QuestionOptionViewModel>();
+                cfg.CreateMap<QuestionOption, QuestionOptionViewModel>()
+                    .ForMember(d => d.QuestionName, o => o.MapFrom(s => s.Question != null ? s.Question.Name : string.Empty))
+                    .ForMember(d => d.LessonName,   o => o.MapFrom(s => s.Question != null && s.Question.Lesson != null ? s.Question.Lesson.Name : string.Empty))
+                    .ForMember(d => d.CourseName,   o => o.MapFrom(s => s.Question != null && s.Question.Lesson != null && s.Question.Lesson.Course != null ? s.Question.Lesson.Course.Title : string.Empty))
+                    .ForMember(d => d.TeamName,     o => o.MapFrom(s => s.Question != null && s.Question.Lesson != null && s.Question.Lesson.Course != null && s.Question.Lesson.Course.Category != null && s.Question.Lesson.Course.Category.Team != null ? s.Question.Lesson.Course.Category.Team.Name : string.Empty));
                 cfg.CreateMap<QuestionOptionViewModel, QuestionOption>()
                     .ForMember(d => d.Question, o => o.Ignore())
                     .ForMember(d => d.UserLessonQuestions, o => o.Ignore());

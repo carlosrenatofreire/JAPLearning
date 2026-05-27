@@ -5,6 +5,7 @@ namespace JAPLearning.Mvc.ViewModels.Entities
         public Guid Id { get; set; }
         public Guid CourseId { get; set; }
         public string CourseTitle { get; set; } = string.Empty;
+        public string TeamName { get; set; } = string.Empty;
         public Guid TopicId { get; set; }
         public string TopicName { get; set; } = string.Empty;
         public int Order { get; set; }

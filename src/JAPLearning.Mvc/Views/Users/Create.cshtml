@@ -11,27 +11,40 @@
     </div>
 </div>
 
-<div class="md-card" style="max-width:720px;">
-    <form asp-action="Create" method="post">
+<div class="md-card">
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="ModelOnly" class="md-alert md-alert-danger mb-3"></div>
 
         <div class="row g-3">
-            <div class="col-md-6">
+
+            <!-- Nome | Apelido | Equipa -->
+            <div class="col-md-4">
                 <div class="md-form-row">
                     <label asp-for="FirstName" class="md-label"></label>
                     <input asp-for="FirstName" class="md-input" placeholder="Nome" />
                     <span asp-validation-for="FirstName" class="text-danger" style="font-size:12px;"></span>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="md-form-row">
                     <label asp-for="LastName" class="md-label"></label>
                     <input asp-for="LastName" class="md-input" placeholder="Apelido" />
                     <span asp-validation-for="LastName" class="text-danger" style="font-size:12px;"></span>
                 </div>
             </div>
-            <div class="col-md-8">
+            <div class="col-md-4">
+                <div class="md-form-row">
+                    <label asp-for="TeamId" class="md-label"></label>
+                    <select asp-for="TeamId" asp-items="ViewBag.Teams" class="md-select">
+                        <option value="">Seleccionar...</option>
+                    </select>
+                    <span asp-validation-for="TeamId" class="text-danger" style="font-size:12px;"></span>
+                </div>
+            </div>
+
+            <!-- Email | Perfil | Telefone -->
+            <div class="col-md-5">
                 <div class="md-form-row">
                     <label asp-for="Email" class="md-label"></label>
                     <input asp-for="Email" class="md-input" placeholder="email@exemplo.com" />
@@ -47,49 +60,59 @@
                     <span asp-validation-for="RoleId" class="text-danger" style="font-size:12px;"></span>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="md-form-row">
-                    <label asp-for="TeamId" class="md-label"></label>
-                    <select asp-for="TeamId" asp-items="ViewBag.Teams" class="md-select">
-                        <option value="">Seleccionar...</option>
-                    </select>
-                    <span asp-validation-for="TeamId" class="text-danger" style="font-size:12px;"></span>
+                    <label asp-for="PhoneNumber" class="md-label"></label>
+                    <input asp-for="PhoneNumber" class="md-input" placeholder="+351 912 345 678" />
                 </div>
             </div>
-            <div class="col-md-6">
+
+            <!-- Senha | Confirmar Senha | Cidade -->
+            <div class="col-md-4">
                 <div class="md-form-row">
                     <label asp-for="Password" class="md-label"></label>
                     <input asp-for="Password" class="md-input" placeholder="Mínimo 6 caracteres" />
                     <span asp-validation-for="Password" class="text-danger" style="font-size:12px;"></span>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="md-form-row">
                     <label asp-for="ConfirmPassword" class="md-label"></label>
                     <input asp-for="ConfirmPassword" class="md-input" placeholder="Repetir senha" />
                     <span asp-validation-for="ConfirmPassword" class="text-danger" style="font-size:12px;"></span>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="md-form-row">
-                    <label asp-for="PhoneNumber" class="md-label"></label>
-                    <input asp-for="PhoneNumber" class="md-input" placeholder="+351 912 345 678" />
-                </div>
-            </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="md-form-row">
                     <label asp-for="City" class="md-label"></label>
                     <input asp-for="City" class="md-input" placeholder="Cidade" />
                 </div>
             </div>
-            <div class="col-12">
-                <div class="md-form-row mb-0">
-                    <div class="md-form-check">
-                        <input asp-for="IsActived" type="checkbox" />
-                        <label asp-for="IsActived">Activo</label>
+
+            <!-- Foto de Perfil | Activo -->
+            <div class="col-md-8">
+                <div class="md-form-row">
+                    <label class="md-label">Foto de Perfil</label>
+                    <div style="display:flex; align-items:center; gap:14px;">
+                        <div id="photoPlaceholder" style="width:52px;height:52px;border-radius:50%;background:var(--md-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="bi bi-person" style="font-size:22px;color:var(--md-text-muted);"></i>
+                        </div>
+                        <img id="photoPreview" src="" alt="Preview"
+                             style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--md-border);flex-shrink:0;display:none;" />
+                        <div style="flex:1;">
+                            <input type="file" id="photoInput" name="photo" accept="image/jpeg,image/png,image/webp" class="md-input" style="padding:6px;" />
+                            <small style="color:var(--md-text-muted);font-size:11px;">JPG, PNG ou WebP — opcional</small>
+                        </div>
                     </div>
                 </div>
             </div>
+            <div class="col-md-4" style="display:flex; align-items:flex-end; padding-bottom:4px;">
+                <div class="md-form-check">
+                    <input asp-for="IsActived" type="checkbox" />
+                    <label asp-for="IsActived">Activo</label>
+                </div>
+            </div>
+
         </div>
 
         <div style="display:flex; gap:12px; margin-top:24px;">
@@ -98,3 +121,17 @@
         </div>
     </form>
 </div>
+
+@section Scripts {
+<script>
+    document.getElementById('photoInput').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        const preview     = document.getElementById('photoPreview');
+        const placeholder = document.getElementById('photoPlaceholder');
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+        placeholder.style.display = 'none';
+    });
+</script>
+}

@@ -12,6 +12,9 @@ namespace JAPLearning.Data.Mappings.Entities
 
             builder.HasKey(e => e.Id);
 
+            builder.Property(e => e.ScorePercent)
+                .HasDefaultValue(0);
+
             builder.Property(e => e.CertifiedFile)
                 .IsRequired()
                 .HasColumnType("varchar(500)");

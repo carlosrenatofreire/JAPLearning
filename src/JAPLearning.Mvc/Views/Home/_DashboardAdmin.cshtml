@@ -94,69 +94,109 @@
     </div>
 </div>
 
+@{
+    var topStudents = ViewBag.TopStudents as List<dynamic> ?? new List<dynamic>();
+    var topTeams    = ViewBag.TopTeams    as List<dynamic> ?? new List<dynamic>();
+    var topCourses  = ViewBag.TopCourses  as List<dynamic> ?? new List<dynamic>();
+}
+
 <div class="row g-4">
-    <!-- Quick Actions -->
-    <div class="col-lg-6">
-        <h5 style="font-weight:700; margin-bottom:16px;">Acesso Rápido</h5>
-        <div class="row g-2">
-            <div class="col-6">
-                <a asp-controller="Users" asp-action="Create" class="md-card-sm d-flex align-items-center gap-3 text-decoration-none" style="color:var(--md-text-primary);">
-                    <div class="kpi-icon mb-0" style="background:rgba(99,102,241,0.12); color:#818CF8; flex-shrink:0;">
-                        <i class="bi bi-person-plus"></i>
+
+    <!-- Top 10 Alunos -->
+    <div class="col-lg-4">
+        <h5 style="font-weight:700; margin-bottom:16px; font-size:14px; text-transform:uppercase; letter-spacing:.05em; color:var(--md-text-muted);">
+            <i class="bi bi-trophy" style="color:#F59E0B; margin-right:6px;"></i> Top 10 Alunos
+        </h5>
+        <div class="md-card" style="padding:0; overflow:hidden;">
+            @if (!topStudents.Any())
+            {
+                <p style="padding:20px; font-size:13px; color:var(--md-text-muted); margin:0; font-style:italic;">Sem dados de progresso ainda.</p>
+            }
+            else
+            {
+                @for (int i = 0; i < topStudents.Count; i++)
+                {
+                    var s      = topStudents[i];
+                    var name   = (string)s.Name;
+                    var photo  = s.Photo as string;
+                    var count  = (int)s.Count;
+                    var abbr   = string.Join("", name.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => w[0].ToString().ToUpper()));
+                    var medal  = i == 0 ? "#F59E0B" : i == 1 ? "#9CA3AF" : i == 2 ? "#D97706" : "var(--md-text-muted)";
+                    <div class="activity-row" style="padding:10px 16px;">
+                        <span style="width:18px; font-size:12px; font-weight:700; color:@medal; flex-shrink:0;">@(i+1)</span>
+                        @if (!string.IsNullOrWhiteSpace(photo))
+                        {
+                            <img src="@photo" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+                        }
+                        else
+                        {
+                            <div style="width:28px;height:28px;border-radius:50%;background:var(--md-gradient);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0;">@abbr</div>
+                        }
+                        <span style="flex:1; font-size:13px; font-weight:500; color:var(--md-text-secondary); overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">@name</span>
+                        <span style="font-size:12px; font-weight:700; color:var(--md-accent); flex-shrink:0;">@count aulas</span>
                     </div>
-                    <span style="font-size:14px; font-weight:600;">Novo Colaborador</span>
-                </a>
-            </div>
-            <div class="col-6">
-                <a asp-controller="Courses" asp-action="Create" class="md-card-sm d-flex align-items-center gap-3 text-decoration-none" style="color:var(--md-text-primary);">
-                    <div class="kpi-icon mb-0" style="background:rgba(34,197,94,0.12); color:var(--md-success); flex-shrink:0;">
-                        <i class="bi bi-collection-play"></i>
-                    </div>
-                    <span style="font-size:14px; font-weight:600;">Nova Formação</span>
-                </a>
-            </div>
-            <div class="col-6">
-                <a asp-controller="Articles" asp-action="Create" class="md-card-sm d-flex align-items-center gap-3 text-decoration-none" style="color:var(--md-text-primary);">
-                    <div class="kpi-icon mb-0" style="background:rgba(245,158,11,0.12); color:var(--md-warning); flex-shrink:0;">
-                        <i class="bi bi-file-earmark-plus"></i>
-                    </div>
-                    <span style="font-size:14px; font-weight:600;">Novo Artigo</span>
-                </a>
-            </div>
-            <div class="col-6">
-                <a asp-controller="Teams" asp-action="Create" class="md-card-sm d-flex align-items-center gap-3 text-decoration-none" style="color:var(--md-text-primary);">
-                    <div class="kpi-icon mb-0" style="background:rgba(232,80,26,0.12); color:var(--md-accent); flex-shrink:0;">
-                        <i class="bi bi-people-fill"></i>
-                    </div>
-                    <span style="font-size:14px; font-weight:600;">Nova Equipa</span>
-                </a>
-            </div>
+                }
+            }
         </div>
     </div>
 
-    <!-- Modules Summary -->
-    <div class="col-lg-6">
-        <h5 style="font-weight:700; margin-bottom:16px;">Módulos do Sistema</h5>
-        <div class="md-card" style="padding:16px;">
-            @{
-                var modules = new[] {
-                    ("Colaboradores",  "bi-people",           "Users"),
-                    ("Formações",      "bi-collection-play",  "Courses"),
-                    ("Equipas",        "bi-people-fill",      "Teams"),
-                    ("Categorias",     "bi-layers",           "Categories"),
-                    ("Artigos",        "bi-file-earmark-text","Articles"),
-                };
-            }
-            @foreach (var (name, icon, ctrl) in modules)
+    <!-- Top 10 Equipas -->
+    <div class="col-lg-4">
+        <h5 style="font-weight:700; margin-bottom:16px; font-size:14px; text-transform:uppercase; letter-spacing:.05em; color:var(--md-text-muted);">
+            <i class="bi bi-people-fill" style="color:#818CF8; margin-right:6px;"></i> Top 10 Equipas
+        </h5>
+        <div class="md-card" style="padding:0; overflow:hidden;">
+            @if (!topTeams.Any())
             {
-                <div class="activity-row">
-                    <i class="bi @icon" style="color:var(--md-accent); font-size:16px; flex-shrink:0;"></i>
-                    <span style="flex:1; color:var(--md-text-secondary);">@name</span>
-                    <a asp-controller="@ctrl" asp-action="Index" class="btn-md-ghost" style="padding:4px 10px; font-size:12px;">
-                        Ver <i class="bi bi-arrow-right"></i>
-                    </a>
-                </div>
+                <p style="padding:20px; font-size:13px; color:var(--md-text-muted); margin:0; font-style:italic;">Sem dados de progresso ainda.</p>
+            }
+            else
+            {
+                @for (int i = 0; i < topTeams.Count; i++)
+                {
+                    var t     = topTeams[i];
+                    var name  = (string)t.Name;
+                    var count = (int)t.Count;
+                    var medal = i == 0 ? "#F59E0B" : i == 1 ? "#9CA3AF" : i == 2 ? "#D97706" : "var(--md-text-muted)";
+                    var abbr  = string.Join("", name.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => w[0].ToString().ToUpper()));
+                    <div class="activity-row" style="padding:10px 16px;">
+                        <span style="width:18px; font-size:12px; font-weight:700; color:@medal; flex-shrink:0;">@(i+1)</span>
+                        <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0;">@abbr</div>
+                        <span style="flex:1; font-size:13px; font-weight:500; color:var(--md-text-secondary); overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">@name</span>
+                        <span style="font-size:12px; font-weight:700; color:#818CF8; flex-shrink:0;">@count aulas</span>
+                    </div>
+                }
             }
         </div>
     </div>
+
+    <!-- Top 5 Cursos mais populares -->
+    <div class="col-lg-4">
+        <h5 style="font-weight:700; margin-bottom:16px; font-size:14px; text-transform:uppercase; letter-spacing:.05em; color:var(--md-text-muted);">
+            <i class="bi bi-collection-play" style="color:var(--md-success); margin-right:6px;"></i> Top 5 Formações
+        </h5>
+        <div class="md-card" style="padding:0; overflow:hidden;">
+            @if (!topCourses.Any())
+            {
+                <p style="padding:20px; font-size:13px; color:var(--md-text-muted); margin:0; font-style:italic;">Sem dados de progresso ainda.</p>
+            }
+            else
+            {
+                @for (int i = 0; i < topCourses.Count; i++)
+                {
+                    var c        = topCourses[i];
+                    var title    = (string)c.Title;
+                    var students = (int)c.Students;
+                    var medal    = i == 0 ? "#F59E0B" : i == 1 ? "#9CA3AF" : i == 2 ? "#D97706" : "var(--md-text-muted)";
+                    <div class="activity-row" style="padding:10px 16px;">
+                        <span style="width:18px; font-size:12px; font-weight:700; color:@medal; flex-shrink:0;">@(i+1)</span>
+                        <div style="width:28px;height:28px;border-radius:8px;background:rgba(34,197,94,0.12);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--md-success);flex-shrink:0;"><i class="bi bi-play-circle-fill"></i></div>
+                        <span style="flex:1; font-size:13px; font-weight:500; color:var(--md-text-secondary); overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">@title</span>
+                        <span style="font-size:12px; font-weight:700; color:var(--md-success); flex-shrink:0;">@students alunos</span>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
 </div>

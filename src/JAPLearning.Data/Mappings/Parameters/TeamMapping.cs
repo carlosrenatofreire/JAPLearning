@@ -19,6 +19,9 @@ namespace JAPLearning.Data.Mappings.Parameters
             builder.Property(e => e.Description)
                 .HasColumnType("varchar(1000)");
 
+            builder.Property(e => e.Thumbnail)
+                .HasColumnType("nvarchar(max)");
+
             builder.HasMany(e => e.Categories)
                 .WithOne(e => e.Team)
                 .HasForeignKey(e => e.TeamId);

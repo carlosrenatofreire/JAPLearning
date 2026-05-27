@@ -11,8 +11,6 @@ namespace JAPLearning.Mvc.Configurations
 
             if (string.IsNullOrWhiteSpace(token))
             {
-                // Em desenvolvimento local sem Doppler configurado, continua sem ele
-                // (appsettings.json ou variáveis locais serão usadas)
                 return builder;
             }
 
@@ -20,7 +18,7 @@ namespace JAPLearning.Mvc.Configurations
             {
                 options.ServiceToken = token;
                 options.Project      = "jap-learning";
-                options.Config       = builder.Environment.IsProduction() ? "prd" : "dev_personal";
+                options.Config       = builder.Environment.IsProduction() ? "prd" : "dev";
             });
 
             var root = (IConfigurationRoot)builder.Configuration;

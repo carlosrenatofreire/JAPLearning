@@ -11,48 +11,161 @@
     </div>
 </div>
 
-<div class="md-card" style="max-width:600px;">
+<div class="md-card form-card">
     <form asp-action="Create" method="post">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="All" class="validation-summary"></div>
 
-        <div class="mb-3">
-            <label class="md-label">Questão <span class="text-danger">*</span></label>
-            <select asp-for="QuestionId" asp-items="ViewBag.Questions" class="md-input">
-                <option value="">— Seleccionar —</option>
-            </select>
-            <span asp-validation-for="QuestionId" class="field-error"></span>
-        </div>
+        <div class="row g-3">
 
-        <div class="mb-3">
-            <label class="md-label">Texto da Opção <span class="text-danger">*</span></label>
-            <input asp-for="Name" class="md-input" placeholder="ex: A opção A é..." />
-            <span asp-validation-for="Name" class="field-error"></span>
-        </div>
+            <!-- Equipa (3) + Formação (3) + Tópico (3) + Lição (3) -->
+            <div class="col-md-3">
+                <div class="md-form-row">
+                    <label class="md-label">Equipa</label>
+                    <select id="teamSelect" asp-items="ViewBag.Teams" class="md-select">
+                        <option value="">Seleccionar...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="md-form-row">
+                    <label class="md-label">Formação</label>
+                    <select id="courseSelect" class="md-select" disabled>
+                        <option value="">— Equipa primeiro —</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="md-form-row">
+                    <label class="md-label">Tópico</label>
+                    <select id="topicSelect" class="md-select" disabled>
+                        <option value="">— Formação primeiro —</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="md-form-row">
+                    <label class="md-label">Lição</label>
+                    <select id="lessonSelect" class="md-select" disabled>
+                        <option value="">— Tópico primeiro —</option>
+                    </select>
+                </div>
+            </div>
 
-        <div class="mb-3">
-            <label class="md-label">Descrição / Explicação</label>
-            <textarea asp-for="Description" class="md-input" rows="2" placeholder="Explicação (mostrada após resposta)"></textarea>
-        </div>
+            <!-- Questão (12) -->
+            <div class="col-12">
+                <div class="md-form-row">
+                    <label asp-for="QuestionId" class="md-label">Questão <span class="text-danger">*</span></label>
+                    <select asp-for="QuestionId" id="questionSelect" class="md-select" disabled>
+                        <option value="">— Lição primeiro —</option>
+                    </select>
+                    <span asp-validation-for="QuestionId" class="text-danger" style="font-size:12px;"></span>
+                </div>
+            </div>
 
-        <div class="row g-3 mb-4">
-            <div class="col-auto">
-                <label class="md-form-check">
+            <!-- Texto da Opção (8) + Correcta + Activa (4) -->
+            <div class="col-md-8">
+                <div class="md-form-row">
+                    <label asp-for="Name" class="md-label">Texto da Opção <span class="text-danger">*</span></label>
+                    <input asp-for="Name" class="md-input" placeholder="ex: A opção A é..." />
+                    <span asp-validation-for="Name" class="text-danger" style="font-size:12px;"></span>
+                </div>
+            </div>
+            <div class="col-md-4" style="display:flex; align-items:flex-end; gap:20px; padding-bottom:4px;">
+                <div class="md-form-check">
                     <input asp-for="IsCorrect" type="checkbox" />
-                    <span style="color:#4caf82;"><i class="bi bi-check-circle"></i> Resposta correcta</span>
-                </label>
-            </div>
-            <div class="col-auto">
-                <label class="md-form-check">
+                    <label asp-for="IsCorrect" style="color:#4caf82;"><i class="bi bi-check-circle"></i> Correcta</label>
+                </div>
+                <div class="md-form-check">
                     <input asp-for="IsActived" type="checkbox" />
-                    <span>Activa</span>
-                </label>
+                    <label asp-for="IsActived">Activa</label>
+                </div>
             </div>
+
+            <!-- Descrição (12) -->
+            <div class="col-12">
+                <div class="md-form-row">
+                    <label asp-for="Description" class="md-label">Descrição / Explicação</label>
+                    <textarea asp-for="Description" class="md-input" rows="3" placeholder="Explicação (mostrada após resposta)"></textarea>
+                </div>
+            </div>
+
         </div>
 
-        <div style="display:flex; gap:12px;">
+        <div style="display:flex; gap:12px; margin-top:24px;">
             <button type="submit" class="btn-md-primary"><i class="bi bi-check-lg"></i> Guardar</button>
-            <a asp-action="Index" class="btn-md-secondary">Cancelar</a>
+            <a asp-action="Index" class="btn-md-ghost">Cancelar</a>
         </div>
     </form>
 </div>
+
+@section Scripts {
+<script>
+(function () {
+    const teamSel     = document.getElementById('teamSelect');
+    const courseSel   = document.getElementById('courseSelect');
+    const topicSel    = document.getElementById('topicSelect');
+    const lessonSel   = document.getElementById('lessonSelect');
+    const questionSel = document.getElementById('questionSelect');
+
+    function resetSelect(sel, placeholder) {
+        sel.innerHTML = `<option value="">${placeholder}</option>`;
+        sel.disabled = true;
+    }
+
+    teamSel.addEventListener('change', function () {
+        resetSelect(courseSel,   '— Equipa primeiro —');
+        resetSelect(topicSel,    '— Formação primeiro —');
+        resetSelect(lessonSel,   '— Tópico primeiro —');
+        resetSelect(questionSel, '— Lição primeiro —');
+        if (!this.value) return;
+        fetch(`/QuestionOptions/GetCoursesByTeam?teamId=${this.value}`)
+            .then(r => r.json()).then(data => {
+                courseSel.innerHTML = '<option value="">Seleccionar formação...</option>';
+                data.forEach(c => courseSel.innerHTML += `<option value="${c.value}">${c.text}</option>`);
+                courseSel.disabled = data.length === 0;
+                if (data.length === 0) courseSel.innerHTML = '<option value="">Sem formações nesta equipa</option>';
+            });
+    });
+
+    courseSel.addEventListener('change', function () {
+        resetSelect(topicSel,    '— Formação primeiro —');
+        resetSelect(lessonSel,   '— Tópico primeiro —');
+        resetSelect(questionSel, '— Lição primeiro —');
+        if (!this.value) return;
+        fetch(`/QuestionOptions/GetTopicsByCourse?courseId=${this.value}`)
+            .then(r => r.json()).then(data => {
+                topicSel.innerHTML = '<option value="">Seleccionar tópico...</option>';
+                data.forEach(t => topicSel.innerHTML += `<option value="${t.value}">${t.text}</option>`);
+                topicSel.disabled = data.length === 0;
+                if (data.length === 0) topicSel.innerHTML = '<option value="">Sem tópicos nesta formação</option>';
+            });
+    });
+
+    topicSel.addEventListener('change', function () {
+        resetSelect(lessonSel,   '— Tópico primeiro —');
+        resetSelect(questionSel, '— Lição primeiro —');
+        if (!this.value) return;
+        fetch(`/QuestionOptions/GetLessonsByTopic?topicId=${this.value}`)
+            .then(r => r.json()).then(data => {
+                lessonSel.innerHTML = '<option value="">Seleccionar lição...</option>';
+                data.forEach(l => lessonSel.innerHTML += `<option value="${l.value}">${l.text}</option>`);
+                lessonSel.disabled = data.length === 0;
+                if (data.length === 0) lessonSel.innerHTML = '<option value="">Sem lições neste tópico</option>';
+            });
+    });
+
+    lessonSel.addEventListener('change', function () {
+        resetSelect(questionSel, '— Lição primeiro —');
+        if (!this.value) return;
+        fetch(`/QuestionOptions/GetQuestionsByLesson?lessonId=${this.value}`)
+            .then(r => r.json()).then(data => {
+                questionSel.innerHTML = '<option value="">Seleccionar questão...</option>';
+                data.forEach(q => questionSel.innerHTML += `<option value="${q.value}">${q.text}</option>`);
+                questionSel.disabled = data.length === 0;
+                if (data.length === 0) questionSel.innerHTML = '<option value="">Sem questões nesta lição</option>';
+            });
+    });
+})();
+</script>
+}

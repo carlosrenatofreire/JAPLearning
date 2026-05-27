@@ -48,7 +48,7 @@
 
 <!-- Breadcrumb -->
 <div class="player-breadcrumb">
-    <a asp-action="MyCourses">Meus Cursos</a>
+    <a asp-action="MyCourses">Minhas Formações</a>
     <span>/</span>
     <a asp-action="Player" asp-route-courseId="@Model.Course.Id">@Model.Course.Title</a>
     <span>/</span>
@@ -60,13 +60,45 @@
     <h1 style="font-size:20px; font-weight:800; margin:0; color:var(--md-text-primary);">
         @Model.CurrentLesson.Name
     </h1>
-    @if (!Model.IsCurrentLessonCompleted)
+
+    @if (Model.IsQuizLesson)
     {
+        @* Quiz lesson — show attempt status badge instead of complete button *@
+        if (Model.QuizPassed)
+        {
+            <span style="flex-shrink:0; display:inline-flex; align-items:center; gap:7px;
+                         background:rgba(76,175,130,0.12); border:1px solid #4caf82; border-radius:8px;
+                         padding:8px 16px; font-size:13px; font-weight:700; color:#4caf82;">
+                <i class="bi bi-patch-check-fill"></i> Teste Concluído &nbsp;·&nbsp; @Model.BestQuizScore%
+            </span>
+        }
+        else if (Model.HasAttemptedQuiz)
+        {
+            <span style="flex-shrink:0; display:inline-flex; align-items:center; gap:7px;
+                         background:rgba(239,83,80,0.10); border:1px solid #ef5350; border-radius:8px;
+                         padding:8px 16px; font-size:13px; font-weight:700; color:#ef5350;">
+                <i class="bi bi-arrow-repeat"></i> Tentativa: @Model.BestQuizScore% &nbsp;·&nbsp; mín. @Model.PassingScore%
+            </span>
+        }
+        else
+        {
+            <span style="flex-shrink:0; display:inline-flex; align-items:center; gap:7px;
+                         background:rgba(232,80,26,0.08); border:1px solid var(--md-border); border-radius:8px;
+                         padding:8px 16px; font-size:13px; font-weight:700; color:var(--md-text-muted);">
+                <i class="bi bi-pencil-square"></i> Teste a Fazer
+            </span>
+        }
+    }
+    else if (!Model.IsCurrentLessonCompleted)
+    {
+        var hasVideo = !string.IsNullOrEmpty(Model.EmbedUrl);
         <form asp-action="CompleteLesson" method="post" style="flex-shrink:0;">
             @Html.AntiForgeryToken()
             <input type="hidden" name="lessonId"  value="@Model.CurrentLesson.Id" />
             <input type="hidden" name="courseId"  value="@Model.Course.Id" />
-            <button type="submit" class="btn-md-success" style="font-size:13px; padding:8px 18px;">
+            <button type="submit" class="btn-md-success" style="font-size:13px; padding:8px 18px;"
+                    @(hasVideo ? "" : "disabled")
+                    title="@(hasVideo ? "" : "Vídeo ainda não disponível — não é possível concluir esta aula")">
                 <i class="bi bi-check-lg"></i> Concluir Aula
             </button>
         </form>
@@ -79,22 +111,25 @@
     }
 </div>
 
-<!-- Video -->
-<div class="player-video-wrap">
-    @if (!string.IsNullOrEmpty(Model.EmbedUrl))
-    {
-        <iframe src="@Model.EmbedUrl"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen></iframe>
-    }
-    else
-    {
-        <div class="player-video-placeholder">
-            <i class="bi bi-camera-video-off" style="font-size:48px;"></i>
-            <span>Vídeo não disponível</span>
-        </div>
-    }
-</div>
+<!-- Video — hidden for quiz lessons -->
+@if (!Model.IsQuizLesson)
+{
+    <div class="player-video-wrap">
+        @if (!string.IsNullOrEmpty(Model.EmbedUrl))
+        {
+            <iframe src="@Model.EmbedUrl"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+        }
+        else
+        {
+            <div class="player-video-placeholder">
+                <i class="bi bi-camera-video-off" style="font-size:48px;"></i>
+                <span>Vídeo não disponível</span>
+            </div>
+        }
+    </div>
+}
 
 <!-- Description -->
 @if (!string.IsNullOrWhiteSpace(Model.CurrentLesson.Description))
@@ -105,6 +140,335 @@
     </div>
 }
 
+<!-- ── Quiz Block ─────────────────────────────────────────────────────── -->
+@if (Model.Questions.Any())
+{
+    var questions = Model.Questions.Where(q => q.Options.Any()).ToList();
+    if (questions.Any())
+    {
+    <div id="quizBlock" style="margin-top:32px; padding-top:28px; border-top:2px solid var(--md-border);">
+
+        <!-- Header -->
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+            <div>
+                <h3 style="font-size:17px; font-weight:800; margin:0; color:var(--md-text-primary);">
+                    <i class="bi bi-patch-question-fill" style="color:var(--md-accent); margin-right:8px;"></i>
+                    Teste de Conhecimentos
+                </h3>
+                <p style="font-size:13px; color:var(--md-text-muted); margin:4px 0 0;">
+                    @questions.Count @(questions.Count == 1 ? "questão" : "questões") — mínimo @Model.PassingScore% para concluir
+                    @if (Model.HasAttemptedQuiz)
+                    {
+                        <span style="margin-left:8px; font-weight:700; color:@(Model.QuizPassed ? "#4caf82" : "#ef5350");">
+                            · melhor tentativa: @Model.BestQuizScore%
+                        </span>
+                    }
+                </p>
+            </div>
+            <div id="quizProgress" style="font-size:13px; font-weight:700; color:var(--md-text-muted);">
+                1 / @questions.Count
+            </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="md-progress" style="margin-bottom:28px;">
+            <div id="quizProgressBar" class="md-progress-bar" style="width:0%; transition:width .4s ease;"></div>
+        </div>
+
+        <!-- Questions (hidden via JS, show 1 at a time) -->
+        @for (int qi = 0; qi < questions.Count; qi++)
+        {
+            var q = questions[qi];
+            <div class="quiz-question" id="question-@qi" style="display:@(qi == 0 ? "block" : "none");">
+
+                <!-- Question text -->
+                <div style="background:var(--md-bg-secondary); border:1px solid var(--md-border);
+                             border-radius:var(--md-radius); padding:20px 24px; margin-bottom:20px;
+                             display:flex; gap:20px; align-items:flex-start;">
+                    <!-- Big icon -->
+                    <div style="flex-shrink:0; width:52px; height:52px; border-radius:50%;
+                                background:rgba(232,80,26,0.10); border:1.5px solid rgba(232,80,26,0.25);
+                                display:flex; align-items:center; justify-content:center;">
+                        <i class="bi bi-question-lg" style="font-size:26px; color:var(--md-accent);"></i>
+                    </div>
+                    <!-- Text -->
+                    <div style="flex:1; min-width:0;">
+                        <p style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
+                                   color:var(--md-accent); margin-bottom:8px;">Questão @(qi + 1)</p>
+                        <p style="font-size:16px; font-weight:700; color:var(--md-text-primary); margin:0; line-height:1.5;">
+                            @q.Name
+                        </p>
+                        @if (!string.IsNullOrWhiteSpace(q.Description))
+                        {
+                            <p style="font-size:13px; color:var(--md-text-muted); margin:10px 0 0; line-height:1.5;">@q.Description</p>
+                        }
+                    </div>
+                </div>
+
+                <!-- Options -->
+                <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:20px;">
+                    @foreach (var opt in q.Options)
+                    {
+                        <button class="quiz-option"
+                                data-correct="@opt.IsCorrect.ToString().ToLower()"
+                                data-explanation="@(opt.Description ?? "")"
+                                onclick="selectOption(this, @qi)"
+                                style="text-align:left; padding:13px 18px; border-radius:var(--md-radius-sm);
+                                       background:var(--md-bg-card); border:1.5px solid var(--md-border);
+                                       color:var(--md-text-primary); font-size:14px; cursor:pointer;
+                                       transition:border-color .2s, background .2s; width:100%;
+                                       display:flex; align-items:center; gap:12px;">
+                            <span style="flex-shrink:0; width:28px; height:28px; border-radius:50%;
+                                         border:1.5px solid var(--md-border); background:var(--md-bg-secondary);
+                                         display:flex; align-items:center; justify-content:center;
+                                         font-size:12px; font-weight:700; color:var(--md-text-muted);">
+                                @("ABCDEFGH"[q.Options.ToList().IndexOf(opt)])
+                            </span>
+                            <span>@opt.Name</span>
+                        </button>
+                    }
+                </div>
+
+                <!-- Feedback (hidden until answered) -->
+                <div id="feedback-@qi" style="display:none; padding:14px 18px; border-radius:var(--md-radius-sm);
+                                               font-size:13px; font-weight:600; margin-bottom:20px; line-height:1.5;">
+                </div>
+
+                <!-- Next / Finish button -->
+                <div style="display:flex; justify-content:flex-end;">
+                    @if (qi < questions.Count - 1)
+                    {
+                        <button id="btnNext-@qi" onclick="nextQuestion(@qi, @questions.Count)"
+                                style="display:none;" class="btn-md-primary">
+                            Próxima Questão <i class="bi bi-chevron-right"></i>
+                        </button>
+                    }
+                    else
+                    {
+                        <button id="btnNext-@qi" onclick="finishQuiz(@questions.Count)"
+                                style="display:none;" class="btn-md-primary">
+                            Ver Resultado <i class="bi bi-trophy"></i>
+                        </button>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Result panel (hidden until finish) -->
+        <div id="quizResult" style="display:none; text-align:center; padding:40px 20px;">
+            <div id="quizResultIcon" style="font-size:56px; margin-bottom:16px;"></div>
+            <h3 id="quizResultTitle" style="font-size:22px; font-weight:900; margin-bottom:8px;"></h3>
+            <p id="quizResultSub" style="font-size:14px; color:var(--md-text-muted); margin-bottom:28px;"></p>
+            <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+                <button onclick="retryQuiz(@questions.Count)" class="btn-md-ghost">
+                    <i class="bi bi-arrow-counterclockwise"></i> Tentar novamente
+                </button>
+                <button id="btnCompleteFromQuiz" onclick="completeFromQuiz()" class="btn-md-success" style="display:none;">
+                    <i class="bi bi-check-lg"></i> Concluir Aula
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <style>
+        .quiz-option:hover:not(:disabled) {
+            border-color: var(--md-accent);
+            background: rgba(232,80,26,0.06);
+        }
+        .quiz-option:hover:not(:disabled) span:first-child {
+            border-color: var(--md-accent);
+            color: var(--md-accent);
+        }
+        .quiz-option.correct  {
+            border-color:#4caf82 !important;
+            background:rgba(76,175,130,0.12) !important;
+            color:#4caf82 !important;
+            font-weight:700;
+        }
+        .quiz-option.correct span:first-child {
+            border-color:#4caf82 !important;
+            background:rgba(76,175,130,0.2) !important;
+            color:#4caf82 !important;
+        }
+        .quiz-option.wrong {
+            border-color:#ef5350 !important;
+            background:rgba(239,83,80,0.10) !important;
+            color:#ef5350 !important;
+        }
+        .quiz-option.wrong span:first-child {
+            border-color:#ef5350 !important;
+            background:rgba(239,83,80,0.15) !important;
+            color:#ef5350 !important;
+        }
+        .quiz-option.reveal {
+            border-color:#4caf82 !important;
+            background:rgba(76,175,130,0.07) !important;
+        }
+        .quiz-option.reveal span:first-child {
+            border-color:#4caf82 !important;
+            color:#4caf82 !important;
+        }
+        .quiz-option:disabled { cursor:default; }
+    </style>
+    }
+}
+<!-- ── /Quiz Block ──────────────────────────────────────────────────────── -->
+
+@section Scripts {
+<script>
+(function () {
+    // ── State ────────────────────────────────────────────────────────────────
+    var scores      = [];   // true/false per question index
+    var passingScore = @Model.PassingScore;
+    var lessonId     = '@Model.CurrentLesson.Id';
+
+    // ── selectOption ─────────────────────────────────────────────────────────
+    window.selectOption = function (btn, qi) {
+        var wrap    = document.getElementById('question-' + qi);
+        var options = wrap.querySelectorAll('.quiz-option');
+
+        // Disable all options
+        options.forEach(function (o) { o.disabled = true; });
+
+        var isCorrect   = btn.dataset.correct === 'true';
+        var explanation = btn.dataset.explanation || '';
+
+        // Mark selected
+        btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+        // Reveal the correct answer if the user was wrong
+        if (!isCorrect) {
+            options.forEach(function (o) {
+                if (o.dataset.correct === 'true') { o.classList.add('reveal'); }
+            });
+        }
+
+        // Show feedback
+        var fb = document.getElementById('feedback-' + qi);
+        fb.style.display = 'block';
+        if (isCorrect) {
+            fb.style.background  = 'rgba(76,175,130,0.12)';
+            fb.style.border      = '1px solid #4caf82';
+            fb.style.color       = '#4caf82';
+            fb.innerHTML = '<i class="bi bi-check-circle-fill"></i> Correcto!' +
+                (explanation ? '<br><span style="font-weight:400;color:var(--md-text-secondary);">' + explanation + '</span>' : '');
+        } else {
+            fb.style.background  = 'rgba(239,83,80,0.10)';
+            fb.style.border      = '1px solid #ef5350';
+            fb.style.color       = '#ef5350';
+            fb.innerHTML = '<i class="bi bi-x-circle-fill"></i> Incorrecta.' +
+                (explanation ? '<br><span style="font-weight:400;color:var(--md-text-secondary);">' + explanation + '</span>' : '');
+        }
+
+        // Record score
+        scores[qi] = isCorrect;
+
+        // Show next/finish button
+        var btnNext = document.getElementById('btnNext-' + qi);
+        if (btnNext) { btnNext.style.display = 'inline-flex'; }
+    };
+
+    // ── nextQuestion ──────────────────────────────────────────────────────────
+    window.nextQuestion = function (currentQi, total) {
+        document.getElementById('question-' + currentQi).style.display = 'none';
+        var nextQi = currentQi + 1;
+        document.getElementById('question-' + nextQi).style.display = 'block';
+
+        // Update counter & progress bar
+        document.getElementById('quizProgress').textContent = (nextQi + 1) + ' / ' + total;
+        var pct = Math.round((nextQi / total) * 100);
+        document.getElementById('quizProgressBar').style.width = pct + '%';
+    };
+
+    // ── finishQuiz ────────────────────────────────────────────────────────────
+    window.finishQuiz = function (total) {
+        document.getElementById('question-' + (total - 1)).style.display = 'none';
+
+        // Update progress to 100 %
+        document.getElementById('quizProgress').textContent = total + ' / ' + total;
+        document.getElementById('quizProgressBar').style.width = '100%';
+
+        var correct = scores.filter(Boolean).length;
+        var pct     = Math.round((correct / total) * 100);
+        var passed  = pct >= passingScore;
+
+        var iconEl      = document.getElementById('quizResultIcon');
+        var titleEl     = document.getElementById('quizResultTitle');
+        var subEl       = document.getElementById('quizResultSub');
+        var btnComplete = document.getElementById('btnCompleteFromQuiz');
+
+        if (passed) {
+            iconEl.textContent  = '🏆';
+            titleEl.textContent = 'Parabéns! Excelente resultado!';
+            titleEl.style.color = 'var(--md-success, #4caf82)';
+        } else {
+            iconEl.textContent  = '📚';
+            titleEl.textContent = 'Continua a tentar!';
+            titleEl.style.color = 'var(--md-accent)';
+        }
+
+        subEl.textContent = correct + ' de ' + total + ' respostas correctas (' + pct + '%)' +
+            (passed ? '' : ' — mínimo exigido: ' + passingScore + '%');
+
+        // Save result to server (fire-and-forget)
+        fetch('/Student/SaveQuizResult', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ lessonId: lessonId, correctAnswers: correct, totalQuestions: total })
+        });
+
+        if (passed && btnComplete) {
+            btnComplete.style.display = 'inline-flex';
+        }
+
+        document.getElementById('quizResult').style.display = 'block';
+    };
+
+    // ── retryQuiz ─────────────────────────────────────────────────────────────
+    window.retryQuiz = function (total) {
+        scores = [];
+
+        // Reset all questions
+        for (var i = 0; i < total; i++) {
+            var wrap = document.getElementById('question-' + i);
+
+            // Reset options
+            wrap.querySelectorAll('.quiz-option').forEach(function (o) {
+                o.disabled = false;
+                o.classList.remove('correct', 'wrong', 'reveal');
+            });
+
+            // Hide feedback
+            var fb = document.getElementById('feedback-' + i);
+            fb.style.display = 'none';
+            fb.innerHTML     = '';
+
+            // Hide next button
+            var btnNext = document.getElementById('btnNext-' + i);
+            if (btnNext) { btnNext.style.display = 'none'; }
+
+            // Show only first question
+            wrap.style.display = (i === 0) ? 'block' : 'none';
+        }
+
+        // Reset progress
+        document.getElementById('quizProgress').textContent = '1 / ' + total;
+        document.getElementById('quizProgressBar').style.width = '0%';
+
+        // Hide result panel
+        document.getElementById('quizResult').style.display = 'none';
+    };
+
+    // ── completeFromQuiz ──────────────────────────────────────────────────────
+    window.completeFromQuiz = function () {
+        var form = document.querySelector('form[action*="CompleteLesson"]');
+        if (form) { form.submit(); }
+    };
+})();
+</script>
+}
+
 <!-- Navigation buttons -->
 @{
     var allLessonIds = Model.Topics.SelectMany(t => t.Lessons).Select(l => l.Id).ToList();
@@ -112,7 +476,7 @@
     var prevLessonId = currentIndex > 0 ? allLessonIds[currentIndex - 1] : (Guid?)null;
     var nextLessonId = currentIndex >= 0 && currentIndex + 1 < allLessonIds.Count ? allLessonIds[currentIndex + 1] : (Guid?)null;
 }
-<div style="display:flex; gap:12px; margin-top:32px; padding-top:24px; border-top:1px solid var(--md-border);">
+<div id="lessonNav" style="display:flex; gap:12px; margin-top:32px; padding-top:24px; border-top:1px solid var(--md-border);">
     @if (prevLessonId.HasValue)
     {
         <a asp-action="Player" asp-route-courseId="@Model.Course.Id" asp-route-lessonId="@prevLessonId"
@@ -123,7 +487,7 @@
     <div style="flex:1;"></div>
     @if (nextLessonId.HasValue)
     {
-        <a asp-action="Player" asp-route-courseId="@Model.Course.Id" asp-route-lessonId="@nextLessonId"
+        <a id="btnNextLesson" asp-action="Player" asp-route-courseId="@Model.Course.Id" asp-route-lessonId="@nextLessonId"
            class="btn-md-primary" style="gap:6px;">
             Próxima Aula <i class="bi bi-chevron-right"></i>
         </a>

@@ -22,6 +22,8 @@
         <thead>
             <tr>
                 <th>Questão</th>
+                <th>Equipa</th>
+                <th>Formação</th>
                 <th>Lição</th>
                 <th>Opções</th>
                 <th>Estado</th>
@@ -33,6 +35,8 @@
             {
                 <tr>
                     <td style="color:var(--md-text-primary); font-weight:600;">@item.Name</td>
+                    <td><span class="md-badge md-badge-secondary">@item.TeamName</span></td>
+                    <td style="font-size:13px; color:var(--md-text-secondary);">@item.CourseName</td>
                     <td><span class="md-badge md-badge-info">@item.LessonName</span></td>
                     <td>
                         <span style="color:var(--md-text-muted); font-size:13px;">
@@ -64,7 +68,7 @@
             }
             @if (!Model.Any())
             {
-                <tr><td colspan="5" style="text-align:center; padding:40px; color:var(--md-text-muted);">
+                <tr><td colspan="7" style="text-align:center; padding:40px; color:var(--md-text-muted);">
                     <i class="bi bi-question-circle" style="font-size:32px; display:block; margin-bottom:8px;"></i>
                     Nenhuma questão encontrada.
                 </td></tr>

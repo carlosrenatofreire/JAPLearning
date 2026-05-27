@@ -69,7 +69,7 @@
         <p style="color:var(--md-text-secondary); margin:0; font-size:14px;">
             @if (Model.CoursesInProgress > 0)
             {
-                <text>Continue de onde parou. Tem @Model.CoursesInProgress curso(s) em progresso.</text>
+                <text>Continue de onde parou. Tem @Model.CoursesInProgress formação(ões) em progresso.</text>
             }
             else
             {
@@ -78,7 +78,7 @@
         </p>
     </div>
     <a asp-action="MyCourses" class="btn-md-primary">
-        Meus Cursos <i class="bi bi-arrow-right"></i>
+        Minhas Formações <i class="bi bi-arrow-right"></i>
     </a>
 </div>
 
@@ -90,7 +90,7 @@
                 <i class="bi bi-collection-play"></i>
             </div>
             <div class="kpi-value">@Model.CoursesInProgress</div>
-            <div class="kpi-label">Cursos em Progresso</div>
+            <div class="kpi-label">Formações em Progresso</div>
         </div>
     </div>
     <div class="col-6 col-lg-3">
@@ -99,7 +99,7 @@
                 <i class="bi bi-check-circle"></i>
             </div>
             <div class="kpi-value">@Model.CoursesCompleted</div>
-            <div class="kpi-label">Cursos Concluídos</div>
+            <div class="kpi-label">Formações Concluídas</div>
         </div>
     </div>
     <div class="col-6 col-lg-3">
@@ -154,7 +154,7 @@
         {
             <div style="text-align:center; padding:40px; color:var(--md-text-muted);">
                 <i class="bi bi-play-circle" style="font-size:40px; display:block; margin-bottom:12px;"></i>
-                <p style="margin:0;">Nenhum curso iniciado ainda.</p>
+                <p style="margin:0;">Nenhuma formação iniciada ainda.</p>
             </div>
         }
     </div>

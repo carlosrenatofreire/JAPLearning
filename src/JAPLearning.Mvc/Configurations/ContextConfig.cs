@@ -7,9 +7,7 @@ namespace JAPLearning.Mvc.Configurations
     {
         public static IServiceCollection AddContextConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration["SQLSERVER__CONNECTIONSTRING"]
-                ?? Environment.GetEnvironmentVariable("SQLSERVER__CONNECTIONSTRING")
-                ?? throw new InvalidOperationException("Connection string 'SQLSERVER__CONNECTIONSTRING' não encontrada.");
+            var connectionString = configuration["CONNECTIONSTRINGS"];
 
             services.AddDbContext<MainDbContext>(options =>
                 options.UseSqlServer(connectionString));

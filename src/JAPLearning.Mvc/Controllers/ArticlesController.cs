@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using JAPLearning.Business.Interfaces.Externals;
 using JAPLearning.Business.Interfaces.Internals.Shareds;
 using JAPLearning.Business.Interfaces.Services.Entities;
 using JAPLearning.Business.Interfaces.Services.Parameters;
@@ -15,13 +16,15 @@ namespace JAPLearning.Mvc.Controllers
     {
         private readonly IArticleService _service;
         private readonly ISubjectService _subjectService;
+        private readonly ICloudinaryService _cloudinary;
         private readonly IMapper _mapper;
 
         public ArticlesController(IArticleService service, ISubjectService subjectService,
-            IMapper mapper, INotificator notificator) : base(notificator)
+            ICloudinaryService cloudinary, IMapper mapper, INotificator notificator) : base(notificator)
         {
             _service = service;
             _subjectService = subjectService;
+            _cloudinary = cloudinary;
             _mapper = mapper;
         }
 
@@ -46,7 +49,7 @@ namespace JAPLearning.Mvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ArticleViewModel vm)
+        public async Task<IActionResult> Create(ArticleViewModel vm, IFormFile? coverImageFile)
         {
             ViewData["ActiveMenu"] = "articles";
             if (!ModelState.IsValid) { await PopulateSubjectsAsync(); return View(vm); }
@@ -55,6 +58,8 @@ namespace JAPLearning.Mvc.Controllers
             entity.CreatedDate = DateTime.UtcNow;
             if (string.IsNullOrWhiteSpace(entity.Slug))
                 entity.Slug = GenerateSlug(entity.Name);
+            if (coverImageFile != null && coverImageFile.Length > 0)
+                entity.CoverImage = await _cloudinary.UploadImageAsync(coverImageFile, "articles");
             if (!await _service.AddAsync(entity)) { AddErrors(); await PopulateSubjectsAsync(); return View(vm); }
             TempData["Success"] = "Artigo criado com sucesso.";
             return RedirectToAction(nameof(Index));
@@ -72,7 +77,7 @@ namespace JAPLearning.Mvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, ArticleViewModel vm)
+        public async Task<IActionResult> Edit(Guid id, ArticleViewModel vm, IFormFile? coverImageFile)
         {
             ViewData["ActiveMenu"] = "articles";
             if (!ModelState.IsValid) { await PopulateSubjectsAsync(vm.SubjectId); return View(vm); }
@@ -81,6 +86,15 @@ namespace JAPLearning.Mvc.Controllers
             entity.ChangedDate = DateTime.UtcNow;
             if (string.IsNullOrWhiteSpace(entity.Slug))
                 entity.Slug = GenerateSlug(entity.Name);
+            if (coverImageFile != null && coverImageFile.Length > 0)
+            {
+                if (!string.IsNullOrWhiteSpace(vm.CoverImage))
+                {
+                    var oldId = _cloudinary.ExtractPublicId(vm.CoverImage);
+                    if (oldId != null) await _cloudinary.DeleteImageAsync(oldId);
+                }
+                entity.CoverImage = await _cloudinary.UploadImageAsync(coverImageFile, "articles");
+            }
             if (!await _service.UpdateAsync(entity)) { AddErrors(); await PopulateSubjectsAsync(vm.SubjectId); return View(vm); }
             TempData["Success"] = "Artigo actualizado com sucesso.";
             return RedirectToAction(nameof(Index));

@@ -12,8 +12,12 @@ namespace JAPLearning.Business.Services.Entities
 
         public async Task<List<Question>> GetByLessonAsync(Guid lessonId)
         {
-            var all = await _repository.Find(q => q.LessonId == lessonId && !q.IsDeleted);
-            return all.OrderBy(q => q.Name).ToList();
+            // GetAll already includes Options via ThenInclude in QuestionRepository
+            var all = await _repository.GetAll();
+            return all
+                .Where(q => q.LessonId == lessonId && q.IsActived && !q.IsDeleted)
+                .OrderBy(q => q.Name)
+                .ToList();
         }
     }
 }

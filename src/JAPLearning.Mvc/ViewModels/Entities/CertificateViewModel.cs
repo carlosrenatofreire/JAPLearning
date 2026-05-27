@@ -9,6 +9,7 @@ namespace JAPLearning.Mvc.ViewModels.Entities
         public string CourseTitle { get; set; } = string.Empty;
         public string CertifiedFile { get; set; } = string.Empty;
         public string? ValidationCode { get; set; }
+        public int ScorePercent { get; set; }
         public DateTime CompletedDate { get; set; }
     }
 }

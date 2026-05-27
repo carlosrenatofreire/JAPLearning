@@ -8,6 +8,7 @@ namespace JAPLearning.Business.Models.Domains.Entities
         public Guid CourseId { get; set; }
         public string CertifiedFile { get; set; } = string.Empty;
         public string? ValidationCode { get; set; }
+        public int ScorePercent { get; set; }
         public DateTime CompletedDate { get; set; }
 
         public User User { get; set; } = null!;

@@ -12,7 +12,7 @@
 <div class="page-header">
     <div>
         <h4 class="page-header-title">Tópicos</h4>
-        <p class="page-header-sub">Módulos e tópicos dos cursos</p>
+        <p class="page-header-sub">Módulos e tópicos das formações</p>
     </div>
     <a asp-action="Create" class="btn-md-primary"><i class="bi bi-plus-lg"></i> Novo Tópico</a>
 </div>
@@ -22,7 +22,8 @@
         <thead>
             <tr>
                 <th>Nome</th>
-                <th>Curso</th>
+                <th>Equipa</th>
+                <th>Formação</th>
                 <th style="width:80px; text-align:center;">Ordem</th>
                 <th>Estado</th>
                 <th style="width:100px; text-align:center;">Acções</th>
@@ -33,6 +34,7 @@
             {
                 <tr>
                     <td style="color:var(--md-text-primary); font-weight:600;">@item.Name</td>
+                    <td><span class="md-badge md-badge-secondary">@item.TeamName</span></td>
                     <td><span class="md-badge md-badge-info">@item.CourseName</span></td>
                     <td style="text-align:center;">@item.Order</td>
                     <td>
@@ -53,7 +55,7 @@
             }
             @if (!Model.Any())
             {
-                <tr><td colspan="5" style="text-align:center; padding:40px; color:var(--md-text-muted);">
+                <tr><td colspan="6" style="text-align:center; padding:40px; color:var(--md-text-muted);">
                     <i class="bi bi-folder2-open" style="font-size:32px; display:block; margin-bottom:8px;"></i>
                     Nenhum tópico encontrado.
                 </td></tr>

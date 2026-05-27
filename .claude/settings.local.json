@@ -50,7 +50,8 @@
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(xargs grep -l \"CreateMap.*Order\\\\|CreateMap.*Payment\")",
       "Bash(xargs grep -l \"Order\\\\|Payment\")",
-      "Bash(xargs grep -l \"Doppler\")"
+      "Bash(xargs grep -l \"Doppler\")",
+      "Bash(dotnet user-secrets *)"
     ]
   }
 }

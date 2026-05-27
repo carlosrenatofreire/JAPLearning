@@ -16,6 +16,9 @@ namespace JAPLearning.Business.Services.Relationships
             _uow = uow;
         }
 
+        public async Task<List<UserCourseLesson>> GetAllAsync() =>
+            await _repository.GetAll();
+
         public async Task<List<UserCourseLesson>> GetByUserAsync(Guid userId) =>
             await _repository.GetByUserAsync(userId);
 

@@ -93,6 +93,7 @@ namespace JAPLearning.Mvc.Configurations
             // Services - Relationships
             services.AddScoped<IUserCourseLessonService, UserCourseLessonService>();
             services.AddScoped<ICourseRequirementService, CourseRequirementService>();
+            services.AddScoped<IUserLessonTestService, UserLessonTestService>();
 
             // Services - Auxiliaries
             services.AddScoped<IAuditLogService, AuditLogService>();

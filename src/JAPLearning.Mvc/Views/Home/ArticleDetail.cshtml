@@ -1,0 +1,142 @@
+@model JAPLearning.Business.Models.Domains.Entities.Article
+@{
+    ViewData["Title"] = Model.Name;
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+}
+
+<style>
+    .article-detail-hero {
+        padding: 64px 0 0;
+    }
+    .article-detail-cover {
+        width: 100%; max-height: 460px; object-fit: cover;
+        border-radius: var(--md-radius); border: 1px solid var(--md-border);
+        display: block; margin-bottom: 48px;
+    }
+    .article-detail-cover-placeholder {
+        width: 100%; height: 280px;
+        background: linear-gradient(135deg, rgba(232,80,26,0.10), rgba(160,31,58,0.06));
+        border-radius: var(--md-radius); border: 1px solid var(--md-border);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 64px; color: var(--md-accent); margin-bottom: 48px;
+    }
+    .article-content {
+        font-size: 16px; line-height: 1.85; color: var(--md-text-secondary);
+    }
+    .article-content p  { margin-bottom: 1.4em; }
+    .article-content h2 { font-size: 22px; font-weight: 700; color: var(--md-text-primary); margin: 2em 0 .8em; }
+    .article-content h3 { font-size: 18px; font-weight: 700; color: var(--md-text-primary); margin: 1.6em 0 .6em; }
+    .article-content ul, .article-content ol { padding-left: 1.6em; margin-bottom: 1.4em; }
+    .article-content li { margin-bottom: .4em; }
+    .article-content blockquote {
+        border-left: 3px solid var(--md-accent); margin: 1.6em 0;
+        padding: 12px 20px; background: rgba(232,80,26,0.05);
+        border-radius: 0 var(--md-radius-sm) var(--md-radius-sm) 0;
+        font-style: italic; color: var(--md-text-primary);
+    }
+    .article-content code {
+        font-family: monospace; font-size: 14px;
+        background: var(--md-bg-secondary); padding: 2px 6px;
+        border-radius: 4px; color: var(--md-accent);
+    }
+    .article-content pre {
+        background: var(--md-bg-secondary); border: 1px solid var(--md-border);
+        border-radius: var(--md-radius-sm); padding: 20px;
+        overflow-x: auto; margin-bottom: 1.4em;
+    }
+    .article-content pre code { background: none; padding: 0; color: var(--md-text-primary); }
+    .article-meta-divider { border: none; border-top: 1px solid var(--md-border); margin: 48px 0; }
+</style>
+
+<section class="article-detail-hero">
+    <div class="container" style="max-width: 780px;">
+
+        <!-- Breadcrumb -->
+        <nav style="margin-bottom: 28px;">
+            <a asp-controller="Home" asp-action="Blog"
+               style="font-size:13px; color:var(--md-text-muted); text-decoration:none;">
+                <i class="bi bi-arrow-left" style="font-size:11px;"></i> Artigos
+            </a>
+        </nav>
+
+        <!-- Assunto + tempo de leitura -->
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:18px;">
+            @if (Model.Subject != null)
+            {
+                <span class="md-badge md-badge-info">@Model.Subject.Name</span>
+            }
+            @if (Model.ReadingTime.HasValue)
+            {
+                <span style="font-size:12px; color:var(--md-text-muted);">
+                    <i class="bi bi-clock"></i> @Model.ReadingTime min de leitura
+                </span>
+            }
+        </div>
+
+        <!-- Título -->
+        <h1 style="font-size:clamp(26px,4vw,38px); font-weight:900; line-height:1.2;
+                   color:var(--md-text-primary); margin-bottom:20px;">
+            @Model.Name
+        </h1>
+
+        <!-- Descrição / subtítulo -->
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <p style="font-size:18px; color:var(--md-text-secondary); line-height:1.65; margin-bottom:28px;">
+                @Model.Description
+            </p>
+        }
+
+        <!-- Meta (autor + data) -->
+        <div style="display:flex; gap:20px; align-items:center; flex-wrap:wrap; margin-bottom:40px;">
+            @if (!string.IsNullOrWhiteSpace(Model.Author))
+            {
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="md-avatar" style="width:36px; height:36px; font-size:13px; flex-shrink:0;">
+                        @(string.Join("", (Model.Author ?? "?").Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => w[0].ToString().ToUpper())))
+                    </div>
+                    <span style="font-size:14px; font-weight:600; color:var(--md-text-primary);">@Model.Author</span>
+                </div>
+                <span style="color:var(--md-border);">|</span>
+            }
+            <span style="font-size:13px; color:var(--md-text-muted);">
+                <i class="bi bi-calendar3"></i>
+                @Model.PublishDate.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-PT"))
+            </span>
+        </div>
+
+        <!-- Imagem de capa -->
+        @if (!string.IsNullOrWhiteSpace(Model.CoverImage))
+        {
+            <img src="@Model.CoverImage" alt="@Model.Name" class="article-detail-cover" />
+        }
+        else
+        {
+            <div class="article-detail-cover-placeholder">
+                <i class="bi bi-journal-text"></i>
+            </div>
+        }
+
+        <!-- Conteúdo -->
+        @if (!string.IsNullOrWhiteSpace(Model.Content))
+        {
+            <div class="article-content">
+                @Html.Raw(Model.Content.Replace("\n", "<br/>"))
+            </div>
+        }
+        else
+        {
+            <p style="color:var(--md-text-muted); font-style:italic;">Conteúdo não disponível.</p>
+        }
+
+        <hr class="article-meta-divider" />
+
+        <!-- Rodapé -->
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding-bottom:80px;">
+            <a asp-controller="Home" asp-action="Blog" class="btn-md-ghost">
+                <i class="bi bi-arrow-left"></i> Voltar aos artigos
+            </a>
+        </div>
+
+    </div>
+</section>

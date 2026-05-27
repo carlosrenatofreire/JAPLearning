@@ -22,8 +22,11 @@
         <thead>
             <tr>
                 <th>Opção</th>
+                <th>Equipa</th>
+                <th>Formação</th>
+                <th>Lição</th>
                 <th>Questão</th>
-                <th>Correcta</th>
+                <th style="width:80px; text-align:center;">Correcta</th>
                 <th>Estado</th>
                 <th style="width:100px; text-align:center;">Acções</th>
             </tr>
@@ -33,7 +36,10 @@
             {
                 <tr>
                     <td style="color:var(--md-text-primary); font-weight:600;">@item.Name</td>
-                    <td style="color:var(--md-text-muted); font-size:13px;">@item.QuestionId</td>
+                    <td><span class="md-badge md-badge-secondary">@item.TeamName</span></td>
+                    <td style="font-size:13px; color:var(--md-text-secondary);">@item.CourseName</td>
+                    <td><span class="md-badge md-badge-info">@item.LessonName</span></td>
+                    <td style="font-size:13px; color:var(--md-text-muted);">@item.QuestionName</td>
                     <td>
                         @if (item.IsCorrect)
                         { <span class="badge-active"><i class="bi bi-check-circle-fill"></i> Sim</span> }
@@ -58,7 +64,7 @@
             }
             @if (!Model.Any())
             {
-                <tr><td colspan="5" style="text-align:center; padding:40px; color:var(--md-text-muted);">
+                <tr><td colspan="8" style="text-align:center; padding:40px; color:var(--md-text-muted);">
                     <i class="bi bi-ui-radios" style="font-size:32px; display:block; margin-bottom:8px;"></i>
                     Nenhuma opção encontrada.
                 </td></tr>

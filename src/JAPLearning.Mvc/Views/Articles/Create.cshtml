@@ -12,7 +12,7 @@
 </div>
 
 <div class="md-card" style="max-width:860px;">
-    <form asp-action="Create" method="post">
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -52,8 +52,14 @@
         </div>
 
         <div class="mb-3">
-            <label class="md-label">Imagem de Capa (URL)</label>
-            <input asp-for="CoverImage" class="md-input" placeholder="https://..." />
+            <label class="md-label">Imagem de Capa</label>
+            <div id="coverPreviewWrap" style="display:none; margin-bottom:8px;">
+                <img id="coverPreview" src="" alt="Preview"
+                     style="width:180px; height:100px; object-fit:cover; border-radius:6px; border:2px solid var(--md-border);" />
+                <small style="display:block; color:var(--md-text-muted); font-size:11px; margin-top:4px;">Pré-visualização</small>
+            </div>
+            <input type="file" id="coverImageFile" name="coverImageFile" accept="image/jpeg,image/png,image/webp" class="md-input" style="padding:6px;" />
+            <small style="color:var(--md-text-muted); font-size:11px;">Formatos aceites: JPG, PNG, WebP — dimensão recomendada: 1200×630 px</small>
         </div>
 
         <div class="mb-3">
@@ -79,3 +85,17 @@
         </div>
     </form>
 </div>
+
+@section Scripts {
+<script>
+    document.getElementById('coverImageFile').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        const wrap  = document.getElementById('coverPreviewWrap');
+        const img   = document.getElementById('coverPreview');
+        img.src = URL.createObjectURL(file);
+        img.style.display  = 'block';
+        wrap.style.display = 'block';
+    });
+</script>
+}

@@ -17,6 +17,14 @@
         <div asp-validation-summary="ModelOnly" class="md-alert md-alert-danger mb-3"></div>
 
         <div class="md-form-row">
+            <label asp-for="TeamId" class="md-label">Equipa</label>
+            <select asp-for="TeamId" asp-items="ViewBag.Teams" class="md-select">
+                <option value="">Seleccionar equipa...</option>
+            </select>
+            <span asp-validation-for="TeamId" class="text-danger" style="font-size:12px;"></span>
+        </div>
+
+        <div class="md-form-row">
             <label asp-for="Name" class="md-label"></label>
             <input asp-for="Name" class="md-input" placeholder="Nome da categoria" />
             <span asp-validation-for="Name" class="text-danger" style="font-size:12px;"></span>

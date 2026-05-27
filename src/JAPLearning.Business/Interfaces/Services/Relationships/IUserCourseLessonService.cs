@@ -4,6 +4,7 @@ namespace JAPLearning.Business.Interfaces.Services.Relationships
 {
     public interface IUserCourseLessonService
     {
+        Task<List<UserCourseLesson>> GetAllAsync();
         Task<List<UserCourseLesson>> GetByUserAsync(Guid userId);
         Task<UserCourseLesson?> GetByUserAndLessonAsync(Guid userId, Guid lessonId);
         Task MarkCompletedAsync(Guid userId, Guid lessonId);

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using JAPLearning.Business.Interfaces.Internals.Shareds;
 using JAPLearning.Business.Interfaces.Services.Entities;
+using JAPLearning.Business.Interfaces.Services.Parameters;
 using JAPLearning.Business.Models.Domains.Entities;
 using JAPLearning.Mvc.ViewModels.Entities;
 
@@ -15,14 +16,17 @@ namespace JAPLearning.Mvc.Controllers
         private readonly ILessonService _service;
         private readonly ICourseService _courseService;
         private readonly ITopicService _topicService;
+        private readonly ITeamService _teamService;
         private readonly IMapper _mapper;
 
         public LessonsController(ILessonService service, ICourseService courseService,
-            ITopicService topicService, IMapper mapper, INotificator notificator) : base(notificator)
+            ITopicService topicService, ITeamService teamService,
+            IMapper mapper, INotificator notificator) : base(notificator)
         {
             _service = service;
             _courseService = courseService;
             _topicService = topicService;
+            _teamService = teamService;
             _mapper = mapper;
         }
 
@@ -38,7 +42,7 @@ namespace JAPLearning.Mvc.Controllers
         {
             ViewData["ActiveMenu"] = "lessons";
             await PopulateDropdownsAsync();
-            return View(new LessonViewModel { IsActived = true, Order = 1 });
+            return View(new LessonViewModel { IsActived = true, Order = 1, TimeLesson = TimeSpan.FromMinutes(5) });
         }
 
         [HttpPost]
@@ -89,16 +93,37 @@ namespace JAPLearning.Mvc.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // AJAX — courses filtered by team
+        [HttpGet]
+        public async Task<IActionResult> GetCoursesByTeam(Guid teamId)
+        {
+            var all = await _courseService.GetAllAsync();
+            var filtered = all
+                .Where(c => c.IsActived && c.Category != null && c.Category.TeamId == teamId)
+                .OrderBy(c => c.Title)
+                .Select(c => new { value = c.Id, text = c.Title });
+            return Json(filtered);
+        }
+
         private async Task PopulateDropdownsAsync(Guid? selectedCourseId = null)
         {
             var courses = await _courseService.GetAllAsync();
-            ViewBag.Courses = new SelectList(courses, "Id", "Title", selectedCourseId);
+            ViewBag.Courses = new SelectList(courses.Where(c => c.IsActived), "Id", "Title", selectedCourseId);
 
-            // Load topics: if courseId provided load filtered, else load all
             var topics = selectedCourseId.HasValue
                 ? await _topicService.GetByCourseAsync(selectedCourseId.Value)
-                : await _topicService.GetAllAsync();
+                : new List<Topic>();
             ViewBag.Topics = new SelectList(topics, "Id", "Name");
+
+            var teams = await _teamService.GetAllAsync();
+            ViewBag.Teams = new SelectList(teams.Where(t => t.IsActived), "Id", "Name");
+
+            // Pre-select team for Edit
+            if (selectedCourseId.HasValue)
+            {
+                var course = courses.FirstOrDefault(c => c.Id == selectedCourseId.Value);
+                ViewBag.SelectedTeamId = course?.Category?.TeamId;
+            }
         }
     }
 }

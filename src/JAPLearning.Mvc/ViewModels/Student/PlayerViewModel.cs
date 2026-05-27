@@ -15,7 +15,17 @@ namespace JAPLearning.Mvc.ViewModels.Student
         public HashSet<Guid> CompletedLessonIds { get; set; } = new();
 
         public int ProgressPercent { get; set; }
+        public int PassingScore    { get; set; } = 60;
         public bool IsCurrentLessonCompleted => CompletedLessonIds.Contains(CurrentLesson?.Id ?? Guid.Empty);
+
+        // Quiz questions for the current lesson (empty = no quiz)
+        public List<QuestionViewModel> Questions { get; set; } = new();
+
+        // Quiz attempt history for the current lesson
+        public bool IsQuizLesson      => Questions.Any(q => q.Options.Any());
+        public bool HasAttemptedQuiz  { get; set; }
+        public int? BestQuizScore     { get; set; }
+        public bool QuizPassed        => HasAttemptedQuiz && BestQuizScore.HasValue && BestQuizScore.Value >= PassingScore;
     }
 
     public class TopicWithLessonsViewModel

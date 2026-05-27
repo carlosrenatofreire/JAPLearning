@@ -19,12 +19,15 @@ namespace JAPLearning.Mvc.Controllers
         private readonly ICategoryService            _categoryService;
         private readonly ITeacherService             _teacherService;
         private readonly ILevelService               _levelService;
+        private readonly ITeamService                _teamService;
+        private readonly ILessonService              _lessonService;
         private readonly ICloudinaryService          _cloudinary;
         private readonly ICourseRequirementService   _requirementService;
         private readonly IMapper                     _mapper;
 
         public CoursesController(ICourseService service, ICategoryService categoryService,
             ITeacherService teacherService, ILevelService levelService,
+            ITeamService teamService, ILessonService lessonService,
             ICloudinaryService cloudinary, ICourseRequirementService requirementService,
             IMapper mapper, INotificator notificator) : base(notificator)
         {
@@ -32,6 +35,8 @@ namespace JAPLearning.Mvc.Controllers
             _categoryService    = categoryService;
             _teacherService     = teacherService;
             _levelService       = levelService;
+            _teamService        = teamService;
+            _lessonService      = lessonService;
             _cloudinary         = cloudinary;
             _requirementService = requirementService;
             _mapper             = mapper;
@@ -40,7 +45,16 @@ namespace JAPLearning.Mvc.Controllers
         public async Task<IActionResult> Index()
         {
             ViewData["ActiveMenu"] = "courses";
-            var list = await _service.GetAllAsync();
+            var list    = await _service.GetAllAsync();
+            var lessons = await _lessonService.GetAllAsync();
+
+            ViewBag.CourseDurations = lessons
+                .Where(l => l.IsActived && l.TimeLesson.HasValue)
+                .GroupBy(l => l.CourseId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Aggregate(TimeSpan.Zero, (sum, l) => sum + l.TimeLesson!.Value));
+
             return View(_mapper.Map<List<CourseViewModel>>(list));
         }
 
@@ -74,8 +88,12 @@ namespace JAPLearning.Mvc.Controllers
             ViewData["ActiveMenu"] = "courses";
             var entity = await _service.GetByIdAsync(id);
             if (entity == null) return NotFound();
-            await PopulateDropdownsAsync();
+            await PopulateDropdownsAsync(entity.CategoryId);
             await PopulateRequirementsAsync(id);
+            // Pre-select the team based on the current category
+            var categories = await _categoryService.GetAllAsync();
+            var currentCat = categories.FirstOrDefault(c => c.Id == entity.CategoryId);
+            ViewBag.SelectedTeamId = currentCat?.TeamId;
             return View(_mapper.Map<CourseViewModel>(entity));
         }
 
@@ -143,11 +161,15 @@ namespace JAPLearning.Mvc.Controllers
 
         // ── Helpers ─────────────────────────────────────────────────────────
 
-        private async Task PopulateDropdownsAsync()
+        private async Task PopulateDropdownsAsync(Guid? selectedCategoryId = null)
         {
-            ViewBag.Categories = new SelectList(await _categoryService.GetAllAsync(), "Id", "Name");
-            ViewBag.Teachers   = new SelectList(await _teacherService.GetAllAsync(), "Id", "Name");
-            ViewBag.Levels     = new SelectList(await _levelService.GetAllAsync(), "Id", "Name");
+            var categories = await _categoryService.GetAllAsync();
+            ViewBag.CategoriesFull = categories.Where(c => c.IsActived)
+                                               .OrderBy(c => c.Name).ToList();
+            ViewBag.Categories     = new SelectList(categories.Where(c => c.IsActived).OrderBy(c => c.Name), "Id", "Name", selectedCategoryId);
+            ViewBag.Teachers       = new SelectList(await _teacherService.GetAllAsync(), "Id", "Name");
+            ViewBag.Levels         = new SelectList(await _levelService.GetAllAsync(), "Id", "Name");
+            ViewBag.Teams          = new SelectList((await _teamService.GetAllAsync()).Where(t => t.IsActived).OrderBy(t => t.Name), "Id", "Name");
         }
 
         private async Task PopulateRequirementsAsync(Guid courseId)
@@ -161,15 +183,22 @@ namespace JAPLearning.Mvc.Controllers
                 if (coursesById.TryGetValue(req.PrerequisiteCourseId, out var prereq))
                     req.PrerequisiteCourse = prereq;
 
-            // Cursos disponíveis para adicionar (exclui o próprio e os que já são pré-requisitos)
+            // Determina a equipa da formação actual (via Category.TeamId)
+            var currentCourse = coursesById.GetValueOrDefault(courseId);
+            var currentTeamId = currentCourse?.Category?.TeamId;
+
+            // Cursos disponíveis: mesma equipa, activos, excluindo o próprio e pré-requisitos já existentes
             var existingIds = requirements.Select(r => r.PrerequisiteCourseId).ToHashSet();
             existingIds.Add(courseId);
 
+            var available = allCourses
+                .Where(c => c.IsActived
+                         && !existingIds.Contains(c.Id)
+                         && (currentTeamId == null || c.Category?.TeamId == currentTeamId))
+                .OrderBy(c => c.Title);
+
             ViewBag.Requirements     = requirements;
-            ViewBag.AvailableCourses = new SelectList(
-                allCourses.Where(c => c.IsActived && !existingIds.Contains(c.Id))
-                          .OrderBy(c => c.Title),
-                "Id", "Title");
+            ViewBag.AvailableCourses = new SelectList(available, "Id", "Title");
         }
     }
 }

@@ -21,6 +21,7 @@
     <table class="crud-table">
         <thead>
             <tr>
+                <th style="width:60px;"></th>
                 <th>Nome</th>
                 <th>Descrição</th>
                 <th>Estado</th>
@@ -31,8 +32,23 @@
             @foreach (var item in Model)
             {
                 <tr>
+                    <td style="padding:8px 12px;">
+                        @if (!string.IsNullOrWhiteSpace(item.Thumbnail))
+                        {
+                            <img src="@item.Thumbnail" alt="@item.Name"
+                                 style="width:44px; height:44px; object-fit:cover; border-radius:8px; border:1px solid var(--md-border); display:block;" />
+                        }
+                        else
+                        {
+                            <div style="width:44px; height:44px; border-radius:8px; background:var(--md-bg-secondary);
+                                        border:1px solid var(--md-border); display:flex; align-items:center;
+                                        justify-content:center; color:var(--md-text-muted); font-size:18px;">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                        }
+                    </td>
                     <td style="color:var(--md-text-primary); font-weight:600;">@item.Name</td>
-                    <td>@(item.Description ?? "—")</td>
+                    <td style="color:var(--md-text-muted); font-size:13px;">@(item.Description ?? "—")</td>
                     <td>
                         @if (item.IsActived)
                         {
@@ -61,7 +77,7 @@
             }
             @if (!Model.Any())
             {
-                <tr><td colspan="4" style="text-align:center; padding:40px; color:var(--md-text-muted);">
+                <tr><td colspan="5" style="text-align:center; padding:40px; color:var(--md-text-muted);">
                     <i class="bi bi-inbox" style="font-size:32px; display:block; margin-bottom:8px;"></i>
                     Nenhum registo encontrado.
                 </td></tr>

@@ -7,8 +7,8 @@ namespace JAPLearning.Data.Contexts
     {
         public MainDbContext CreateDbContext(string[] args)
         {
-            var connectionString = Environment.GetEnvironmentVariable("SQLSERVER__CONNECTIONSTRING")
-                ?? throw new InvalidOperationException("Variável de ambiente SQLSERVER__CONNECTIONSTRING não definida.");
+            var connectionString = Environment.GetEnvironmentVariable("CONNECTIONSTRINGS")
+                ?? throw new InvalidOperationException("Variável de ambiente CONNECTIONSTRINGS não definida.");
 
             var optionsBuilder = new DbContextOptionsBuilder<MainDbContext>();
             optionsBuilder.UseSqlServer(connectionString);

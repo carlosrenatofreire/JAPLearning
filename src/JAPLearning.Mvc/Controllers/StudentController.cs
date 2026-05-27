@@ -8,6 +8,7 @@ using JAPLearning.Business.Interfaces.Internals.Shareds;
 using JAPLearning.Business.Interfaces.Services.Entities;
 using JAPLearning.Business.Interfaces.Services.Parameters;
 using JAPLearning.Business.Interfaces.Services.Relationships;
+using JAPLearning.Business.Models.Domains.Relationships;
 using JAPLearning.Mvc.ViewModels.Entities;
 using JAPLearning.Mvc.ViewModels.Parameters;
 using JAPLearning.Mvc.ViewModels.Student;
@@ -22,8 +23,10 @@ namespace JAPLearning.Mvc.Controllers
         private readonly ICourseService             _courseService;
         private readonly ITopicService              _topicService;
         private readonly ILessonService             _lessonService;
+        private readonly IQuestionService           _questionService;
         private readonly ICertificateService        _certificateService;
         private readonly IUserCourseLessonService   _userCourseLessonService;
+        private readonly IUserLessonTestService     _userLessonTestService;
         private readonly ICategoryService           _categoryService;
         private readonly ICloudinaryService         _cloudinary;
         private readonly IMapper                    _mapper;
@@ -33,8 +36,10 @@ namespace JAPLearning.Mvc.Controllers
             ICourseService courseService,
             ITopicService topicService,
             ILessonService lessonService,
+            IQuestionService questionService,
             ICertificateService certificateService,
             IUserCourseLessonService userCourseLessonService,
+            IUserLessonTestService userLessonTestService,
             ICategoryService categoryService,
             ICloudinaryService cloudinary,
             IMapper mapper,
@@ -44,8 +49,10 @@ namespace JAPLearning.Mvc.Controllers
             _courseService           = courseService;
             _topicService            = topicService;
             _lessonService           = lessonService;
+            _questionService         = questionService;
             _certificateService      = certificateService;
             _userCourseLessonService = userCourseLessonService;
+            _userLessonTestService   = userLessonTestService;
             _categoryService         = categoryService;
             _cloudinary              = cloudinary;
             _mapper                  = mapper;
@@ -223,6 +230,7 @@ namespace JAPLearning.Mvc.Controllers
             var userId  = GetCurrentUserId();
             var course  = await _courseService.GetByIdAsync(courseId);
             if (course == null) return NotFound();
+            if (course.IsBrief) return RedirectToAction(nameof(Courses));
 
             var allTopics  = await _topicService.GetAllAsync();
             var allLessons = await _lessonService.GetAllAsync();
@@ -280,6 +288,17 @@ namespace JAPLearning.Mvc.Controllers
             var currentLessonVm = _mapper.Map<LessonViewModel>(currentLessonEntity);
             var embedUrl        = ExtractYouTubeEmbedUrl(currentLessonEntity.Video);
 
+            // Load questions + options for current lesson
+            var questions   = await _questionService.GetByLessonAsync(currentLessonEntity.Id);
+            var questionVms = _mapper.Map<List<QuestionViewModel>>(questions);
+
+            // Load quiz attempt history for current lesson
+            var allTests    = await _userLessonTestService.GetByUserAsync(userId);
+            var lessonTests = allTests
+                .Where(t => t.LessonId == currentLessonEntity.Id && t.Score.HasValue)
+                .ToList();
+            int? bestScore = lessonTests.Any() ? lessonTests.Max(t => t.Score!.Value) : null;
+
             var vm = new PlayerViewModel
             {
                 Course              = _mapper.Map<CourseViewModel>(course),
@@ -287,7 +306,11 @@ namespace JAPLearning.Mvc.Controllers
                 EmbedUrl            = embedUrl ?? string.Empty,
                 Topics              = topicGroups,
                 CompletedLessonIds  = completedLessonIds,
-                ProgressPercent     = progressPct
+                ProgressPercent     = progressPct,
+                PassingScore        = course.PassingScore,
+                Questions           = questionVms,
+                HasAttemptedQuiz    = lessonTests.Any(),
+                BestQuizScore       = bestScore
             };
 
             ViewData["Title"]      = currentLessonEntity.Name;
@@ -297,7 +320,45 @@ namespace JAPLearning.Mvc.Controllers
             return View(vm);
         }
 
-        // ─── Complete Lesson (AJAX POST) ─────────────────────────────────────
+        // ─── Save Quiz Result (AJAX POST) ────────────────────────────────────
+
+        public class SaveQuizResultRequest
+        {
+            public Guid LessonId { get; set; }
+            public int  CorrectAnswers { get; set; }
+            public int  TotalQuestions { get; set; }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveQuizResult([FromBody] SaveQuizResultRequest req)
+        {
+            if (req == null || req.TotalQuestions == 0)
+                return Json(new { success = false });
+
+            var userId = GetCurrentUserId();
+
+            // Compute score
+            int score  = (int)Math.Round((double)req.CorrectAnswers / req.TotalQuestions * 100);
+
+            // Determine attempt number
+            var latest = await _userLessonTestService.GetLatestByUserAndLessonAsync(userId, req.LessonId);
+            int attempt = latest == null ? 1 : latest.AttemptNumber + 1;
+
+            var test = new UserLessonTest
+            {
+                UserId        = userId,
+                LessonId      = req.LessonId,
+                Score         = score,
+                Passed        = false,           // will be determined against course PassingScore at completion
+                AttemptNumber = attempt,
+                CompletedDate = DateTime.UtcNow
+            };
+
+            await _userLessonTestService.AddAsync(test);
+            return Json(new { success = true, score });
+        }
+
+        // ─── Complete Lesson ─────────────────────────────────────────────────
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -306,23 +367,77 @@ namespace JAPLearning.Mvc.Controllers
             var userId = GetCurrentUserId();
             await _userCourseLessonService.MarkCompletedAsync(userId, lessonId);
 
-            // Find next lesson in course
+            var course = await _courseService.GetByIdAsync(courseId);
             var allLessons = await _lessonService.GetAllAsync();
             var courseLessons = allLessons
                 .Where(l => l.CourseId == courseId && l.IsActived)
                 .OrderBy(l => l.Order)
                 .ToList();
 
+            // ── Check course completion + certificate eligibility ──────────
+            var userProgress = await _userCourseLessonService.GetByUserAsync(userId);
+            var completedIds = userProgress
+                .Where(x => x.CompletedDate.HasValue)
+                .Select(x => x.LessonId)
+                .ToHashSet();
+            completedIds.Add(lessonId); // include the one just marked
+
+            bool allDone = courseLessons.All(l => completedIds.Contains(l.Id));
+
+            if (allDone && course != null && !await _certificateService.HasCertificateAsync(userId, courseId))
+            {
+                // Best score per lesson that has at least one quiz attempt
+                var allTests    = await _userLessonTestService.GetByUserAsync(userId);
+                var lessonIds   = courseLessons.Select(l => l.Id).ToHashSet();
+                var courseTests = allTests
+                    .Where(t => lessonIds.Contains(t.LessonId) && t.Score.HasValue)
+                    .GroupBy(t => t.LessonId)
+                    .Select(g => g.Max(t => t.Score!.Value))
+                    .ToList();
+
+                // If no quiz at all → 100 %; otherwise average of best scores per lesson
+                int avgScore = courseTests.Any()
+                    ? (int)Math.Round(courseTests.Average())
+                    : 100;
+
+                if (avgScore >= (course.PassingScore > 0 ? course.PassingScore : 60))
+                {
+                    await _certificateService.IssueCertificateAsync(userId, courseId, avgScore);
+                    TempData["CertificateIssued"] = "true";
+                    TempData["Success"] = $"🏆 Parabéns! Concluiu a formação com {avgScore}% de aproveitamento. O seu certificado está disponível em Meus Certificados!";
+                }
+                else
+                {
+                    TempData["Warning"] = $"Concluiu todas as aulas, mas a sua média ({avgScore}%) é inferior ao mínimo exigido ({course.PassingScore}%). Repita os testes para melhorar a nota.";
+                }
+            }
+
+            // ── Navigate to next lesson (unless certificate was just issued) ─
             var currentIdx = courseLessons.FindIndex(l => l.Id == lessonId);
             var nextLesson = currentIdx >= 0 && currentIdx + 1 < courseLessons.Count
                 ? courseLessons[currentIdx + 1]
                 : null;
 
-            if (nextLesson != null)
+            if (nextLesson != null && TempData.Peek("CertificateIssued") == null)
                 return RedirectToAction(nameof(Player), new { courseId, lessonId = nextLesson.Id });
 
-            TempData["Success"] = "Parabéns! Você concluiu todas as aulas deste curso.";
             return RedirectToAction(nameof(Player), new { courseId, lessonId });
+        }
+
+        // ─── Certificate View (printable) ────────────────────────────────────
+
+        [HttpGet]
+        public async Task<IActionResult> CertificateView(Guid id)
+        {
+            var cert = await _certificateService.GetByIdAsync(id);
+            if (cert == null) return NotFound();
+
+            var userId = GetCurrentUserId();
+            if (cert.UserId != userId && !User.IsInRole("Administrador"))
+                return Forbid();
+
+            var vm = _mapper.Map<CertificateViewModel>(cert);
+            return View(vm);
         }
 
         // ─── My Certificates ─────────────────────────────────────────────────
@@ -429,12 +544,22 @@ namespace JAPLearning.Mvc.Controllers
             ViewData["ActiveMenu"] = "courses";
             ViewData["Title"]      = "Cursos";
 
-            var userId       = GetCurrentUserId();
-            var allCourses   = await _courseService.GetAllAsync();
-            var allTopics    = await _topicService.GetAllAsync();
-            var allLessons   = await _lessonService.GetAllAsync();
-            var userProgress = await _userCourseLessonService.GetByUserAsync(userId);
+            var userId        = GetCurrentUserId();
+            var user          = await _userService.GetByIdAsync(userId);
+            var allCourses    = await _courseService.GetAllAsync();
+            var allTopics     = await _topicService.GetAllAsync();
+            var allLessons    = await _lessonService.GetAllAsync();
+            var userProgress  = await _userCourseLessonService.GetByUserAsync(userId);
             var allCategories = await _categoryService.GetAllAsync();
+
+            // Filtrar categorias pela equipa do aluno.
+            // Administradores vêem tudo.
+            var isAdmin = User.IsInRole("Administrador");
+            var teamCategories = allCategories
+                .Where(c => c.IsActived && (isAdmin || c.TeamId == user?.TeamId))
+                .ToList();
+
+            var teamCategoryIds = teamCategories.Select(c => c.Id).ToHashSet();
 
             var completedLessonIds = userProgress
                 .Where(x => x.CompletedDate.HasValue)
@@ -442,7 +567,7 @@ namespace JAPLearning.Mvc.Controllers
                 .ToHashSet();
 
             var items = allCourses
-                .Where(c => c.IsActived)
+                .Where(c => c.IsActived && teamCategoryIds.Contains(c.CategoryId))
                 .OrderBy(c => c.Title)
                 .Select(c =>
                 {
@@ -473,10 +598,10 @@ namespace JAPLearning.Mvc.Controllers
             var vm = new CourseCatalogViewModel
             {
                 Courses    = items,
-                Categories = allCategories.Where(c => c.IsActived)
-                                          .Select(c => _mapper.Map<CategoryViewModel>(c))
-                                          .OrderBy(c => c.Name)
-                                          .ToList()
+                Categories = teamCategories
+                                .Select(c => _mapper.Map<CategoryViewModel>(c))
+                                .OrderBy(c => c.Name)
+                                .ToList()
             };
 
             ViewBag.ActiveCategory = category;

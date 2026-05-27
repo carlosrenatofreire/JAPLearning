@@ -14,6 +14,8 @@ namespace JAPLearning.Data.Repositories.Entities
         {
             return await DbSet.AsNoTracking()
                 .Include(t => t.Course)
+                    .ThenInclude(c => c.Category)
+                        .ThenInclude(cat => cat.Team)
                 .OrderBy(t => t.Course.Title).ThenBy(t => t.Order)
                 .ToListAsync();
         }
@@ -22,6 +24,8 @@ namespace JAPLearning.Data.Repositories.Entities
         {
             return await DbSet.AsNoTracking()
                 .Include(t => t.Course)
+                    .ThenInclude(c => c.Category)
+                        .ThenInclude(cat => cat.Team)
                 .FirstOrDefaultAsync(t => t.Id == id);
         }
     }

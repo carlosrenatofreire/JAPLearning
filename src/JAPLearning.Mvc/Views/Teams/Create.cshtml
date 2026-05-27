@@ -12,33 +12,74 @@
 </div>
 
 <div class="md-card form-card">
-    <form asp-action="Create" method="post">
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="ModelOnly" class="md-alert md-alert-danger mb-3"></div>
 
-        <div class="md-form-row">
-            <label asp-for="Name" class="md-label"></label>
-            <input asp-for="Name" class="md-input" placeholder="Nome da equipa" />
-            <span asp-validation-for="Name" class="text-danger" style="font-size:12px;"></span>
-        </div>
+        <div class="row g-3">
 
-        <div class="md-form-row">
-            <label asp-for="Description" class="md-label"></label>
-            <textarea asp-for="Description" class="md-input" rows="3" placeholder="Descrição opcional"></textarea>
-        </div>
-
-        <div class="md-form-row">
-            <div class="md-form-check">
-                <input asp-for="IsActived" type="checkbox" />
-                <label asp-for="IsActived">Activo</label>
+            <!-- Nome + Activo -->
+            <div class="col-md-8">
+                <div class="md-form-row">
+                    <label asp-for="Name" class="md-label"></label>
+                    <input asp-for="Name" class="md-input" placeholder="Nome da equipa" />
+                    <span asp-validation-for="Name" class="text-danger" style="font-size:12px;"></span>
+                </div>
             </div>
+            <div class="col-md-4" style="display:flex; align-items:flex-end; padding-bottom:4px;">
+                <div class="md-form-check">
+                    <input asp-for="IsActived" type="checkbox" />
+                    <label asp-for="IsActived">Activo</label>
+                </div>
+            </div>
+
+            <!-- Thumbnail + Descrição -->
+            <div class="col-md-4">
+                <div class="md-form-row">
+                    <label class="md-label">Thumbnail da Equipa</label>
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <div style="width:100%; height:120px; border-radius:10px; background:var(--md-bg-secondary);
+                                    border:1px solid var(--md-border); overflow:hidden; position:relative;">
+                            <div id="thumbPlaceholder" style="width:100%; height:100%; display:flex; align-items:center;
+                                        justify-content:center; color:var(--md-text-muted); font-size:36px;">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <img id="thumbPreview" src="" alt="Preview"
+                                 style="width:100%; height:100%; object-fit:cover; display:none; position:absolute; top:0; left:0;" />
+                        </div>
+                        <div>
+                            <input type="file" id="thumbnailInput" name="thumbnail" accept="image/jpeg,image/png,image/webp" class="md-input" style="padding:6px;" />
+                            <small style="color:var(--md-text-muted); font-size:11px;">JPG, PNG ou WebP — opcional</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="md-form-row">
+                    <label asp-for="Description" class="md-label"></label>
+                    <textarea asp-for="Description" class="md-input" rows="6" placeholder="Descrição opcional"></textarea>
+                </div>
+            </div>
+
         </div>
 
-        <div style="display:flex; gap:12px; margin-top:8px;">
-            <button type="submit" class="btn-md-primary">
-                <i class="bi bi-check-lg"></i> Guardar
-            </button>
+        <div style="display:flex; gap:12px; margin-top:24px;">
+            <button type="submit" class="btn-md-primary"><i class="bi bi-check-lg"></i> Guardar</button>
             <a asp-action="Index" class="btn-md-ghost">Cancelar</a>
         </div>
     </form>
 </div>
+
+@section Scripts {
+<script>
+    document.getElementById('thumbnailInput').addEventListener('change', function () {
+        const file        = this.files[0];
+        if (!file) return;
+        const preview     = document.getElementById('thumbPreview');
+        const placeholder = document.getElementById('thumbPlaceholder');
+        preview.src = URL.createObjectURL(file);
+        preview.style.display    = 'block';
+        placeholder.style.display = 'none';
+    });
+</script>
+}
