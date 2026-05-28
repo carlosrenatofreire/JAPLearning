@@ -15,14 +15,16 @@
 </div>
 
 <div style="display:flex; gap:24px; flex-wrap:wrap; align-items:flex-start;">
-    <div class="md-card form-card" style="flex:1; min-width:400px;">
+
+    <!-- ── Formulário principal ───────────────────────────────────── -->
+    <div class="md-card form-card" style="flex:1; min-width:400px; max-width:none;">
         <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="All" class="validation-summary"></div>
 
             <div class="row g-3">
 
-                <!-- Equipa (3) + Formação (3) + Tópico (3) + Lição (3) -->
+                <!-- ── Linha 1: Cascata de filtros ───────────────── -->
                 <div class="col-md-3">
                     <div class="md-form-row">
                         <label class="md-label">Equipa</label>
@@ -57,26 +59,27 @@
                     </div>
                 </div>
 
-                <!-- Questão (8) + Activa (4) -->
-                <div class="col-md-8">
+                <!-- ── Linha 2: Questão (9) + Activa (3) ─────────── -->
+                <div class="col-md-9">
                     <div class="md-form-row">
                         <label asp-for="Name" class="md-label">Questão <span class="text-danger">*</span></label>
-                        <input asp-for="Name" class="md-input" />
+                        <textarea asp-for="Name" class="md-input" rows="3"></textarea>
                         <span asp-validation-for="Name" class="text-danger" style="font-size:12px;"></span>
                     </div>
                 </div>
-                <div class="col-md-4" style="display:flex; align-items:flex-end; padding-bottom:4px;">
+                <div class="col-md-3" style="display:flex; align-items:flex-end; padding-bottom:6px;">
                     <div class="md-form-check">
                         <input asp-for="IsActived" type="checkbox" />
                         <label asp-for="IsActived">Activa</label>
                     </div>
                 </div>
 
-                <!-- Descrição (12) -->
+                <!-- ── Linha 3: Descrição ─────────────────────────── -->
                 <div class="col-12">
                     <div class="md-form-row">
                         <label asp-for="Description" class="md-label">Descrição / Contexto</label>
-                        <textarea asp-for="Description" class="md-input" rows="3"></textarea>
+                        <textarea asp-for="Description" class="md-input" rows="3"
+                                  placeholder="Contexto adicional que aparece abaixo da pergunta no quiz (opcional)"></textarea>
                     </div>
                 </div>
 
@@ -89,11 +92,12 @@
         </form>
     </div>
 
+    <!-- ── Painel de Opções de Resposta ──────────────────────────── -->
     @if (Model.Options.Any())
     {
-        <div class="md-card" style="min-width:320px; max-width:420px;">
-            <h6 style="color:var(--md-text-primary); margin-bottom:16px; font-size:14px; font-weight:600;">
-                <i class="bi bi-list-check"></i> Opções de Resposta
+        <div class="md-card" style="min-width:300px; max-width:380px; flex-shrink:0;">
+            <h6 style="color:var(--md-text-primary); margin-bottom:16px; font-size:14px; font-weight:700;">
+                <i class="bi bi-list-check" style="color:var(--md-accent);"></i> Opções de Resposta
             </h6>
             @foreach (var opt in Model.Options)
             {
@@ -114,19 +118,19 @@
                 </div>
             }
             <div style="margin-top:14px;">
-                <a asp-controller="QuestionOptions" asp-action="Create" class="btn-md-secondary" style="font-size:13px; padding:6px 14px;">
-                    <i class="bi bi-plus"></i> Adicionar Opção
+                <a asp-controller="QuestionOptions" asp-action="Create" class="btn-md-ghost" style="font-size:13px; padding:6px 14px;">
+                    <i class="bi bi-plus-lg"></i> Adicionar Opção
                 </a>
             </div>
         </div>
     }
     else
     {
-        <div class="md-card" style="min-width:280px; text-align:center; padding:32px;">
-            <i class="bi bi-list-check" style="font-size:28px; color:var(--md-text-muted); display:block; margin-bottom:10px;"></i>
+        <div class="md-card" style="min-width:260px; max-width:300px; text-align:center; padding:32px; flex-shrink:0;">
+            <i class="bi bi-list-check" style="font-size:32px; color:var(--md-text-muted); display:block; margin-bottom:12px;"></i>
             <p style="color:var(--md-text-muted); font-size:13px; margin-bottom:16px;">Ainda sem opções de resposta.</p>
             <a asp-controller="QuestionOptions" asp-action="Create" class="btn-md-primary" style="font-size:13px;">
-                <i class="bi bi-plus"></i> Adicionar Opção
+                <i class="bi bi-plus-lg"></i> Adicionar Opção
             </a>
         </div>
     }
@@ -225,4 +229,3 @@
 })();
 </script>
 }
-

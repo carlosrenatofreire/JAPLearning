@@ -11,7 +11,7 @@
     </div>
 </div>
 
-<div class="md-card form-card">
+<div class="md-card form-card" style="max-width:100%;">
     <form asp-action="Create" method="post">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="All" class="validation-summary"></div>
@@ -63,15 +63,15 @@
                 </div>
             </div>
 
-            <!-- Texto da Opção (8) + Correcta + Activa (4) -->
-            <div class="col-md-8">
+            <!-- Texto da Opção (9) + Correcta + Activa (3) -->
+            <div class="col-md-9">
                 <div class="md-form-row">
                     <label asp-for="Name" class="md-label">Texto da Opção <span class="text-danger">*</span></label>
-                    <input asp-for="Name" class="md-input" placeholder="ex: A opção A é..." />
+                    <textarea asp-for="Name" class="md-input" rows="3" placeholder="ex: A opção A é..."></textarea>
                     <span asp-validation-for="Name" class="text-danger" style="font-size:12px;"></span>
                 </div>
             </div>
-            <div class="col-md-4" style="display:flex; align-items:flex-end; gap:20px; padding-bottom:4px;">
+            <div class="col-md-3" style="display:flex; align-items:flex-end; flex-direction:column; gap:10px; padding-bottom:6px;">
                 <div class="md-form-check">
                     <input asp-for="IsCorrect" type="checkbox" />
                     <label asp-for="IsCorrect" style="color:#4caf82;"><i class="bi bi-check-circle"></i> Correcta</label>

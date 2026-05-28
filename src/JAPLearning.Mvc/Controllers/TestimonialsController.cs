@@ -70,6 +70,7 @@ namespace JAPLearning.Mvc.Controllers
         public async Task<IActionResult> Edit(Guid id, TestimonialViewModel vm, IFormFile? photo)
         {
             ViewData["ActiveMenu"] = "testimonials";
+            ModelState.Remove(nameof(vm.PhotoUrl));
             if (!ModelState.IsValid) return View(vm);
             var entity = _mapper.Map<Testimonial>(vm);
             entity.Id = id;

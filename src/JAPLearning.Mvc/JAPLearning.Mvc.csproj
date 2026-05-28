@@ -14,6 +14,7 @@
     <Folder Include="ViewModels\Auxiliaries\" />
     <Folder Include="ViewModels\Entities\" />
     <Folder Include="ViewModels\Parameters\" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
   <ItemGroup>

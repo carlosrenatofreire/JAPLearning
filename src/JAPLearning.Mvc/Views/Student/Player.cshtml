@@ -91,17 +91,27 @@
     }
     else if (!Model.IsCurrentLessonCompleted)
     {
-        var hasVideo = !string.IsNullOrEmpty(Model.EmbedUrl);
-        <form asp-action="CompleteLesson" method="post" style="flex-shrink:0;">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="lessonId"  value="@Model.CurrentLesson.Id" />
-            <input type="hidden" name="courseId"  value="@Model.Course.Id" />
-            <button type="submit" class="btn-md-success" style="font-size:13px; padding:8px 18px;"
-                    @(hasVideo ? "" : "disabled")
-                    title="@(hasVideo ? "" : "Vídeo ainda não disponível — não é possível concluir esta aula")">
-                <i class="bi bi-check-lg"></i> Concluir Aula
-            </button>
-        </form>
+        if (!string.IsNullOrEmpty(Model.EmbedUrl))
+        {
+            <form asp-action="CompleteLesson" method="post" style="flex-shrink:0;">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="lessonId" value="@Model.CurrentLesson.Id" />
+                <input type="hidden" name="courseId" value="@Model.Course.Id" />
+                <button type="submit" class="btn-md-success" style="font-size:13px; padding:8px 18px;">
+                    <i class="bi bi-check-lg"></i> Concluir Aula
+                </button>
+            </form>
+        }
+        else
+        {
+            <span style="flex-shrink:0; display:inline-flex; align-items:center; gap:7px;
+                         background:var(--md-bg-secondary); border:1px solid var(--md-border); border-radius:8px;
+                         padding:8px 16px; font-size:13px; font-weight:600; color:var(--md-text-muted);
+                         cursor:default;" title="@(Model.IsQuizLesson ? "Teste ainda não disponível — sem questões associadas a esta aula" : "Vídeo ainda não disponível — não é possível concluir esta aula")">
+                <i class="bi bi-@(Model.IsQuizLesson ? "pencil-square" : "camera-video-off")"></i>
+                @(Model.IsQuizLesson ? "Teste não disponível" : "Vídeo não disponível")
+            </span>
+        }
     }
     else
     {
@@ -111,23 +121,36 @@
     }
 </div>
 
-<!-- Video — hidden for quiz lessons -->
-@if (!Model.IsQuizLesson)
+<!-- Video / Placeholder -->
+@if (Model.IsQuizLesson)
+{
+    @* Quiz lesson: video block is intentionally hidden — quiz renders below *@
+}
+else if (!string.IsNullOrEmpty(Model.EmbedUrl))
 {
     <div class="player-video-wrap">
-        @if (!string.IsNullOrEmpty(Model.EmbedUrl))
-        {
-            <iframe src="@Model.EmbedUrl"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen></iframe>
-        }
-        else
-        {
-            <div class="player-video-placeholder">
-                <i class="bi bi-camera-video-off" style="font-size:48px;"></i>
-                <span>Vídeo não disponível</span>
-            </div>
-        }
+        <iframe src="@Model.EmbedUrl"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+    </div>
+}
+else
+{
+    @* No video, no quiz — show a neutral informational placeholder (no black box) *@
+    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+                padding:56px 32px; margin-bottom:8px;
+                background:var(--md-bg-secondary); border:1px dashed var(--md-border);
+                border-radius:var(--md-radius); text-align:center;">
+        <i class="bi bi-hourglass-split" style="font-size:44px; color:var(--md-text-muted); opacity:.6;"></i>
+        <div>
+            <p style="font-size:15px; font-weight:700; color:var(--md-text-primary); margin:0 0 6px;">
+                Conteúdo ainda não disponível
+            </p>
+            <p style="font-size:13px; color:var(--md-text-muted); margin:0; max-width:380px; line-height:1.6;">
+                Esta aula ainda não tem vídeo nem questões associadas.<br>
+                Consulte o administrador ou aguarde a publicação do conteúdo.
+            </p>
+        </div>
     </div>
 }
 
