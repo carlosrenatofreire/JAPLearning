@@ -1,0 +1,423 @@
+@model JAPLearning.Mvc.ViewModels.Entities.CourseViewModel
+@using JAPLearning.Business.Models.Domains.Entities
+@using JAPLearning.Business.Models.Domains.Relationships
+@using JAPLearning.Business.Models.Domains.Parameters
+@{
+    ViewData["Title"]      = Model.Title;
+    ViewData["ActiveMenu"] = "courses";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+
+    var topics           = ViewBag.Topics          as List<Topic>                    ?? new();
+    var lessons          = ViewBag.Lessons         as List<Lesson>                   ?? new();
+    var requirements     = ViewBag.Requirements    as List<CourseRequirement>         ?? new();
+    var prereqDurations  = ViewBag.PrereqDurations as Dictionary<Guid, TimeSpan>     ?? new();
+    var totalLessons     = (int)(ViewBag.TotalLessons     ?? 0);
+    var totalDuration    = (TimeSpan)(ViewBag.TotalDuration ?? TimeSpan.Zero);
+    var progressPercent  = (int)(ViewBag.ProgressPercent  ?? 0);
+    var completedLessons = (int)(ViewBag.CompletedLessons ?? 0);
+    var lastLessonId     = ViewBag.LastLessonId as Guid?;
+    var teacher          = ViewBag.Teacher as Teacher;
+    var totalTests       = lessons.Count(l => l.IsTest);
+
+    string DurationLabel(TimeSpan ts)
+    {
+        if (ts.TotalHours >= 1)
+            return $"{(int)ts.TotalHours:D2}:{ts.Minutes:D2} Horas";
+        if (ts.Minutes > 0)
+            return $"{ts.Minutes} min";
+        return "—";
+    }
+    string LessonDurationLabel(TimeSpan ts)
+    {
+        if (ts.TotalMinutes >= 60)
+            return $"{(int)ts.TotalHours}h{ts.Minutes:D2}";
+        return $"{(int)ts.TotalMinutes}min";
+    }
+}
+
+<style>
+    .project-meta-bar {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: var(--md-text-muted);
+    }
+    .project-meta-bar span { display: flex; align-items: center; gap: 6px; }
+    .sidebar-section-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--md-text-primary);
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--md-border);
+    }
+    .prereq-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--md-border);
+        text-decoration: none;
+    }
+    .prereq-card:last-child { border-bottom: none; }
+    .prereq-icon {
+        width: 42px; height: 42px;
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 18px; font-weight: 900; flex-shrink: 0;
+    }
+</style>
+
+<!-- Page header -->
+<div class="page-header">
+    <div>
+        <h4 class="page-header-title">@Model.Title</h4>
+        <p class="page-header-sub">
+            @if (teacher != null) { <text>@teacher.Name &nbsp;·&nbsp;</text> }
+            @Model.LevelName &nbsp;·&nbsp; @Model.CategoryName
+        </p>
+    </div>
+    <a asp-action="Courses" class="btn-md-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar às Formações
+    </a>
+</div>
+
+<div class="row g-4">
+
+    <!-- ── Conteúdo principal ───────────────────────────────────── -->
+    <div class="col-lg-8">
+
+        <!-- Thumbnail -->
+        @if (!string.IsNullOrWhiteSpace(Model.Thumbnail))
+        {
+            <div style="width:100%; border-radius:var(--md-radius-lg); overflow:hidden; margin-bottom:24px;">
+                <img src="@Model.Thumbnail" alt="@Model.Title"
+                     style="width:100%; aspect-ratio:5/2; object-fit:cover; display:block;" />
+            </div>
+        }
+        else
+        {
+            <div style="width:100%; aspect-ratio:5/2; background:linear-gradient(135deg,rgba(232,80,26,0.12),rgba(160,31,58,0.08));
+                        border-radius:var(--md-radius-lg); display:flex; align-items:center; justify-content:center;
+                        font-size:72px; color:var(--md-accent); margin-bottom:24px;">
+                <i class="bi bi-code-slash"></i>
+            </div>
+        }
+
+        <!-- Tabs -->
+        <div class="md-tabs">
+            <a href="#ementa"       class="md-tab active" onclick="showTab('ementa', this)">Ementa</a>
+            <a href="#apresentacao" class="md-tab"        onclick="showTab('apresentacao', this)">Apresentação</a>
+            @if (teacher != null)
+            {
+                <a href="#instrutor" class="md-tab"       onclick="showTab('instrutor', this)">Instrutor</a>
+            }
+        </div>
+
+        <!-- Tab: Ementa -->
+        <div id="tab-ementa">
+            <h5 style="font-weight:700; margin-bottom:16px;">@Model.Title</h5>
+
+            @if (!topics.Any() && !lessons.Any())
+            {
+                <p style="color:var(--md-text-muted); font-size:14px;">Conteúdo ainda não publicado.</p>
+            }
+            else if (topics.Any())
+            {
+                @foreach (var topic in topics)
+                {
+                    var topicLessons = lessons.Where(l => l.TopicId == topic.Id).OrderBy(l => l.Order).ToList();
+                    var topicDuration = topicLessons
+                        .Where(l => l.TimeLesson.HasValue)
+                        .Aggregate(TimeSpan.Zero, (s, l) => s + l.TimeLesson!.Value);
+                    var topicDurStr = topicDuration > TimeSpan.Zero
+                        ? (topicDuration.TotalHours >= 1
+                            ? $"{(int)topicDuration.TotalHours}h {topicDuration.Minutes:D2}min"
+                            : $"{topicDuration.Minutes}min")
+                        : "";
+
+                    <div class="md-accordion-item">
+                        <div class="md-accordion-header">
+                            <span>@topic.Name</span>
+                            <span style="font-size:12px; font-weight:500;">
+                                @topicLessons.Count @(topicLessons.Count == 1 ? "aula" : "aulas")
+                                @if (!string.IsNullOrEmpty(topicDurStr)) { <text>· @topicDurStr</text> }
+                            </span>
+                        </div>
+                        <div class="md-accordion-body">
+                            @foreach (var lesson in topicLessons)
+                            {
+                                var durLabel = lesson.TimeLesson.HasValue ? $"({LessonDurationLabel(lesson.TimeLesson.Value)})" : "";
+                                var playerUrl = Url.Action("Player", "Student", new { courseId = Model.Id, lessonId = lesson.Id });
+                                <a href="@playerUrl" class="md-lesson-item">
+                                    <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                    <span style="flex:1;">@lesson.Name @durLabel</span>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="md-accordion-item">
+                    <div class="md-accordion-header">
+                        <span>Aulas</span>
+                        <span style="font-size:12px; font-weight:500;">@lessons.Count @(lessons.Count == 1 ? "aula" : "aulas")</span>
+                    </div>
+                    <div class="md-accordion-body">
+                        @foreach (var lesson in lessons.OrderBy(l => l.Order))
+                        {
+                            var durLabel = lesson.TimeLesson.HasValue ? $"({LessonDurationLabel(lesson.TimeLesson.Value)})" : "";
+                            var playerUrl = Url.Action("Player", "Student", new { courseId = Model.Id, lessonId = lesson.Id });
+                            <a href="@playerUrl" class="md-lesson-item">
+                                <i class="bi bi-play-circle-fill" style="color:var(--md-accent);"></i>
+                                <span style="flex:1;">@lesson.Name @durLabel</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Tab: Apresentação -->
+        <div id="tab-apresentacao" style="display:none;">
+            <h5 style="font-weight:700; margin-bottom:12px;">Sobre esta Formação</h5>
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <p style="color:var(--md-text-secondary); line-height:1.8;">@Model.Description</p>
+            }
+            else
+            {
+                <p style="color:var(--md-text-muted);">Descrição não disponível.</p>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
+            {
+                <p style="color:var(--md-text-secondary); line-height:1.8;">@Model.Subtitle</p>
+            }
+        </div>
+
+        <!-- Tab: Instrutor -->
+        @if (teacher != null)
+        {
+            <div id="tab-instrutor" style="display:none;">
+                <div class="d-flex align-items-start gap-4">
+                    @if (!string.IsNullOrWhiteSpace(teacher.PhotoUrl))
+                    {
+                        <img src="@teacher.PhotoUrl" alt="@teacher.Name"
+                             style="width:80px; height:80px; border-radius:50%; object-fit:cover; flex-shrink:0;
+                                    border:2px solid var(--md-border);" />
+                    }
+                    else
+                    {
+                        var ti = string.Join("", teacher.Name.Split(' ').Take(2).Select(w => w[0].ToString().ToUpper()));
+                        <div class="md-avatar" style="width:80px; height:80px; font-size:24px; flex-shrink:0;">@ti</div>
+                    }
+                    <div>
+                        <h5 style="font-weight:800; font-size:18px; margin:0 0 4px; color:var(--md-text-primary);">
+                            @teacher.Name
+                        </h5>
+                        @if (!string.IsNullOrWhiteSpace(teacher.Description))
+                        {
+                            <p style="font-size:13px; color:var(--md-accent); font-weight:600; margin:0 0 12px;">
+                                @teacher.Description
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+
+    <!-- ── Sidebar ──────────────────────────────────────────────── -->
+    <div class="col-lg-4">
+        <div class="md-card mb-4" style="position:sticky; top:80px; padding:0; overflow:hidden;">
+
+            <!-- Header do card -->
+            <div style="width:100%; padding:20px 20px 18px;
+                        background:linear-gradient(135deg,rgba(232,80,26,0.14) 0%,rgba(160,31,58,0.08) 100%);
+                        border-bottom:1px solid var(--md-border);
+                        display:flex; align-items:center; gap:14px;">
+                <div style="width:44px; height:44px; border-radius:10px;
+                            background:rgba(232,80,26,0.15); flex-shrink:0;
+                            display:flex; align-items:center; justify-content:center;
+                            font-size:20px; color:var(--md-accent);">
+                    <i class="bi bi-journal-bookmark-fill"></i>
+                </div>
+                <div style="min-width:0;">
+                    <p style="font-size:11px; font-weight:700; text-transform:uppercase;
+                              letter-spacing:0.07em; color:var(--md-accent); margin:0 0 2px;">Formação</p>
+                    <p style="font-size:14px; font-weight:700; color:var(--md-text-primary);
+                              margin:0; line-height:1.3;
+                              white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        @Model.Title
+                    </p>
+                </div>
+            </div>
+
+            <div style="padding:16px;">
+
+                <!-- Botão principal de acesso -->
+                @{
+                    var btnLessonId = lastLessonId.HasValue ? lastLessonId.Value.ToString() : null;
+                    var btnUrl      = Url.Action("Player", "Student", new { courseId = Model.Id, lessonId = btnLessonId });
+                    var btnLabel    = progressPercent == 0   ? "Começar Formação"
+                                   : progressPercent == 100 ? "Rever Formação"
+                                   :                          "Continuar Formação";
+                    var btnIcon     = progressPercent == 100 ? "bi-arrow-repeat" : "bi-play-fill";
+                }
+                <a href="@btnUrl" class="btn-md-primary w-100"
+                   style="display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; margin-bottom:16px;">
+                    <i class="bi @btnIcon"></i> @btnLabel
+                </a>
+
+                <!-- Barra de progresso -->
+                @if (progressPercent > 0)
+                {
+                    <div style="margin-bottom:16px;">
+                        <div style="display:flex; justify-content:space-between; font-size:12px;
+                                    color:var(--md-text-muted); margin-bottom:6px;">
+                            <span>@completedLessons de @totalLessons aulas concluídas</span>
+                            <span style="font-weight:700; color:@(progressPercent == 100 ? "var(--md-success)" : "var(--md-accent)");">
+                                @progressPercent%
+                            </span>
+                        </div>
+                        <div class="md-progress">
+                            <div class="md-progress-bar"
+                                 style="width:@progressPercent%;
+                                        @(progressPercent == 100 ? "background:var(--md-success);" : "")">
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Informações Gerais -->
+                <p class="sidebar-section-title">Informações Gerais</p>
+
+                @if (totalDuration > TimeSpan.Zero)
+                {
+                    <div class="md-info-row">
+                        <span class="md-info-label"><i class="bi bi-clock"></i> Duração</span>
+                        <span class="md-info-value">@DurationLabel(totalDuration)</span>
+                    </div>
+                }
+                @if (topics.Any())
+                {
+                    <div class="md-info-row">
+                        <span class="md-info-label"><i class="bi bi-folder"></i> Módulos</span>
+                        <span class="md-info-value">@topics.Count</span>
+                    </div>
+                }
+                <div class="md-info-row">
+                    <span class="md-info-label"><i class="bi bi-play-circle"></i> Aulas</span>
+                    <span class="md-info-value">@(totalLessons - totalTests)</span>
+                </div>
+                @if (totalTests > 0)
+                {
+                    <div class="md-info-row">
+                        <span class="md-info-label"><i class="bi bi-patch-question"></i> Testes</span>
+                        <span class="md-info-value">@totalTests</span>
+                    </div>
+                }
+
+                <!-- Instrutor -->
+                @if (teacher != null)
+                {
+                    <div class="mt-4 pt-4" style="border-top:1px solid var(--md-border);">
+                        <p class="sidebar-section-title">Instrutor</p>
+                        <div class="d-flex align-items-center gap-3">
+                            @if (!string.IsNullOrWhiteSpace(teacher.PhotoUrl))
+                            {
+                                <img src="@teacher.PhotoUrl" alt="@teacher.Name"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+                            }
+                            else
+                            {
+                                var ti = string.Join("", teacher.Name.Split(' ').Take(2).Select(w => w[0].ToString().ToUpper()));
+                                <div class="md-avatar" style="width:36px;height:36px;font-size:13px;flex-shrink:0;">@ti</div>
+                            }
+                            <div>
+                                <p style="font-weight:700; font-size:14px; margin:0; color:var(--md-text-primary);">@teacher.Name</p>
+                                @if (!string.IsNullOrWhiteSpace(teacher.Description))
+                                {
+                                    <p style="font-size:12px; color:var(--md-text-muted); margin:0;">@teacher.Description</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Pré-requisitos — sempre visível -->
+                <div class="mt-4 pt-4" style="border-top:1px solid var(--md-border);">
+                    <p class="sidebar-section-title">Pré-requisitos</p>
+                    @if (requirements.Any())
+                    {
+                        @foreach (var req in requirements)
+                        {
+                            var prereqTitle = req.PrerequisiteCourse?.Title ?? "Pré-requisito";
+                            var abbr = string.Join("", prereqTitle
+                                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                .Take(2).Select(w => w[0].ToString().ToUpper()));
+                            prereqDurations.TryGetValue(req.PrerequisiteCourseId, out var prereqDur);
+                            var durStr = prereqDur.TotalHours >= 1
+                                ? $"{(int)prereqDur.TotalHours}h"
+                                : prereqDur.Minutes > 0 ? $"{prereqDur.Minutes}min" : "";
+
+                            <a asp-action="CourseDetail" asp-route-id="@req.PrerequisiteCourseId" class="prereq-card">
+                                @if (!string.IsNullOrWhiteSpace(req.PrerequisiteCourse?.Thumbnail))
+                                {
+                                    <img src="@req.PrerequisiteCourse.Thumbnail" alt="@prereqTitle"
+                                         class="prereq-icon" style="object-fit:cover;" />
+                                }
+                                else
+                                {
+                                    <div class="prereq-icon" style="background:linear-gradient(135deg,#6366F1,#8B5CF6); color:#fff; font-size:13px; font-weight:800;">@abbr</div>
+                                }
+                                <div>
+                                    <p style="font-weight:600; font-size:13px; margin:0; color:var(--md-text-primary);">@prereqTitle</p>
+                                    @if (!string.IsNullOrEmpty(durStr))
+                                    {
+                                        <p style="font-size:12px; color:var(--md-text-muted); margin:0;">@durStr</p>
+                                    }
+                                </div>
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <p style="font-size:13px; color:var(--md-text-muted); margin:0;">
+                            <i class="bi bi-check2-circle" style="color:var(--md-success); margin-right:6px;"></i>
+                            Não possui pré-requisitos
+                        </p>
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+<script>
+    function showTab(name, el) {
+        document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+        document.querySelectorAll('.md-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + name).style.display = 'block';
+        el.classList.add('active');
+        return false;
+    }
+    // Accordion
+    document.querySelectorAll('.md-accordion-header').forEach(h => {
+        h.addEventListener('click', () => {
+            const body = h.nextElementSibling;
+            const isOpen = body.style.display !== 'none';
+            body.style.display = isOpen ? 'none' : 'block';
+        });
+    });
+</script>
+}

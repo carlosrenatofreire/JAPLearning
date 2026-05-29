@@ -4,6 +4,7 @@ using JAPLearning.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JAPLearning.Data.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260528215154_AddAuditLogFields")]
+    partial class AddAuditLogFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -679,7 +682,7 @@ namespace JAPLearning.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("varchar(500)");
 
                     b.Property<bool>("IsActived")
                         .HasColumnType("bit");
@@ -692,7 +695,7 @@ namespace JAPLearning.Data.Migrations
                         .HasColumnType("varchar(100)");
 
                     b.Property<string>("PhotoUrl")
-                        .HasColumnType("varchar(1000)");
+                        .HasColumnType("varchar(500)");
 
                     b.HasKey("Id");
 

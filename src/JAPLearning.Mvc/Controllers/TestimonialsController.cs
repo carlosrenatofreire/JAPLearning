@@ -44,13 +44,14 @@ namespace JAPLearning.Mvc.Controllers
         public async Task<IActionResult> Create(TestimonialViewModel vm, IFormFile? photo)
         {
             ViewData["ActiveMenu"] = "testimonials";
-            if (photo != null && photo.Length > 0) ModelState.Remove(nameof(vm.PhotoUrl));
+            ModelState.Remove(nameof(vm.PhotoUrl));
             if (!ModelState.IsValid) return View(vm);
             var entity = _mapper.Map<Testimonial>(vm);
             entity.Id = Guid.NewGuid();
             entity.CreatedDate = DateTime.UtcNow;
-            if (photo != null && photo.Length > 0)
-                entity.PhotoUrl = await _cloudinary.UploadImageAsync(photo, "testimonials");
+            entity.PhotoUrl = (photo != null && photo.Length > 0)
+                ? await _cloudinary.UploadImageAsync(photo, "testimonials")
+                : string.Empty;
             if (!await _service.AddAsync(entity)) { AddErrors(); return View(vm); }
             TempData["Success"] = "Testemunho criado com sucesso.";
             return RedirectToAction(nameof(Index));
@@ -86,7 +87,7 @@ namespace JAPLearning.Mvc.Controllers
             }
             else
             {
-                entity.PhotoUrl = vm.PhotoUrl;
+                entity.PhotoUrl = vm.PhotoUrl ?? string.Empty;
             }
             if (!await _service.UpdateAsync(entity)) { AddErrors(); return View(vm); }
             TempData["Success"] = "Testemunho actualizado com sucesso.";

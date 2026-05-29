@@ -20,12 +20,18 @@
     }
     .course-card:hover { border-color: rgba(232,80,26,0.35); transform: translateY(-1px); }
     .course-thumb {
-        width: 72px; height: 72px;
+        width: 80px; height: 80px;
         background: var(--md-bg-secondary);
         border-radius: var(--md-radius-sm);
         display: flex; align-items: center; justify-content: center;
         font-size: 28px; color: var(--md-border);
         flex-shrink: 0;
+        overflow: hidden;
+    }
+    .course-thumb img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        border-radius: var(--md-radius-sm);
     }
 </style>
 
@@ -40,10 +46,18 @@
 {
     foreach (var item in Model.OrderByDescending(x => x.ProgressPercent))
     {
-        <a asp-action="Player" asp-route-courseId="@item.Course.Id"
-           asp-route-lessonId="@(item.LastLessonId?.ToString())"
+        <a asp-action="CourseDetail" asp-route-id="@item.Course.Id"
            class="course-card">
-            <div class="course-thumb"><i class="bi bi-code-square"></i></div>
+            <div class="course-thumb">
+                @if (!string.IsNullOrWhiteSpace(item.Course.Thumbnail))
+                {
+                    <img src="@item.Course.Thumbnail" alt="@item.Course.Title" />
+                }
+                else
+                {
+                    <i class="bi bi-code-square"></i>
+                }
+            </div>
             <div style="flex:1; min-width:0;">
                 <p style="font-weight:700; font-size:15px; color:var(--md-text-primary); margin:0 0 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                     @item.Course.Title

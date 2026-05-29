@@ -13,6 +13,9 @@ namespace JAPLearning.Mvc.ViewModels.Student
         public int TotalWatchedHours => TotalWatchedSeconds / 3600;
 
         // Continue watching
-        public List<CourseProgressViewModel> InProgressCourses { get; set; } = new();
+        public List<CourseProgressViewModel> InProgressCourses  { get; set; } = new();
+
+        // Completed courses
+        public List<CourseProgressViewModel> CompletedCourses   { get; set; } = new();
     }
 }

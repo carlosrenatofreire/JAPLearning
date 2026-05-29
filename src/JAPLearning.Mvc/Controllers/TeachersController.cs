@@ -68,24 +68,25 @@ namespace JAPLearning.Mvc.Controllers
         public async Task<IActionResult> Edit(Guid id, TeacherViewModel vm, IFormFile? photo)
         {
             ViewData["ActiveMenu"] = "teachers";
+            ModelState.Remove(nameof(vm.PhotoUrl));
             if (!ModelState.IsValid) return View(vm);
             var entity = _mapper.Map<Teacher>(vm);
             entity.Id = id;
-            if (photo != null && photo.Length > 0)
+            entity.PhotoUrl = (photo != null && photo.Length > 0)
+                ? await _cloudinary.UploadImageAsync(photo, "teachers")
+                : vm.PhotoUrl ?? string.Empty;
+
+            try
             {
-                if (!string.IsNullOrWhiteSpace(vm.PhotoUrl))
-                {
-                    var oldPublicId = _cloudinary.ExtractPublicId(vm.PhotoUrl);
-                    if (oldPublicId != null) await _cloudinary.DeleteImageAsync(oldPublicId);
-                }
-                entity.PhotoUrl = await _cloudinary.UploadImageAsync(photo, "teachers");
+                if (!await _service.UpdateAsync(entity)) { AddErrors(); return View(vm); }
             }
-            else
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
             {
-                // Preserva a foto actual se não foi enviada nova
-                entity.PhotoUrl = vm.PhotoUrl;
+                var inner = ex.InnerException?.Message ?? ex.Message;
+                ModelState.AddModelError(string.Empty, $"Erro ao guardar: {inner}");
+                return View(vm);
             }
-            if (!await _service.UpdateAsync(entity)) { AddErrors(); return View(vm); }
+
             TempData["Success"] = "Professor actualizado com sucesso.";
             return RedirectToAction(nameof(Index));
         }

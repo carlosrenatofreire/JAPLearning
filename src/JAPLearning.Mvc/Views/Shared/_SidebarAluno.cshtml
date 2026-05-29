@@ -7,7 +7,10 @@
     <a asp-controller="Student" asp-action="Dashboard" class="sidebar-item @(active == "dashboard" ? "active" : "")">
         <i class="bi bi-grid-1x2"></i> Dashboard
     </a>
-<a asp-controller="Student" asp-action="MyCertificates" class="sidebar-item @(active == "certificates" ? "active" : "")">
+    <a asp-controller="Student" asp-action="MyCourses" class="sidebar-item @(active == "my-courses" ? "active" : "")">
+        <i class="bi bi-collection-play"></i> Minhas Formações
+    </a>
+    <a asp-controller="Student" asp-action="MyCertificates" class="sidebar-item @(active == "certificates" ? "active" : "")">
         <i class="bi bi-award"></i> Meus Certificados
     </a>
 </div>

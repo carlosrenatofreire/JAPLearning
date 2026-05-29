@@ -27,9 +27,10 @@ namespace JAPLearning.Mvc.Controllers
         private readonly ICertificateService        _certificateService;
         private readonly IUserCourseLessonService   _userCourseLessonService;
         private readonly IUserLessonTestService     _userLessonTestService;
-        private readonly ICategoryService           _categoryService;
-        private readonly ICloudinaryService         _cloudinary;
-        private readonly IMapper                    _mapper;
+        private readonly ICategoryService               _categoryService;
+        private readonly ICourseRequirementService      _requirementService;
+        private readonly ICloudinaryService             _cloudinary;
+        private readonly IMapper                        _mapper;
 
         public StudentController(
             IUserService userService,
@@ -41,6 +42,7 @@ namespace JAPLearning.Mvc.Controllers
             IUserCourseLessonService userCourseLessonService,
             IUserLessonTestService userLessonTestService,
             ICategoryService categoryService,
+            ICourseRequirementService requirementService,
             ICloudinaryService cloudinary,
             IMapper mapper,
             INotificator notificator) : base(notificator)
@@ -54,6 +56,7 @@ namespace JAPLearning.Mvc.Controllers
             _userCourseLessonService = userCourseLessonService;
             _userLessonTestService   = userLessonTestService;
             _categoryService         = categoryService;
+            _requirementService      = requirementService;
             _cloudinary              = cloudinary;
             _mapper                  = mapper;
         }
@@ -166,7 +169,8 @@ namespace JAPLearning.Mvc.Controllers
                 CoursesCompleted    = courseProgressList.Count(c => c.IsCompleted),
                 CertificatesCount   = userCerts.Count,
                 TotalWatchedSeconds = userProgress.Sum(x => x.WatchedSeconds ?? 0),
-                InProgressCourses   = courseProgressList.Where(c => !c.IsCompleted).Take(5).ToList()
+                InProgressCourses   = courseProgressList.Where(c => !c.IsCompleted).Take(5).ToList(),
+                CompletedCourses    = courseProgressList.Where(c => c.IsCompleted).ToList()
             };
 
             return View(vm);
@@ -220,6 +224,69 @@ namespace JAPLearning.Mvc.Controllers
             }
 
             return View(progressList);
+        }
+
+        // ─── Course Detail (área do aluno) ───────────────────────────────────
+
+        [HttpGet]
+        public async Task<IActionResult> CourseDetail(Guid id)
+        {
+            ViewData["ActiveMenu"] = "courses";
+
+            var course = await _courseService.GetByIdAsync(id);
+            if (course == null || !course.IsActived) return NotFound();
+
+            var allTopics  = await _topicService.GetAllAsync();
+            var allLessons = await _lessonService.GetAllAsync();
+            var allCourses = await _courseService.GetAllAsync();
+
+            var topics  = allTopics.Where(t => t.CourseId == id && t.IsActived).OrderBy(t => t.Order).ToList();
+            var lessons = allLessons.Where(l => l.CourseId == id && l.IsActived).OrderBy(l => l.Order).ToList();
+
+            var totalDuration = lessons
+                .Where(l => l.TimeLesson.HasValue)
+                .Aggregate(TimeSpan.Zero, (sum, l) => sum + l.TimeLesson!.Value);
+
+            var requirements = await _requirementService.GetByCourseAsync(id);
+            var coursesById  = allCourses.ToDictionary(c => c.Id);
+            foreach (var req in requirements)
+                if (coursesById.TryGetValue(req.PrerequisiteCourseId, out var prereq))
+                    req.PrerequisiteCourse = prereq;
+
+            var prereqDurations = requirements.ToDictionary(
+                r => r.PrerequisiteCourseId,
+                r => allLessons
+                    .Where(l => l.CourseId == r.PrerequisiteCourseId && l.IsActived && l.TimeLesson.HasValue)
+                    .Aggregate(TimeSpan.Zero, (s, l) => s + l.TimeLesson!.Value));
+
+            // Progresso do aluno neste curso
+            var userId       = GetCurrentUserId();
+            var userProgress = await _userCourseLessonService.GetByUserAsync(userId);
+            var completedIds = userProgress.Where(x => x.CompletedDate.HasValue).Select(x => x.LessonId).ToHashSet();
+            var completed    = lessons.Count(l => completedIds.Contains(l.Id));
+            var progressPct  = lessons.Count == 0 ? 0 : (int)Math.Round((double)completed / lessons.Count * 100);
+
+            // Última lição visitada para o botão "Continuar"
+            var lastRecord = userProgress
+                .Where(x => lessons.Any(l => l.Id == x.LessonId))
+                .OrderByDescending(x => x.CompletedDate)
+                .FirstOrDefault();
+            var lastLessonId = lastRecord != null
+                ? lessons.FirstOrDefault(l => l.Id == lastRecord.LessonId)?.Id
+                : lessons.FirstOrDefault()?.Id;
+
+            ViewBag.Topics           = topics;
+            ViewBag.Lessons          = lessons;
+            ViewBag.TotalDuration    = totalDuration;
+            ViewBag.TotalLessons     = lessons.Count;
+            ViewBag.Requirements     = requirements;
+            ViewBag.PrereqDurations  = prereqDurations;
+            ViewBag.ProgressPercent  = progressPct;
+            ViewBag.CompletedLessons = completed;
+            ViewBag.LastLessonId     = lastLessonId;
+            ViewBag.Teacher          = course.Teacher;  // entidade Teacher com PhotoUrl/Description
+
+            return View(_mapper.Map<CourseViewModel>(course));
         }
 
         // ─── Player ──────────────────────────────────────────────────────────

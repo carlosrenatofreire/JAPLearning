@@ -51,7 +51,12 @@
       "Bash(xargs grep -l \"CreateMap.*Order\\\\|CreateMap.*Payment\")",
       "Bash(xargs grep -l \"Order\\\\|Payment\")",
       "Bash(xargs grep -l \"Doppler\")",
-      "Bash(dotnet user-secrets *)"
+      "Bash(dotnet user-secrets *)",
+      "Bash(xargs grep -l \"ToTable\\\\|HasColumnType\\\\|IsRequired\\\\|HasIndex\\\\|HasMaxLength\")",
+      "Bash(CONNECTIONSTRINGS=\"Server=.;Database=JAPLearning;Trusted_Connection=True;\" dotnet ef migrations add AddAuditLogFields --project src/JAPLearning.Data --startup-project src/JAPLearning.Mvc)",
+      "Bash(CONNECTIONSTRINGS=\"Server=.;Database=JAPLearning;Trusted_Connection=True;\" dotnet ef database update --project src/JAPLearning.Data --startup-project src/JAPLearning.Mvc)",
+      "PowerShell([System.Environment]::GetEnvironmentVariable\\(\"CONNECTIONSTRINGS\", \"User\"\\))",
+      "PowerShell($env:CONNECTIONSTRINGS = \"Data Source=10.147.20.1\\\\SQLEXPRESS,64500;Initial Catalog=DEV_JAPLEARNING;User ID=sa;Password=Password.123;TrustServerCertificate=True\"; Set-Location C:\\\\JAPLearning; dotnet ef migrations add IncreaseTeacherDescriptionToMax --project src/JAPLearning.Data --startup-project src/JAPLearning.Mvc 2>&1)"
     ]
   }
 }

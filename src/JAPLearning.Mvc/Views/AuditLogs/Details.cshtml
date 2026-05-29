@@ -1,0 +1,133 @@
+@model JAPLearning.Mvc.ViewModels.Auxiliaries.AuditLogViewModel
+@using JAPLearning.Business.Models.Enums
+@{
+    ViewData["Title"]      = "Detalhe do Registo";
+    ViewData["ActiveMenu"] = "auditlogs";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+
+    var (levelColor, levelLabel) = Model.LogLevel switch
+    {
+        LogType.Info     => ("#818CF8",           "Info"),
+        LogType.Warning  => ("var(--md-warning)", "Aviso"),
+        LogType.Error    => ("var(--md-danger)",  "Erro"),
+        LogType.Critical => ("#ff4444",           "Crítico"),
+        _                => ("var(--md-text-muted)", "—")
+    };
+}
+
+@await Html.PartialAsync("_CrudStyles")
+
+<div class="page-header">
+    <div>
+        <h4 class="page-header-title">Detalhe do Registo</h4>
+        <p class="page-header-sub">@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</p>
+    </div>
+    <a asp-action="Index" class="btn-md-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+</div>
+
+<div class="row g-4">
+
+    <!-- Info principal -->
+    <div class="col-lg-8">
+        <div class="md-card" style="padding:24px;">
+
+            <!-- Cabeçalho do log -->
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid var(--md-border);">
+                <div style="width:44px; height:44px; border-radius:10px; flex-shrink:0;
+                            background:rgba(232,80,26,0.1); display:flex; align-items:center; justify-content:center;">
+                    @if (Model.LogLevel == LogType.Info)
+                    {
+                        <i class="bi bi-info-circle-fill" style="font-size:20px; color:#818CF8;"></i>
+                    }
+                    else if (Model.LogLevel == LogType.Warning)
+                    {
+                        <i class="bi bi-exclamation-triangle-fill" style="font-size:20px; color:var(--md-warning);"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-x-octagon-fill" style="font-size:20px; color:var(--md-danger);"></i>
+                    }
+                </div>
+                <div>
+                    <p style="margin:0; font-weight:700; font-size:15px; color:var(--md-text-primary);">
+                        @(Model.Message ?? "Sem mensagem")
+                    </p>
+                    <p style="margin:0; font-size:12px; color:var(--md-text-muted);">
+                        ID: @Model.Id
+                    </p>
+                </div>
+            </div>
+
+            <!-- Campos de detalhe -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <p style="font-size:11px; color:var(--md-text-muted); text-transform:uppercase; letter-spacing:0.06em; margin:0 0 4px;">Nível</p>
+                    <span style="font-weight:700; color:@levelColor;">@levelLabel</span>
+                </div>
+                <div class="col-6 col-md-3">
+                    <p style="font-size:11px; color:var(--md-text-muted); text-transform:uppercase; letter-spacing:0.06em; margin:0 0 4px;">Acção</p>
+                    <span style="font-weight:600; color:var(--md-text-primary);">@(Model.Action ?? "—")</span>
+                </div>
+                <div class="col-6 col-md-3">
+                    <p style="font-size:11px; color:var(--md-text-muted); text-transform:uppercase; letter-spacing:0.06em; margin:0 0 4px;">Entidade</p>
+                    <span style="color:var(--md-text-secondary);">@(Model.EntityName ?? "—")</span>
+                </div>
+                <div class="col-6 col-md-3">
+                    <p style="font-size:11px; color:var(--md-text-muted); text-transform:uppercase; letter-spacing:0.06em; margin:0 0 4px;">HTTP</p>
+                    @if (Model.HttpStatusCode.HasValue)
+                    {
+                        var c = Model.HttpStatusCode >= 500 ? "var(--md-danger)"
+                              : Model.HttpStatusCode >= 400 ? "var(--md-warning)" : "var(--md-success)";
+                        <span style="font-weight:700; color:@c;">@Model.HttpStatusCode</span>
+                    }
+                    else { <span style="color:var(--md-text-muted);">—</span> }
+                </div>
+            </div>
+
+            <!-- StackTrace -->
+            @if (!string.IsNullOrWhiteSpace(Model.StackTrace))
+            {
+                <div style="margin-bottom:16px;">
+                    <p style="font-size:12px; font-weight:700; color:var(--md-text-muted); text-transform:uppercase; letter-spacing:0.06em; margin:0 0 8px;">Stack Trace</p>
+                    <pre style="background:var(--md-bg-secondary); border:1px solid var(--md-border); border-radius:var(--md-radius-sm);
+                                padding:14px; font-size:12px; color:var(--md-danger); overflow-x:auto; white-space:pre-wrap; word-break:break-all; margin:0;">@Model.StackTrace</pre>
+                </div>
+            }
+
+            <!-- JSON snapshot -->
+            @if (!string.IsNullOrWhiteSpace(Model.Json))
+            {
+                <div>
+                    <p style="font-size:12px; font-weight:700; color:var(--md-text-muted); text-transform:uppercase; letter-spacing:0.06em; margin:0 0 8px;">Dados (JSON)</p>
+                    <pre style="background:var(--md-bg-secondary); border:1px solid var(--md-border); border-radius:var(--md-radius-sm);
+                                padding:14px; font-size:12px; color:var(--md-text-secondary); overflow-x:auto; white-space:pre-wrap; word-break:break-all; margin:0;">@Model.Json</pre>
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <!-- Sidebar de meta -->
+    <div class="col-lg-4">
+        <div class="md-card" style="padding:20px;">
+            <p style="font-size:13px; font-weight:700; color:var(--md-text-primary); border-bottom:1px solid var(--md-border); padding-bottom:12px; margin-bottom:16px;">
+                Informações do Registo
+            </p>
+            <div class="md-info-row">
+                <span class="md-info-label"><i class="bi bi-calendar3"></i> Data</span>
+                <span class="md-info-value">@Model.CreatedDate.ToString("dd/MM/yyyy")</span>
+            </div>
+            <div class="md-info-row">
+                <span class="md-info-label"><i class="bi bi-clock"></i> Hora</span>
+                <span class="md-info-value">@Model.CreatedDate.ToString("HH:mm:ss")</span>
+            </div>
+            <div class="md-info-row">
+                <span class="md-info-label"><i class="bi bi-person"></i> Utilizador</span>
+                <span class="md-info-value" style="word-break:break-all;">@Model.CreatedBy</span>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -16,6 +16,12 @@ namespace JAPLearning.Data.Mappings.Auxiliaries
                 .IsRequired()
                 .HasColumnType("varchar(150)");
 
+            builder.Property(e => e.Action)
+                .HasColumnType("varchar(50)");
+
+            builder.Property(e => e.EntityName)
+                .HasColumnType("varchar(100)");
+
             builder.Property(e => e.Message)
                 .HasColumnType("varchar(1000)");
 

@@ -1,15 +1,22 @@
+using Microsoft.AspNetCore.Http;
 using JAPLearning.Business.Interfaces.Internals.Parameters;
 using JAPLearning.Business.Interfaces.Internals.Shareds;
+using JAPLearning.Business.Interfaces.Services.Auxiliaries;
 using JAPLearning.Business.Interfaces.Services.Parameters;
 using JAPLearning.Business.Models.Domains.Parameters;
 using JAPLearning.Business.Validators;
 
 namespace JAPLearning.Business.Services.Parameters
 {
-    public class CategoryService : BaseService<Category, ICategoryRepository>, ICategoryService
+    public class CategoryService : AuditableService<Category, ICategoryRepository>, ICategoryService
     {
-        public CategoryService(IUnitOfWork uow, ICategoryRepository repository, INotificator notificator)
-            : base(uow, repository, notificator) { }
+        public CategoryService(
+            IUnitOfWork uow,
+            ICategoryRepository repository,
+            INotificator notificator,
+            IHttpContextAccessor httpContextAccessor,
+            IAuditLogService auditLog)
+            : base(uow, repository, notificator, httpContextAccessor, auditLog) { }
 
         public override async Task<bool> AddAsync(Category entity)
         {

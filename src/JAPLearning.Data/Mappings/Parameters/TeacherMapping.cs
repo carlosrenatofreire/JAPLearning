@@ -17,10 +17,10 @@ namespace JAPLearning.Data.Mappings.Parameters
                 .HasColumnType("varchar(100)");
 
             builder.Property(e => e.Description)
-                .HasColumnType("varchar(500)");
+                .HasColumnType("varchar(max)");
 
             builder.Property(e => e.PhotoUrl)
-                .HasColumnType("varchar(500)");
+                .HasColumnType("varchar(1000)");
 
             builder.HasMany(e => e.Courses)
                 .WithOne(e => e.Teacher)

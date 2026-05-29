@@ -3,6 +3,9 @@
 Guia operacional para sessões Claude Code. Lido automaticamente no início de cada sessão.
 Para detalhes técnicos ver [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 Para regras de negócio e módulos ver [`SPEC.md`](./SPEC.md).
+Para design system e padrões de UI/UX ver [`DESIGN.md`](./DESIGN.md).
+Para schema da base de dados ver [`DATABASE.md`](./DATABASE.md).
+Para histórico de sessões ver [`CHANGELOG.md`](./CHANGELOG.md).
 
 ---
 
@@ -55,14 +58,27 @@ dotnet ef database update --project src/JAPLearning.Data --startup-project src/J
 
 ## Armadilhas Conhecidas (Gotchas)
 
-### 1. `ModelState.Remove` obrigatório para campos de URL/ficheiro
-Com `<Nullable>enable</Nullable>`, strings não-nullable têm `[Required]` implícito.
-Campos como `PhotoUrl` que não vêm directamente do POST (ou chegam como `""`) falham validação silenciosamente — o form volta para a mesma página sem mensagem.
-**Sempre adicionar antes de `ModelState.IsValid`:**
+### 1. `ModelState.Remove` + atribuição explícita para campos de URL/ficheiro
+Com `<Nullable>enable</Nullable>`, o model binder define como `null` qualquer propriedade `string` ausente do POST body (ignora o `= string.Empty` do inicializador). Isto causa `SqlException: Cannot insert NULL` mesmo sem erros de validação visíveis.
+
+**Padrão obrigatório em controllers com upload de ficheiro:**
 ```csharp
+// 1. Remover SEMPRE da validação (independentemente de haver foto ou não)
 ModelState.Remove(nameof(vm.PhotoUrl));
 if (!ModelState.IsValid) return View(vm);
+
+// 2. Atribuir SEMPRE explicitamente — nunca confiar no valor mapeado
+entity.PhotoUrl = (photo != null && photo.Length > 0)
+    ? await _cloudinary.UploadImageAsync(photo, "pasta")
+    : string.Empty;                      // ← nunca: entity.PhotoUrl = vm.PhotoUrl
+
+// Em Edit (manter foto existente):
+entity.PhotoUrl = (photo != null && photo.Length > 0)
+    ? await _cloudinary.UploadImageAsync(photo, "pasta")
+    : vm.PhotoUrl ?? string.Empty;       // ← ?? string.Empty é obrigatório
 ```
+
+**Controllers afectados:** TestimonialsController, UsersController, ArticlesController (qualquer um com `IFormFile? photo`).
 
 ### 2. Validation summary — usar a classe correcta
 Usar sempre `class="md-alert md-alert-danger mb-3"`, **nunca** `class="validation-summary"` (não existe no CSS).

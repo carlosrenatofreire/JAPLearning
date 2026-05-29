@@ -456,49 +456,139 @@
             </p>
         </div>
 
-        <!-- Depoimentos dinâmicos do banco de dados -->
+        <!-- Depoimentos dinâmicos com paginação (6 por página) -->
         @if (ViewBag.Testimonials != null && ((IEnumerable<dynamic>)ViewBag.Testimonials).Any())
         {
-            <div class="row g-4">
-                @foreach (var t in (IEnumerable<dynamic>)ViewBag.Testimonials)
-                {
-                    <div class="col-md-6 col-lg-4">
-                        <div class="md-card h-100" style="display:flex; flex-direction:column; gap:16px;">
-                            <div style="display:flex; gap:4px; color:#F59E0B; font-size:14px;">
-                                @for (int i = 0; i < (int)(t.Rating ?? 5); i++)
-                                {
-                                    <i class="bi bi-star-fill"></i>
-                                }
-                            </div>
-                            <p style="font-size:14px; color:var(--md-text-secondary); line-height:1.8; flex:1; margin:0;">
-                                "@t.Quote"
-                            </p>
-                            <div style="display:flex; align-items:center; gap:12px; padding-top:12px; border-top:1px solid var(--md-border);">
-                                @if (!string.IsNullOrWhiteSpace((string)t.PhotoUrl))
-                                {
-                                    <img src="@t.PhotoUrl" alt="@t.AuthorName" style="width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
-                                }
-                                else
-                                {
-                                    <div class="md-avatar" style="width:42px;height:42px;font-size:14px;flex-shrink:0;">
-                                        @(string.Join("", ((string)t.AuthorName).Split(' ').Take(2).Select(w => w[0].ToString().ToUpper())))
-                                    </div>
-                                }
-                                <div>
-                                    <p style="font-weight:700; font-size:13px; margin:0; color:var(--md-text-primary);">@t.AuthorName</p>
-                                    <p style="font-size:12px; color:var(--md-text-muted); margin:0;">@t.Role · @t.City</p>
+            var allTestimonials = ((IEnumerable<dynamic>)ViewBag.Testimonials).ToList();
+            const int perPage = 6;
+            int totalPages = (int)Math.Ceiling(allTestimonials.Count / (double)perPage);
+
+            <!-- Páginas de testemunhos -->
+            @for (int p = 0; p < totalPages; p++)
+            {
+                var pageItems = allTestimonials.Skip(p * perPage).Take(perPage).ToList();
+                <div class="testimonials-page row g-4" id="tpage-@p" style="display:@(p == 0 ? "flex" : "none"); flex-wrap:wrap;">
+                    @foreach (var t in pageItems)
+                    {
+                        <div class="col-md-6 col-lg-4">
+                            <div class="md-card h-100" style="display:flex; flex-direction:column; gap:16px;">
+                                <!-- Estrelas -->
+                                <div style="display:flex; gap:4px; color:#F59E0B; font-size:14px;">
+                                    @for (int i = 0; i < (int)(t.Rating ?? 5); i++)
+                                    {
+                                        <i class="bi bi-star-fill"></i>
+                                    }
                                 </div>
-                                @if (!string.IsNullOrWhiteSpace((string)t.LinkedinUrl))
-                                {
-                                    <a href="@t.LinkedinUrl" target="_blank" rel="noopener noreferrer" class="testimonial-linkedin" style="margin-left:auto; color:#0A66C2; font-size:22px; flex-shrink:0; transition:var(--md-transition);">
-                                        <i class="bi bi-linkedin"></i>
-                                    </a>
-                                }
+                                <!-- Texto -->
+                                <p style="font-size:14px; color:var(--md-text-secondary); line-height:1.8; flex:1; margin:0;">
+                                    "@t.Quote"
+                                </p>
+                                <!-- Autor -->
+                                <div style="display:flex; align-items:center; gap:12px; padding-top:12px; border-top:1px solid var(--md-border);">
+                                    @if (!string.IsNullOrWhiteSpace((string)t.PhotoUrl))
+                                    {
+                                        <img src="@t.PhotoUrl" alt="@t.AuthorName" style="width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="md-avatar" style="width:42px;height:42px;font-size:14px;flex-shrink:0;">
+                                            @(string.Join("", ((string)t.AuthorName).Split(' ').Take(2).Select(w => w[0].ToString().ToUpper())))
+                                        </div>
+                                    }
+                                    <div>
+                                        <p style="font-weight:700; font-size:13px; margin:0; color:var(--md-text-primary);">@t.AuthorName</p>
+                                        <p style="font-size:12px; color:var(--md-text-muted); margin:0;">
+                                            @t.Role
+                                            @if (!string.IsNullOrWhiteSpace((string)t.City))
+                                            {
+                                                <span> · @t.City</span>
+                                            }
+                                        </p>
+                                    </div>
+                                    @if (!string.IsNullOrWhiteSpace((string)t.LinkedinUrl))
+                                    {
+                                        <a href="@t.LinkedinUrl" target="_blank" rel="noopener noreferrer" class="testimonial-linkedin"
+                                           style="margin-left:auto; color:#0A66C2; font-size:22px; flex-shrink:0; transition:var(--md-transition);">
+                                            <i class="bi bi-linkedin"></i>
+                                        </a>
+                                    }
+                                </div>
                             </div>
                         </div>
+                    }
+                </div>
+            }
+
+            <!-- Navegação (setas + dots) — só mostra se há mais de 1 página -->
+            @if (totalPages > 1)
+            {
+                <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-top:40px;">
+
+                    <!-- Seta anterior -->
+                    <button id="tprev" class="testimonials-nav" onclick="testimonialNav(-1)"
+                            style="width:40px;height:40px;border-radius:50%;background:transparent;
+                                   border:1px solid var(--md-border);color:var(--md-text-secondary);
+                                   cursor:pointer;display:flex;align-items:center;justify-content:center;
+                                   transition:var(--md-transition);" disabled>
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+
+                    <!-- Dots -->
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        @for (int d = 0; d < totalPages; d++)
+                        {
+                            <button class="testimonials-dot @(d == 0 ? "active" : "")"
+                                    onclick="testimonialGoTo(@d)"
+                                    style="width:10px;height:10px;border-radius:50%;border:none;
+                                           padding:0;cursor:pointer;">
+                            </button>
+                        }
                     </div>
-                }
-            </div>
+
+                    <!-- Seta seguinte -->
+                    <button id="tnext" class="testimonials-nav" onclick="testimonialNav(1)"
+                            style="width:40px;height:40px;border-radius:50%;background:transparent;
+                                   border:1px solid var(--md-border);color:var(--md-text-secondary);
+                                   cursor:pointer;display:flex;align-items:center;justify-content:center;
+                                   transition:var(--md-transition);" @(totalPages <= 1 ? "disabled" : "")>
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+
+                </div>
+
+                <script>
+                (function () {
+                    var current  = 0;
+                    var total    = @totalPages;
+                    var pages    = document.querySelectorAll('.testimonials-page');
+                    var dots     = document.querySelectorAll('.testimonials-dot');
+                    var btnPrev  = document.getElementById('tprev');
+                    var btnNext  = document.getElementById('tnext');
+
+                    function goTo(idx) {
+                        // Ocultar página actual
+                        pages[current].style.display = 'none';
+                        dots[current].classList.remove('active');
+
+                        current = idx;
+
+                        // Mostrar nova página
+                        pages[current].style.display = 'flex';
+                        dots[current].classList.add('active');
+
+                        // Actualizar estado das setas
+                        btnPrev.disabled = current === 0;
+                        btnNext.disabled = current === total - 1;
+
+                        // Scroll suave até ao topo da secção
+                        pages[current].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+
+                    window.testimonialNav = function (dir) { goTo(current + dir); };
+                    window.testimonialGoTo = function (idx) { goTo(idx); };
+                })();
+                </script>
+            }
         }
         else
         {

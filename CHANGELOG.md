@@ -5,6 +5,84 @@ Actualizar no fim de cada sessão com o que foi feito, corrigido e o que ficou p
 
 ---
 
+## [Sessão 7] — 2026-05-28
+
+### Adicionado
+- **Módulo de Auditoria** (`AuditLogsController` + `Views/AuditLogs/`) — lista com KPIs, filtros (nível/entidade/data/pesquisa) e página de detalhe com StackTrace e JSON
+- **3 campos novos em `A_AuditLogs`**: `Action varchar(50)`, `EntityName varchar(100)`, `HttpStatusCode int null`
+- **`IAuditLogService`** — novo método `LogErrorAsync` (substitui `LogAsync` por `LogInfoAsync` e `LogErrorAsync`)
+- **Menu Admin** — item "Auditoria" adicionado à secção Administração (apenas role Administrador)
+- **Menu Aluno** — item "Minhas Formações" adicionado à secção Principal
+- **Fluxo CourseDetail na área do aluno** — novo passo intermédio entre lista de formações e player; botão inteligente (Começar/Continuar/Rever)
+- **Dashboard aluno** — layout 50/50 com colunas "Formações em Progresso" e "Formações Concluídas"
+
+### Corrigido
+- Thumbnails nas views MyCourses e Dashboard (estavam sempre a mostrar ícone genérico)
+- Proporção da imagem principal em `CourseDetail` pública: `16:9` → `5:2`
+- Card sidebar público: imagem repetida substituída por header com gradiente + ícone
+- Paginação de testemunhos na Landing: `Take(6)` removido do HomeController
+
+### Alterações Manuais BD (executar no SSMS)
+```sql
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('A_AuditLogs') AND name = 'Action')
+    ALTER TABLE A_AuditLogs ADD Action varchar(50) NULL;
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('A_AuditLogs') AND name = 'EntityName')
+    ALTER TABLE A_AuditLogs ADD EntityName varchar(100) NULL;
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('A_AuditLogs') AND name = 'HttpStatusCode')
+    ALTER TABLE A_AuditLogs ADD HttpStatusCode int NULL;
+```
+
+### Ficheiros alterados
+- `Business/Models/Domains/Auxiliaries/AuditLog.cs`
+- `Business/Interfaces/Services/Auxiliaries/IAuditLogService.cs`
+- `Business/Services/Auxiliaries/AuditLogService.cs`
+- `Data/Mappings/Auxiliaries/AuditLogMapping.cs`
+- `Mvc/ViewModels/Auxiliaries/AuditLogViewModel.cs`
+- `Mvc/Controllers/AuditLogsController.cs` — criado
+- `Mvc/Views/AuditLogs/Index.cshtml` — criado
+- `Mvc/Views/AuditLogs/Details.cshtml` — criado
+- `Mvc/Views/Shared/_SidebarAdmin.cshtml`
+- `Mvc/Views/Shared/_SidebarAluno.cshtml`
+- `Mvc/Controllers/StudentController.cs`
+- `Mvc/Views/Student/CourseDetail.cshtml` — criado
+- `Mvc/Views/Student/Courses.cshtml`
+- `Mvc/Views/Student/Dashboard.cshtml`
+- `Mvc/Views/Student/MyCourses.cshtml`
+- `Mvc/Views/Home/CourseDetail.cshtml`
+- `Mvc/Controllers/HomeController.cs`
+
+---
+
+## [Sessão 6] — 2026-05-28
+
+### Corrigido
+- **`SqlException: Cannot insert NULL into column 'PhotoUrl'`** — `.NET 10` com `<Nullable>enable</Nullable>` define strings ausentes do POST body como `null` (ignora inicializador `= string.Empty`). Em `TestimonialsController.Create`, a entidade recebia `PhotoUrl = null` via AutoMapper → falha SQL.
+  - Fix Create: `ModelState.Remove` sempre antes de `IsValid`; atribuição explícita `entity.PhotoUrl = (photo != null) ? url : string.Empty`.
+  - Fix Edit: `entity.PhotoUrl = vm.PhotoUrl ?? string.Empty` (nunca omitir o `?? string.Empty`).
+- **`CLAUDE.md` Gotcha #1** — actualizado com padrão completo obrigatório para todos os controllers com `IFormFile? photo`.
+
+### Adicionado
+- **Paginação de Testemunhos na Landing Page** — 6 testemunhos por página, setas Prev/Next, dots de navegação, JS IIFE (`goTo`, `testimonialNav`, `testimonialGoTo`). Reutiliza CSS já existente (`.testimonials-dot`, `.testimonials-nav`).
+- **`DESIGN.md`** — design system completo: variáveis CSS, componentes HTML, regras UX.
+- **`BLUEPRINT.md`** — diagrama ASCII da estrutura da knowledge base, tabela de responsabilidades, fluxo de sessão, stack técnica, anti-patterns.
+- **`DBML.md`** — script DBML completo para todas as 23 tabelas (compatível com dbdiagram.io), índices, alterações manuais, diagrama de relações ASCII.
+
+### Ficheiros alterados
+- `src/JAPLearning.Mvc/Controllers/TestimonialsController.cs` — fix `PhotoUrl` null (Create + Edit POST)
+- `src/JAPLearning.Mvc/Views/Home/Landing.cshtml` — paginação de testemunhos
+- `CLAUDE.md` — Gotcha #1 actualizado com padrão completo
+- `DESIGN.md` — criado
+- `BLUEPRINT.md` — criado
+- `DBML.md` — criado
+
+### Pendente
+- Verificar `ScorePercent` aplicado na BD de produção
+- Testar fluxo completo: quiz → conclusão → emissão de certificado
+- Dashboard de progresso por equipa (relatórios)
+- Notificação por email ao emitir certificado
+
+---
+
 ## [Sessão 5] — 2026-05-27
 
 ### Corrigido

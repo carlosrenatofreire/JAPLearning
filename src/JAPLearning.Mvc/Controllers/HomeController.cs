@@ -54,8 +54,8 @@ namespace JAPLearning.Mvc.Controllers
                 var testimonials = await _testimonialService.GetAllAsync();
                 ViewBag.Testimonials = testimonials
                     .Where(t => t.IsActived && t.Featured)
-                    .OrderByDescending(t => t.Rating)
-                    .Take(6)
+                    .OrderBy(t => t.DisplayOrder)
+                    .ThenByDescending(t => t.Rating)
                     .Select(t => new {
                         t.AuthorName, t.Role, t.City, t.Quote,
                         t.PhotoUrl, t.LinkedinUrl, t.Rating

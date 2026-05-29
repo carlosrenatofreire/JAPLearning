@@ -134,12 +134,10 @@
     @foreach (var item in Model.Courses)
     {
         var catKey    = item.Course.CategoryName.ToLower().Replace(" ", "-");
-        var playerUrl = item.LastLessonId.HasValue
-            ? Url.Action("Player", "Student", new { courseId = item.Course.Id, lessonId = item.LastLessonId })
-            : Url.Action("Player", "Student", new { courseId = item.Course.Id });
+        var detailUrl = Url.Action("CourseDetail", "Student", new { id = item.Course.Id });
 
         <div class="col-md-6 col-xl-4 course-card-wrap @(item.Course.IsBrief ? "is-breve" : "")" data-category="@catKey">
-            <a href="@(item.Course.IsBrief ? "javascript:void(0)" : playerUrl)" class="md-course-card"
+            <a href="@(item.Course.IsBrief ? "javascript:void(0)" : detailUrl)" class="md-course-card"
                style="@(item.Course.IsBrief ? "pointer-events:none;" : "")">
                 <div class="md-course-card-thumb">
                     @if (!string.IsNullOrEmpty(item.Course.Thumbnail))

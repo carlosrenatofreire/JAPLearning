@@ -1,14 +1,21 @@
+using Microsoft.AspNetCore.Http;
 using JAPLearning.Business.Interfaces.Internals.Entities;
 using JAPLearning.Business.Interfaces.Internals.Shareds;
+using JAPLearning.Business.Interfaces.Services.Auxiliaries;
 using JAPLearning.Business.Interfaces.Services.Entities;
 using JAPLearning.Business.Models.Domains.Entities;
 
 namespace JAPLearning.Business.Services.Entities
 {
-    public class QuestionService : BaseService<Question, IQuestionRepository>, IQuestionService
+    public class QuestionService : AuditableService<Question, IQuestionRepository>, IQuestionService
     {
-        public QuestionService(IUnitOfWork uow, IQuestionRepository repository, INotificator notificator)
-            : base(uow, repository, notificator) { }
+        public QuestionService(
+            IUnitOfWork uow,
+            IQuestionRepository repository,
+            INotificator notificator,
+            IHttpContextAccessor httpContextAccessor,
+            IAuditLogService auditLog)
+            : base(uow, repository, notificator, httpContextAccessor, auditLog) { }
 
         public async Task<List<Question>> GetByLessonAsync(Guid lessonId)
         {
