@@ -360,6 +360,11 @@ hr {
     border: 1px solid rgba(99,102,241,0.25);
     color: #A5B4FC;
 }
+.md-alert-warning {
+    background: rgba(234,179,8,0.1);
+    border: 1px solid rgba(234,179,8,0.3);
+    color: #FDE047;
+}
 
 /* ── Tabs ─────────────────────────────────────────────────── */
 .md-tabs {

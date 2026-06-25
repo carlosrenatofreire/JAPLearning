@@ -30,5 +30,8 @@ namespace JAPLearning.Data.Repositories.Entities
                 .Include(l => l.Topic)
                 .FirstOrDefaultAsync(l => l.Id == id);
         }
+
+        public async Task<bool> HasProgressRecordsAsync(Guid lessonId) =>
+            await Db.UserCourseLessons.AnyAsync(r => r.LessonId == lessonId);
     }
 }

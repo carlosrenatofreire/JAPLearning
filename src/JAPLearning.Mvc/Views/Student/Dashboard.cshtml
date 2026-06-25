@@ -1,8 +1,30 @@
 @model JAPLearning.Mvc.ViewModels.Student.StudentDashboardViewModel
+@using System.Text.Json
 @{
     ViewData["Title"]      = "Dashboard";
     ViewData["ActiveMenu"] = "dashboard";
     Layout = "~/Views/Shared/_LayoutApp.cshtml";
+
+    // ── Dados para gráficos ──────────────────────────────────────────
+    var allCourses     = Model.InProgressCourses.Concat(Model.CompletedCourses).ToList();
+    var hasChartData   = allCourses.Any();
+
+    // Barras horizontais — apenas formações em progresso (< 100%)
+    var barsJson = JsonSerializer.Serialize(
+        Model.InProgressCourses
+            .OrderByDescending(c => c.ProgressPercent)
+            .Select(c => new {
+                title = c.Course.Title.Length > 28 ? c.Course.Title[..28] + "…" : c.Course.Title,
+                pct   = c.ProgressPercent
+            }).ToList()
+    );
+
+    // Doughnut — aulas concluídas vs restantes (todas as formações)
+    var totalCompleted = Model.InProgressCourses.Sum(c => c.CompletedLessons)
+                       + Model.CompletedCourses.Sum(c => c.TotalLessons);
+    var totalRemaining = Model.InProgressCourses.Sum(c => c.TotalLessons - c.CompletedLessons);
+    var totalAll       = totalCompleted + totalRemaining;
+    var globalPct      = totalAll > 0 ? (int)Math.Round((double)totalCompleted / totalAll * 100) : 0;
 }
 
 <style>
@@ -60,6 +82,33 @@
         width: 100%; height: 100%;
         object-fit: cover;
         border-radius: var(--md-radius-sm);
+    }
+    .dash-tab-nav {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid var(--md-border);
+        padding-bottom: 0;
+    }
+    .dash-tab-btn {
+        padding: 10px 20px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--md-text-muted);
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        cursor: pointer;
+        transition: color .15s, border-color .15s;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+    .dash-tab-btn:hover { color: var(--md-text-secondary); }
+    .dash-tab-btn.active {
+        color: var(--md-accent);
+        border-bottom-color: var(--md-accent);
     }
 </style>
 
@@ -122,105 +171,308 @@
             <div class="kpi-icon" style="background:rgba(232,80,26,0.12); color:var(--md-accent);">
                 <i class="bi bi-clock-history"></i>
             </div>
-            <div class="kpi-value">@Model.TotalWatchedHours<span style="font-size:16px;">h</span></div>
+            <div class="kpi-value" style="font-size:@(Model.TotalWatchedHours >= 100 ? "22px" : "28px");">@Model.TotalWatchedLabel</div>
             <div class="kpi-label">Horas Assistidas</div>
         </div>
     </div>
 </div>
 
-<div class="row g-4">
-
-    <!-- Coluna esquerda — Formações em Progresso -->
-    <div class="col-12 col-lg-6">
-        <h5 style="font-weight:700; margin-bottom:16px;">
-            <i class="bi bi-collection-play" style="color:#818CF8; margin-right:8px;"></i>
-            Formações em Progresso
-        </h5>
-        @if (Model.InProgressCourses.Any())
-        {
-            foreach (var item in Model.InProgressCourses)
-            {
-                <a asp-action="CourseDetail" asp-route-id="@item.Course.Id"
-                   class="continue-card">
-                    <div class="continue-thumb">
-                        @if (!string.IsNullOrWhiteSpace(item.Course.Thumbnail))
-                        {
-                            <img src="@item.Course.Thumbnail" alt="@item.Course.Title" />
-                        }
-                        else
-                        {
-                            <i class="bi bi-code-square"></i>
-                        }
-                    </div>
-                    <div style="flex:1; min-width:0;">
-                        <p style="font-weight:600; font-size:14px; color:var(--md-text-primary); margin:0 0 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                            @item.Course.Title
-                        </p>
-                        <p style="font-size:12px; color:var(--md-text-muted); margin:0 0 8px;">
-                            @item.CompletedLessons de @item.TotalLessons aulas concluídas
-                        </p>
-                        <div class="md-progress">
-                            <div class="md-progress-bar" style="width:@item.ProgressPercent%;"></div>
-                        </div>
-                    </div>
-                    <span style="font-size:12px; color:var(--md-text-muted); flex-shrink:0;">@item.ProgressPercent%</span>
-                </a>
-            }
-        }
-        else
-        {
-            <div style="text-align:center; padding:40px; color:var(--md-text-muted);">
-                <i class="bi bi-play-circle" style="font-size:40px; display:block; margin-bottom:12px;"></i>
-                <p style="margin:0;">Nenhuma formação iniciada ainda.</p>
-            </div>
-        }
-    </div>
-
-    <!-- Coluna direita — Formações Concluídas -->
-    <div class="col-12 col-lg-6">
-        <h5 style="font-weight:700; margin-bottom:16px;">
-            <i class="bi bi-check-circle" style="color:var(--md-success); margin-right:8px;"></i>
-            Formações Concluídas
-        </h5>
-        @if (Model.CompletedCourses.Any())
-        {
-            foreach (var item in Model.CompletedCourses)
-            {
-                <a asp-action="CourseDetail" asp-route-id="@item.Course.Id"
-                   class="continue-card">
-                    <div class="continue-thumb">
-                        @if (!string.IsNullOrWhiteSpace(item.Course.Thumbnail))
-                        {
-                            <img src="@item.Course.Thumbnail" alt="@item.Course.Title" />
-                        }
-                        else
-                        {
-                            <i class="bi bi-patch-check-fill" style="color:var(--md-success);"></i>
-                        }
-                    </div>
-                    <div style="flex:1; min-width:0;">
-                        <p style="font-weight:600; font-size:14px; color:var(--md-text-primary); margin:0 0 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                            @item.Course.Title
-                        </p>
-                        <p style="font-size:12px; color:var(--md-text-muted); margin:0 0 8px;">
-                            @item.TotalLessons de @item.TotalLessons aulas concluídas
-                        </p>
-                        <div class="md-progress">
-                            <div class="md-progress-bar"
-                                 style="width:100%; background:var(--md-success);"></div>
-                        </div>
-                    </div>
-                    <span style="font-size:12px; color:var(--md-success); font-weight:700; flex-shrink:0;">100%</span>
-                </a>
-            }
-        }
-        else
-        {
-            <div style="text-align:center; padding:40px; color:var(--md-text-muted);">
-                <i class="bi bi-trophy" style="font-size:40px; display:block; margin-bottom:12px;"></i>
-                <p style="margin:0;">Ainda não concluiu nenhuma formação.</p>
-            </div>
-        }
-    </div>
-
+<!-- Tabs Status / Gráficos -->
+<div class="dash-tab-nav">
+    <button class="dash-tab-btn active" id="btnTabStatus" onclick="switchStudentTab('status')">
+        <i class="bi bi-collection-play"></i> Status
+    </button>
+    <button class="dash-tab-btn" id="btnTabGraficos" onclick="switchStudentTab('graficos')">
+        <i class="bi bi-bar-chart-line"></i> Gráficos
+    </button>
 </div>
+
+<!-- ── Painel STATUS ──────────────────────────────────────────────── -->
+<div id="panelStatus">
+    <div class="row g-4">
+
+        <!-- Formações em Progresso -->
+        <div class="col-12 col-lg-6">
+            <h5 style="font-weight:700; margin-bottom:16px;">
+                <i class="bi bi-collection-play" style="color:#818CF8; margin-right:8px;"></i>
+                Formações em Progresso
+            </h5>
+            @if (Model.InProgressCourses.Any())
+            {
+                foreach (var item in Model.InProgressCourses)
+                {
+                    <a asp-action="CourseDetail" asp-route-id="@item.Course.Id" class="continue-card">
+                        <div class="continue-thumb">
+                            @if (!string.IsNullOrWhiteSpace(item.Course.Thumbnail))
+                            {
+                                <img src="@item.Course.Thumbnail" alt="@item.Course.Title" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-code-square"></i>
+                            }
+                        </div>
+                        <div style="flex:1; min-width:0;">
+                            <p style="font-weight:600; font-size:14px; color:var(--md-text-primary); margin:0 0 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                @item.Course.Title
+                            </p>
+                            <p style="font-size:12px; color:var(--md-text-muted); margin:0 0 8px;">
+                                @item.CompletedLessons de @item.TotalLessons aulas concluídas
+                            </p>
+                            <div class="md-progress">
+                                <div class="md-progress-bar" style="width:@item.ProgressPercent%;"></div>
+                            </div>
+                        </div>
+                        <span style="font-size:12px; color:var(--md-text-muted); flex-shrink:0;">@item.ProgressPercent%</span>
+                    </a>
+                }
+            }
+            else
+            {
+                <div style="text-align:center; padding:40px; color:var(--md-text-muted);">
+                    <i class="bi bi-play-circle" style="font-size:40px; display:block; margin-bottom:12px;"></i>
+                    <p style="margin:0;">Nenhuma formação iniciada ainda.</p>
+                </div>
+            }
+        </div>
+
+        <!-- Formações Concluídas -->
+        <div class="col-12 col-lg-6">
+            <h5 style="font-weight:700; margin-bottom:16px;">
+                <i class="bi bi-check-circle" style="color:var(--md-success); margin-right:8px;"></i>
+                Formações Concluídas
+            </h5>
+            @if (Model.CompletedCourses.Any())
+            {
+                foreach (var item in Model.CompletedCourses)
+                {
+                    <a asp-action="CourseDetail" asp-route-id="@item.Course.Id" class="continue-card">
+                        <div class="continue-thumb">
+                            @if (!string.IsNullOrWhiteSpace(item.Course.Thumbnail))
+                            {
+                                <img src="@item.Course.Thumbnail" alt="@item.Course.Title" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-patch-check-fill" style="color:var(--md-success);"></i>
+                            }
+                        </div>
+                        <div style="flex:1; min-width:0;">
+                            <p style="font-weight:600; font-size:14px; color:var(--md-text-primary); margin:0 0 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                @item.Course.Title
+                            </p>
+                            <p style="font-size:12px; color:var(--md-text-muted); margin:0 0 8px;">
+                                @item.TotalLessons de @item.TotalLessons aulas concluídas
+                            </p>
+                            <div class="md-progress">
+                                <div class="md-progress-bar" style="width:100%; background:var(--md-success);"></div>
+                            </div>
+                        </div>
+                        <span style="font-size:12px; color:var(--md-success); font-weight:700; flex-shrink:0;">100%</span>
+                    </a>
+                }
+            }
+            else
+            {
+                <div style="text-align:center; padding:40px; color:var(--md-text-muted);">
+                    <i class="bi bi-trophy" style="font-size:40px; display:block; margin-bottom:12px;"></i>
+                    <p style="margin:0;">Ainda não concluiu nenhuma formação.</p>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+
+<!-- ── Painel GRÁFICOS ────────────────────────────────────────────── -->
+<div id="panelGraficos" style="display:none;">
+    @if (!hasChartData)
+    {
+        <div style="text-align:center; padding:60px; color:var(--md-text-muted);">
+            <i class="bi bi-bar-chart-line" style="font-size:40px; display:block; margin-bottom:12px;"></i>
+            <p style="margin:0;">Inicie uma formação para ver os seus gráficos de progresso.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+
+            <!-- Barras horizontais: progresso por formação em curso -->
+            <div class="col-12 col-lg-7">
+                <div style="background:var(--md-bg-card); border:1px solid var(--md-border); border-radius:var(--md-radius-lg); padding:24px;">
+                    <p style="font-size:13px; font-weight:700; color:var(--md-text-muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:20px;">
+                        <i class="bi bi-bar-chart-steps" style="color:var(--md-accent); margin-right:6px;"></i>
+                        Progresso por Formação
+                    </p>
+                    @if (!Model.InProgressCourses.Any())
+                    {
+                        <p style="font-size:13px; color:var(--md-text-muted); font-style:italic; text-align:center; padding:30px 0;">
+                            Nenhuma formação em progresso.
+                        </p>
+                    }
+                    else
+                    {
+                        <div style="position:relative; height:@(Math.Max(140, Model.InProgressCourses.Count * 48))px;">
+                            <canvas id="chartBarsProgress"></canvas>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Doughnut: aulas concluídas vs restantes -->
+            <div class="col-12 col-lg-5">
+                <div style="background:var(--md-bg-card); border:1px solid var(--md-border); border-radius:var(--md-radius-lg); padding:24px;">
+                    <p style="font-size:13px; font-weight:700; color:var(--md-text-muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:20px;">
+                        <i class="bi bi-pie-chart-fill" style="color:var(--md-success); margin-right:6px;"></i>
+                        Progresso Geral
+                    </p>
+                    <div style="position:relative; height:240px; display:flex; align-items:center; justify-content:center;">
+                        <canvas id="chartDoughnutGlobal"></canvas>
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:24px; margin-top:16px;">
+                        <span style="font-size:12px; color:var(--md-text-muted); display:flex; align-items:center; gap:6px;">
+                            <span style="width:10px;height:10px;border-radius:50%;background:#22C55E;display:inline-block;"></span>
+                            Concluídas (@totalCompleted)
+                        </span>
+                        <span style="font-size:12px; color:var(--md-text-muted); display:flex; align-items:center; gap:6px;">
+                            <span style="width:10px;height:10px;border-radius:50%;background:var(--md-border);display:inline-block;"></span>
+                            Restantes (@totalRemaining)
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    const BARS_DATA  = @Html.Raw(barsJson);
+    const COMPLETED  = @totalCompleted;
+    const REMAINING  = @totalRemaining;
+    const GLOBAL_PCT = @globalPct;
+
+    const GRID_COLOR = 'rgba(42,42,74,0.8)';
+    const TICK_COLOR = '#A0A0C0';
+
+    let chartsInited = false;
+
+    function barColor(pct) {
+        if (pct >= 80) return '#22C55E';
+        if (pct >= 50) return '#F59E0B';
+        return '#E8501A';
+    }
+
+    // ── Troca de tab ──────────────────────────────────────────────────
+    window.switchStudentTab = function (tab) {
+        const btnStatus   = document.getElementById('btnTabStatus');
+        const btnGraficos = document.getElementById('btnTabGraficos');
+        const panelStatus = document.getElementById('panelStatus');
+        const panelGraf   = document.getElementById('panelGraficos');
+
+        if (tab === 'status') {
+            btnStatus.classList.add('active');
+            btnGraficos.classList.remove('active');
+            panelStatus.style.display = '';
+            panelGraf.style.display   = 'none';
+        } else {
+            btnGraficos.classList.add('active');
+            btnStatus.classList.remove('active');
+            panelStatus.style.display = 'none';
+            panelGraf.style.display   = '';
+            if (!chartsInited) { initCharts(); chartsInited = true; }
+        }
+    };
+
+    function initCharts() {
+
+        // ── Barras horizontais ────────────────────────────────────────
+        const barsCanvas = document.getElementById('chartBarsProgress');
+        if (barsCanvas && BARS_DATA.length) {
+            new Chart(barsCanvas, {
+                type: 'bar',
+                data: {
+                    labels: BARS_DATA.map(d => d.title),
+                    datasets: [{
+                        data:            BARS_DATA.map(d => d.pct),
+                        backgroundColor: BARS_DATA.map(d => barColor(d.pct)),
+                        borderRadius:    5,
+                        borderSkipped:   false,
+                        barThickness:    22
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.x}% concluído` } }
+                    },
+                    scales: {
+                        x: {
+                            min: 0, max: 100,
+                            grid:  { color: GRID_COLOR },
+                            ticks: { color: TICK_COLOR, callback: v => v + '%' }
+                        },
+                        y: {
+                            grid:  { display: false },
+                            ticks: { color: TICK_COLOR, font: { size: 12 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ── Doughnut global ───────────────────────────────────────────
+        const centerPlugin = {
+            id: 'centerText',
+            afterDraw(chart) {
+                if (chart.config.type !== 'doughnut') return;
+                const { ctx, chartArea } = chart;
+                const cx = (chartArea.left + chartArea.right) / 2;
+                const cy = (chartArea.top + chartArea.bottom) / 2;
+                ctx.save();
+                ctx.font = 'bold 30px Inter, sans-serif';
+                ctx.fillStyle = '#F0F0FF';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(GLOBAL_PCT + '%', cx, cy - 10);
+                ctx.font = '12px Inter, sans-serif';
+                ctx.fillStyle = '#606080';
+                ctx.fillText('concluído', cx, cy + 14);
+                ctx.restore();
+            }
+        };
+
+        const doughnutCanvas = document.getElementById('chartDoughnutGlobal');
+        if (doughnutCanvas) {
+            new Chart(doughnutCanvas, {
+                type: 'doughnut',
+                plugins: [centerPlugin],
+                data: {
+                    labels: ['Concluídas', 'Restantes'],
+                    datasets: [{
+                        data:            [COMPLETED, REMAINING],
+                        backgroundColor: ['#22C55E', '#2A2A4A'],
+                        borderColor:     '#16162E',
+                        borderWidth:     3,
+                        hoverOffset:     6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '68%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: ctx => ` ${ctx.parsed} aula(s)` } }
+                    }
+                }
+            });
+        }
+    }
+})();
+</script>

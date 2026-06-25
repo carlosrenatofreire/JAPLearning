@@ -1,0 +1,122 @@
+@model MundoDev.Mvc.ViewModels.Account.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — MundoDev</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/mundodev.css" asp-append-version="true" />
+    <style>
+        body { background: var(--md-bg-primary); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--md-bg-card);
+            border: 1px solid var(--md-border);
+            border-radius: var(--md-radius-lg);
+            padding: 40px 36px;
+            box-shadow: var(--md-shadow-lg);
+        }
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 32px;
+            justify-content: center;
+        }
+        .brand-icon {
+            width: 36px; height: 36px;
+            background: var(--md-gradient);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 14px; color: #fff;
+        }
+        .brand-name { font-size: 20px; font-weight: 800; color: var(--md-text-primary); }
+        .brand-name span { color: var(--md-accent); }
+        .pass-wrapper { position: relative; }
+        .pass-toggle {
+            position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: var(--md-text-muted); cursor: pointer; padding: 0;
+        }
+        .pass-toggle:hover { color: var(--md-accent); }
+        .validation-summary-errors { display: none; }
+        .validation-summary-errors ul { padding: 0; margin: 0; list-style: none; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <div class="brand-logo">
+            <div class="brand-icon">&lt;/&gt;</div>
+            <span class="brand-name">Mundo<span>Dev</span></span>
+        </div>
+
+        <h2 style="font-size:22px; font-weight:800; margin-bottom:6px;">Bem-vindo de volta</h2>
+        <p style="color:var(--md-text-muted); font-size:14px; margin-bottom:28px;">Entra na tua conta para continuar.</p>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="md-alert md-alert-danger mb-4">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <div asp-validation-summary="All"></div>
+            </div>
+        }
+
+        <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="md-form-group">
+                <label asp-for="Email" class="md-label"></label>
+                <input asp-for="Email" class="md-input" placeholder="seu@email.com" autocomplete="username" />
+                <span asp-validation-for="Email" class="text-danger" style="font-size:12px;"></span>
+            </div>
+
+            <div class="md-form-group">
+                <label asp-for="Password" class="md-label"></label>
+                <div class="pass-wrapper">
+                    <input asp-for="Password" class="md-input" placeholder="••••••••" autocomplete="current-password" id="passwordInput" style="padding-right:44px;" />
+                    <button type="button" class="pass-toggle" onclick="togglePassword()">
+                        <i class="bi bi-eye" id="passIcon"></i>
+                    </button>
+                </div>
+                <span asp-validation-for="Password" class="text-danger" style="font-size:12px;"></span>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div class="form-check" style="margin:0;">
+                    <input asp-for="RememberMe" class="form-check-input" style="background-color:var(--md-bg-input); border-color:var(--md-border);" />
+                    <label asp-for="RememberMe" class="form-check-label" style="font-size:13px; color:var(--md-text-secondary);"></label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-md-primary w-100" style="justify-content:center;">
+                Entrar <i class="bi bi-arrow-right"></i>
+            </button>
+        </form>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('passwordInput');
+            const icon  = document.getElementById('passIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'bi bi-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'bi bi-eye';
+            }
+        }
+    </script>
+</body>
+</html>

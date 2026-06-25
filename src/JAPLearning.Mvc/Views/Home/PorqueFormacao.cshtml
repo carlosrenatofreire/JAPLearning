@@ -1,0 +1,568 @@
+@{
+    ViewData["Title"] = "Porquê Investir em Formação";
+    ViewData["Description"] = "Descubra por que razão a formação contínua é o maior activo de uma empresa moderna.";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+}
+
+@section Styles {
+<style>
+    /* ── Utilitários locais ── */
+    .pf-section        { padding: 96px 0; }
+    .pf-section-alt    { padding: 96px 0; background: var(--md-bg-secondary); }
+    .pf-eyebrow        { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--md-accent); margin-bottom: 12px; }
+    .pf-title          { font-size: clamp(28px, 4vw, 42px); font-weight: 900; color: var(--md-text-primary); line-height: 1.15; margin-bottom: 16px; }
+    .pf-subtitle       { font-size: 17px; color: var(--md-text-secondary); line-height: 1.7; max-width: 600px; }
+    .pf-divider        { width: 48px; height: 4px; background: var(--md-gradient); border-radius: 4px; margin: 20px 0 32px; }
+
+    /* ── Hero ── */
+    .pf-hero {
+        min-height: 520px;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        padding: 120px 0 80px;
+    }
+    .pf-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse 80% 60% at 60% 40%, rgba(232,80,26,.10) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .pf-hero-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(42,42,74,.35) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(42,42,74,.35) 1px, transparent 1px);
+        background-size: 48px 48px;
+        pointer-events: none;
+        mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    }
+    .pf-hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(232,80,26,.1);
+        border: 1px solid rgba(232,80,26,.25);
+        color: var(--md-accent);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 6px 16px;
+        border-radius: 40px;
+        margin-bottom: 28px;
+    }
+    .pf-hero-title {
+        font-size: clamp(34px, 5vw, 58px);
+        font-weight: 900;
+        color: var(--md-text-primary);
+        line-height: 1.1;
+        margin-bottom: 22px;
+    }
+    .pf-hero-title .hl { color: var(--md-accent); }
+    .pf-hero-desc {
+        font-size: 18px;
+        color: var(--md-text-secondary);
+        line-height: 1.75;
+        max-width: 560px;
+        margin-bottom: 40px;
+    }
+    .pf-hero-actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+    .pf-hero-visual {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .pf-mini-card {
+        background: var(--md-bg-card);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius);
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .pf-mini-icon {
+        width: 42px; height: 42px; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 18px; flex-shrink: 0;
+    }
+    .pf-mini-card-val { font-size: 20px; font-weight: 900; color: var(--md-text-primary); }
+    .pf-mini-card-lbl { font-size: 12px; color: var(--md-text-muted); margin-top: 1px; }
+
+    /* ── Stats ── */
+    .pf-stat-card {
+        background: var(--md-bg-card);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius-lg);
+        padding: 36px 28px;
+        text-align: center;
+        transition: transform .2s, border-color .2s;
+        height: 100%;
+    }
+    .pf-stat-card:hover { transform: translateY(-4px); border-color: rgba(232,80,26,.4); }
+    .pf-stat-number {
+        font-size: 48px;
+        font-weight: 900;
+        background: var(--md-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
+        margin-bottom: 10px;
+    }
+    .pf-stat-desc { font-size: 14px; color: var(--md-text-secondary); line-height: 1.6; }
+    .pf-stat-source { font-size: 11px; color: var(--md-text-muted); margin-top: 8px; }
+
+    /* ── Pilares ── */
+    .pf-pilar-card {
+        background: var(--md-bg-card);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius-lg);
+        padding: 32px 28px;
+        height: 100%;
+        transition: transform .2s, border-color .2s, box-shadow .2s;
+        position: relative;
+        overflow: hidden;
+    }
+    .pf-pilar-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: var(--md-gradient);
+        border-radius: var(--md-radius-lg) var(--md-radius-lg) 0 0;
+        opacity: 0;
+        transition: opacity .2s;
+    }
+    .pf-pilar-card:hover { transform: translateY(-4px); border-color: rgba(232,80,26,.3); box-shadow: 0 12px 40px rgba(0,0,0,.4); }
+    .pf-pilar-card:hover::before { opacity: 1; }
+    .pf-pilar-icon {
+        width: 52px; height: 52px;
+        background: rgba(232,80,26,.1);
+        border: 1px solid rgba(232,80,26,.2);
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px; color: var(--md-accent);
+        margin-bottom: 20px;
+    }
+    .pf-pilar-title { font-size: 17px; font-weight: 800; color: var(--md-text-primary); margin-bottom: 10px; }
+    .pf-pilar-text  { font-size: 14px; color: var(--md-text-secondary); line-height: 1.7; }
+
+    /* ── Antes/Depois ── */
+    .pf-compare-table {
+        background: var(--md-bg-card);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius-lg);
+        overflow: hidden;
+        width: 100%;
+    }
+    .pf-compare-table th {
+        padding: 18px 24px;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+    .pf-compare-table th.col-sem  { background: rgba(239,68,68,.07);  color: #F87171; }
+    .pf-compare-table th.col-com  { background: rgba(34,197,94,.07);  color: #4ADE80; }
+    .pf-compare-table th.col-tema { background: rgba(255,255,255,.03); color: var(--md-text-muted); }
+    .pf-compare-table td { padding: 14px 24px; font-size: 14px; border-top: 1px solid var(--md-border-light); color: var(--md-text-secondary); vertical-align: middle; }
+    .pf-compare-table tr:hover td { background: rgba(255,255,255,.02); }
+    .pf-compare-table td.col-sem { color: #F87171; }
+    .pf-compare-table td.col-com { color: #4ADE80; }
+    .pf-compare-table td.col-tema { color: var(--md-text-muted); font-weight: 600; }
+    .pf-check { color: #4ADE80; margin-right: 6px; }
+    .pf-cross  { color: #F87171; margin-right: 6px; }
+
+    /* ── Como Funciona ── */
+    .pf-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        position: relative;
+    }
+    .pf-step-num {
+        width: 60px; height: 60px;
+        background: var(--md-gradient);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px; font-weight: 900; color: #fff;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 0 0 8px rgba(232,80,26,.1);
+    }
+    .pf-step-connector {
+        position: absolute;
+        top: 30px;
+        left: calc(50% + 30px);
+        right: calc(-50% + 30px);
+        height: 2px;
+        background: linear-gradient(to right, var(--md-accent), rgba(232,80,26,.2));
+    }
+    .pf-step:last-child .pf-step-connector { display: none; }
+    .pf-step-title { font-size: 16px; font-weight: 800; color: var(--md-text-primary); margin-bottom: 8px; }
+    .pf-step-text  { font-size: 13px; color: var(--md-text-muted); line-height: 1.6; max-width: 200px; }
+
+    /* ── Quote ── */
+    .pf-quote-block {
+        background: linear-gradient(135deg, rgba(232,80,26,.08), rgba(200,55,42,.04));
+        border: 1px solid rgba(232,80,26,.2);
+        border-radius: var(--md-radius-lg);
+        padding: 52px 60px;
+        position: relative;
+        overflow: hidden;
+    }
+    .pf-quote-block::before {
+        content: '\201C';
+        position: absolute;
+        top: -20px; left: 30px;
+        font-size: 160px;
+        font-weight: 900;
+        color: rgba(232,80,26,.1);
+        line-height: 1;
+        pointer-events: none;
+    }
+    .pf-quote-text {
+        font-size: clamp(20px, 2.5vw, 28px);
+        font-weight: 700;
+        color: var(--md-text-primary);
+        line-height: 1.5;
+        margin-bottom: 24px;
+        position: relative;
+    }
+    .pf-quote-author { font-size: 14px; color: var(--md-text-muted); }
+    .pf-quote-author strong { color: var(--md-accent); }
+
+    /* ── CTA final ── */
+    .pf-cta {
+        background: linear-gradient(135deg, rgba(232,80,26,.1), rgba(200,55,42,.05));
+        border: 1px solid rgba(232,80,26,.2);
+        border-radius: var(--md-radius-lg);
+        padding: 72px 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .pf-cta::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse 60% 60% at 50% 0%, rgba(232,80,26,.12), transparent 70%);
+        pointer-events: none;
+    }
+
+    @@media (max-width: 768px) {
+        .pf-quote-block { padding: 36px 28px; }
+        .pf-step-connector { display: none; }
+    }
+</style>
+}
+
+<!-- ══════════════════════════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════════════════════════ -->
+<section class="pf-hero">
+    <div class="pf-hero-grid"></div>
+    <div class="container">
+        <div class="row align-items-center gy-5">
+            <div class="col-lg-7">
+                <div class="pf-hero-badge">
+                    <i class="bi bi-stars"></i> Formação Contínua
+                </div>
+                <h1 class="pf-hero-title">
+                    Porquê investir em<br>
+                    <span class="hl">formação interna</span>?
+                </h1>
+                <p class="pf-hero-desc">
+                    Numa era de mudança acelerada, as empresas que crescem são as que apostam
+                    no desenvolvimento contínuo das suas equipas. A <strong style="color:var(--md-text-primary);">JAP Learning</strong>
+                    foi criada exactamente para isso.
+                </p>
+                <div class="pf-hero-actions">
+                    <a asp-controller="Home" asp-action="Courses" class="btn-md-primary">
+                        <i class="bi bi-play-circle"></i> Explorar Formações
+                    </a>
+                    <a asp-controller="Account" asp-action="Login" class="btn-md-ghost">
+                        Entrar na Plataforma <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="pf-hero-visual">
+                    <div class="pf-mini-card">
+                        <div class="pf-mini-icon" style="background:rgba(34,197,94,.1); color:#4ADE80;">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <div>
+                            <div class="pf-mini-card-val">+40%</div>
+                            <div class="pf-mini-card-lbl">de produtividade com formação regular</div>
+                        </div>
+                    </div>
+                    <div class="pf-mini-card">
+                        <div class="pf-mini-icon" style="background:rgba(99,102,241,.1); color:#818CF8;">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <div>
+                            <div class="pf-mini-card-val">94%</div>
+                            <div class="pf-mini-card-lbl">dos colaboradores ficam mais tempo em empresas que investem neles</div>
+                        </div>
+                    </div>
+                    <div class="pf-mini-card">
+                        <div class="pf-mini-icon" style="background:rgba(232,80,26,.1); color:var(--md-accent);">
+                            <i class="bi bi-award-fill"></i>
+                        </div>
+                        <div>
+                            <div class="pf-mini-card-val">3×</div>
+                            <div class="pf-mini-card-lbl">mais lucro em empresas com cultura de aprendizagem forte</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     ESTATÍSTICAS
+═══════════════════════════════════════════════════════════════ -->
+<section class="pf-section-alt">
+    <div class="container">
+        <div class="text-center mb-5">
+            <p class="pf-eyebrow">Os Números Falam</p>
+            <h2 class="pf-title" style="margin:0 auto;">O impacto real da formação contínua</h2>
+            <div class="pf-divider mx-auto"></div>
+        </div>
+        <div class="row g-4">
+            <div class="col-sm-6 col-lg-3">
+                <div class="pf-stat-card">
+                    <div class="pf-stat-number">94%</div>
+                    <p class="pf-stat-desc">dos colaboradores permaneceriam mais tempo numa empresa que investe no seu crescimento profissional.</p>
+                    <p class="pf-stat-source">Fonte: LinkedIn Workplace Learning Report</p>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="pf-stat-card">
+                    <div class="pf-stat-number">218h</div>
+                    <p class="pf-stat-desc">é a média de horas de formação por ano que as empresas de alto desempenho investem por colaborador.</p>
+                    <p class="pf-stat-source">Fonte: ATD State of the Industry</p>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="pf-stat-card">
+                    <div class="pf-stat-number">3×</div>
+                    <p class="pf-stat-desc">mais lucro geram as organizações com uma cultura de aprendizagem forte face à concorrência.</p>
+                    <p class="pf-stat-source">Fonte: Deloitte Human Capital Trends</p>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="pf-stat-card">
+                    <div class="pf-stat-number">42%</div>
+                    <p class="pf-stat-desc">das competências técnicas ficam desactualizadas em menos de dois anos sem formação contínua.</p>
+                    <p class="pf-stat-source">Fonte: World Economic Forum</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     PILARES
+═══════════════════════════════════════════════════════════════ -->
+<section class="pf-section">
+    <div class="container">
+        <div class="row align-items-end mb-5 gy-3">
+            <div class="col-lg-6">
+                <p class="pf-eyebrow">Os 4 Pilares</p>
+                <h2 class="pf-title">O que a formação interna<br>transforma na sua empresa</h2>
+                <div class="pf-divider"></div>
+            </div>
+            <div class="col-lg-5 offset-lg-1">
+                <p class="pf-subtitle">
+                    Uma plataforma de e-learning interna não é apenas uma ferramenta de
+                    aprendizagem — é um investimento estratégico com impacto directo em
+                    produtividade, retenção e cultura organizacional.
+                </p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="pf-pilar-card">
+                    <div class="pf-pilar-icon"><i class="bi bi-lightbulb-fill"></i></div>
+                    <h3 class="pf-pilar-title">Conhecimento Partilhado</h3>
+                    <p class="pf-pilar-text">
+                        O saber deixa de estar concentrado em pessoas e passa a pertencer à
+                        organização. Formações gravadas garantem que o conhecimento nunca se perde.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="pf-pilar-card">
+                    <div class="pf-pilar-icon"><i class="bi bi-bar-chart-line-fill"></i></div>
+                    <h3 class="pf-pilar-title">Progresso Mensurável</h3>
+                    <p class="pf-pilar-text">
+                        Certificados, testes e métricas de conclusão permitem avaliar o
+                        desenvolvimento real de cada colaborador de forma objectiva.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="pf-pilar-card">
+                    <div class="pf-pilar-icon"><i class="bi bi-diagram-3-fill"></i></div>
+                    <h3 class="pf-pilar-title">Equipas Mais Coesas</h3>
+                    <p class="pf-pilar-text">
+                        Quando todos partem de uma base de conhecimento comum, a comunicação
+                        melhora, os erros diminuem e os projectos avançam mais depressa.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="pf-pilar-card">
+                    <div class="pf-pilar-icon"><i class="bi bi-person-check-fill"></i></div>
+                    <h3 class="pf-pilar-title">Autonomia de Aprendizagem</h3>
+                    <p class="pf-pilar-text">
+                        Cada colaborador aprende ao seu ritmo, quando e onde quiser. Sem
+                        interrupções de agenda nem custos de formação externa.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     ANTES / DEPOIS
+═══════════════════════════════════════════════════════════════ -->
+<section class="pf-section-alt">
+    <div class="container">
+        <div class="text-center mb-5">
+            <p class="pf-eyebrow">Antes vs Depois</p>
+            <h2 class="pf-title" style="margin: 0 auto;">A diferença que uma plataforma faz</h2>
+            <div class="pf-divider mx-auto"></div>
+        </div>
+        <div class="table-responsive">
+            <table class="pf-compare-table">
+                <thead>
+                    <tr>
+                        <th class="col-tema" style="width:30%;">Área</th>
+                        <th class="col-sem"><i class="bi bi-x-circle-fill me-2"></i>Sem Plataforma</th>
+                        <th class="col-com"><i class="bi bi-check-circle-fill me-2"></i>Com JAP Learning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="col-tema">Integração de novos colaboradores</td>
+                        <td class="col-sem"><i class="bi bi-x-circle pf-cross"></i>Processo manual, inconsistente e demorado</td>
+                        <td class="col-com"><i class="bi bi-check-circle pf-check"></i>Percurso de onboarding estruturado e disponível 24/7</td>
+                    </tr>
+                    <tr>
+                        <td class="col-tema">Transferência de conhecimento</td>
+                        <td class="col-sem"><i class="bi bi-x-circle pf-cross"></i>Dependente de pessoas; perde-se com saídas</td>
+                        <td class="col-com"><i class="bi bi-check-circle pf-check"></i>Documentado em formações sempre acessíveis</td>
+                    </tr>
+                    <tr>
+                        <td class="col-tema">Avaliação do progresso</td>
+                        <td class="col-sem"><i class="bi bi-x-circle pf-cross"></i>Sem visibilidade real sobre o que foi aprendido</td>
+                        <td class="col-com"><i class="bi bi-check-circle pf-check"></i>Testes, certificados e métricas por colaborador</td>
+                    </tr>
+                    <tr>
+                        <td class="col-tema">Custo de formação</td>
+                        <td class="col-sem"><i class="bi bi-x-circle pf-cross"></i>Formações externas repetidas e caras</td>
+                        <td class="col-com"><i class="bi bi-check-circle pf-check"></i>Conteúdo criado uma vez, reutilizado sempre</td>
+                    </tr>
+                    <tr>
+                        <td class="col-tema">Retenção de talento</td>
+                        <td class="col-sem"><i class="bi bi-x-circle pf-cross"></i>Colaboradores sem perspectiva de crescimento saem</td>
+                        <td class="col-com"><i class="bi bi-check-circle pf-check"></i>Plano de desenvolvimento visível e motivante</td>
+                    </tr>
+                    <tr>
+                        <td class="col-tema">Alinhamento das equipas</td>
+                        <td class="col-sem"><i class="bi bi-x-circle pf-cross"></i>Diferentes níveis de conhecimento geram conflitos</td>
+                        <td class="col-com"><i class="bi bi-check-circle pf-check"></i>Base comum que une e nivela as equipas</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     COMO FUNCIONA
+═══════════════════════════════════════════════════════════════ -->
+<section class="pf-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <p class="pf-eyebrow">Como Funciona</p>
+            <h2 class="pf-title" style="margin: 0 auto;">Três passos para transformar a sua equipa</h2>
+            <div class="pf-divider mx-auto"></div>
+        </div>
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-4">
+                <div class="pf-step">
+                    <div class="pf-step-connector"></div>
+                    <div class="pf-step-num">1</div>
+                    <h4 class="pf-step-title">Acede à Plataforma</h4>
+                    <p class="pf-step-text">O colaborador recebe acesso à JAP Learning e encontra todas as formações disponíveis para a sua equipa.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="pf-step">
+                    <div class="pf-step-connector"></div>
+                    <div class="pf-step-num">2</div>
+                    <h4 class="pf-step-title">Aprende ao Seu Ritmo</h4>
+                    <p class="pf-step-text">Vídeos, testes e conteúdo estruturado disponíveis a qualquer hora. Cada lição concluída fica registada.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="pf-step">
+                    <div class="pf-step-num">3</div>
+                    <h4 class="pf-step-title">Certifica-se</h4>
+                    <p class="pf-step-text">Ao concluir uma formação com aprovação, recebe automaticamente um certificado com código de validação único.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     QUOTE
+═══════════════════════════════════════════════════════════════ -->
+<section class="pf-section-alt">
+    <div class="container">
+        <div class="pf-quote-block">
+            <p class="pf-quote-text">
+                "A única coisa pior do que formar pessoas e elas saírem é
+                não as formar e elas ficarem."
+            </p>
+            <p class="pf-quote-author">— <strong>Henry Ford</strong>, fundador da Ford Motor Company</p>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CTA FINAL
+═══════════════════════════════════════════════════════════════ -->
+<section class="pf-section">
+    <div class="container">
+        <div class="pf-cta">
+            <p class="pf-eyebrow" style="position:relative; z-index:1;">Pronto para começar?</p>
+            <h2 class="pf-title" style="margin: 0 auto 16px; position:relative; z-index:1;">
+                A sua equipa merece crescer.
+            </h2>
+            <p style="font-size:16px; color:var(--md-text-secondary); max-width:480px; margin: 0 auto 36px; position:relative; z-index:1; line-height:1.7;">
+                Explore as formações disponíveis ou entre na plataforma para começar a aprender hoje.
+            </p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap" style="position:relative; z-index:1;">
+                <a asp-controller="Home" asp-action="Courses" class="btn-md-primary" style="font-size:15px; padding:12px 28px;">
+                    <i class="bi bi-play-circle-fill"></i> Explorar Formações
+                </a>
+                <a asp-controller="Account" asp-action="Login" class="btn-md-ghost" style="font-size:15px; padding:12px 28px;">
+                    Entrar na Plataforma
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

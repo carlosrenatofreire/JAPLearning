@@ -31,6 +31,7 @@ namespace JAPLearning.Mvc.Controllers
         private readonly ICourseRequirementService      _requirementService;
         private readonly ICloudinaryService             _cloudinary;
         private readonly IMapper                        _mapper;
+        private readonly IWebHostEnvironment            _env;
 
         public StudentController(
             IUserService userService,
@@ -45,6 +46,7 @@ namespace JAPLearning.Mvc.Controllers
             ICourseRequirementService requirementService,
             ICloudinaryService cloudinary,
             IMapper mapper,
+            IWebHostEnvironment env,
             INotificator notificator) : base(notificator)
         {
             _userService             = userService;
@@ -59,6 +61,7 @@ namespace JAPLearning.Mvc.Controllers
             _requirementService      = requirementService;
             _cloudinary              = cloudinary;
             _mapper                  = mapper;
+            _env                     = env;
         }
 
         // ─── Helpers ─────────────────────────────────────────────────────────
@@ -162,13 +165,19 @@ namespace JAPLearning.Mvc.Controllers
                 });
             }
 
+            // Calcular horas assistidas: soma da duração (TimeLesson) das aulas concluídas.
+            // WatchedSeconds nunca é preenchido em tempo real, por isso usa-se a duração declarada.
+            var totalWatchedSeconds = allLessons
+                .Where(l => completedLessonIds.Contains(l.Id) && l.TimeLesson.HasValue)
+                .Sum(l => (int)l.TimeLesson!.Value.TotalSeconds);
+
             var vm = new StudentDashboardViewModel
             {
                 FirstName           = user.FirstName,
                 CoursesInProgress   = courseProgressList.Count(c => !c.IsCompleted),
                 CoursesCompleted    = courseProgressList.Count(c => c.IsCompleted),
                 CertificatesCount   = userCerts.Count,
-                TotalWatchedSeconds = userProgress.Sum(x => x.WatchedSeconds ?? 0),
+                TotalWatchedSeconds = totalWatchedSeconds,
                 InProgressCourses   = courseProgressList.Where(c => !c.IsCompleted).Take(5).ToList(),
                 CompletedCourses    = courseProgressList.Where(c => c.IsCompleted).ToList()
             };
@@ -698,6 +707,43 @@ namespace JAPLearning.Mvc.Controllers
 
             ViewBag.CategoryItems = vm;
             return View();
+        }
+
+        // ─── Downloads ───────────────────────────────────────────────────────
+        // [Authorize] garante que só utilizadores autenticados acedem.
+
+        /// <summary>
+        /// ZIP do snapshot — servido localmente (sem limite de tamanho, sem consumo Cloudinary).
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> DownloadSnapshot(Guid courseId)
+        {
+            var course = await _courseService.GetByIdAsync(courseId);
+            if (course == null || string.IsNullOrWhiteSpace(course.SnapshotUrl))
+                return NotFound();
+
+            var fullPath = Path.Combine(_env.ContentRootPath, "PrivateFiles", course.SnapshotUrl);
+            if (!System.IO.File.Exists(fullPath)) return NotFound();
+
+            var fileName = $"snapshot-{course.Title.Replace(" ", "-").ToLowerInvariant()}.zip";
+            return PhysicalFile(fullPath, "application/zip", fileName);
+        }
+
+        /// <summary>
+        /// PDF — servido localmente (sem limite de tamanho).
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> DownloadPdf(Guid courseId)
+        {
+            var course = await _courseService.GetByIdAsync(courseId);
+            if (course == null || string.IsNullOrWhiteSpace(course.PdfFileUrl))
+                return NotFound();
+
+            var fullPath = Path.Combine(_env.ContentRootPath, "PrivateFiles", course.PdfFileUrl);
+            if (!System.IO.File.Exists(fullPath)) return NotFound();
+
+            var fileName = $"{course.Title.Replace(" ", "-").ToLowerInvariant()}.pdf";
+            return PhysicalFile(fullPath, "application/pdf", fileName);
         }
 
         // ─── Change Password ─────────────────────────────────────────────────

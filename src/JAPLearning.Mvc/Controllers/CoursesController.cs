@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using JAPLearning.Business.Interfaces.Externals;
@@ -9,6 +10,7 @@ using JAPLearning.Business.Interfaces.Services.Parameters;
 using JAPLearning.Business.Interfaces.Services.Relationships;
 using JAPLearning.Business.Models.Domains.Entities;
 using JAPLearning.Mvc.ViewModels.Entities;
+using System.Security.Claims;
 
 namespace JAPLearning.Mvc.Controllers
 {
@@ -24,12 +26,13 @@ namespace JAPLearning.Mvc.Controllers
         private readonly ICloudinaryService          _cloudinary;
         private readonly ICourseRequirementService   _requirementService;
         private readonly IMapper                     _mapper;
+        private readonly IWebHostEnvironment         _env;
 
         public CoursesController(ICourseService service, ICategoryService categoryService,
             ITeacherService teacherService, ILevelService levelService,
             ITeamService teamService, ILessonService lessonService,
             ICloudinaryService cloudinary, ICourseRequirementService requirementService,
-            IMapper mapper, INotificator notificator) : base(notificator)
+            IMapper mapper, IWebHostEnvironment env, INotificator notificator) : base(notificator)
         {
             _service            = service;
             _categoryService    = categoryService;
@@ -40,13 +43,41 @@ namespace JAPLearning.Mvc.Controllers
             _cloudinary         = cloudinary;
             _requirementService = requirementService;
             _mapper             = mapper;
+            _env                = env;
         }
 
         public async Task<IActionResult> Index()
         {
             ViewData["ActiveMenu"] = "courses";
-            var list    = await _service.GetAllAsync();
-            var lessons = await _lessonService.GetAllAsync();
+            var allCourses    = await _service.GetAllAsync();
+            var lessons       = await _lessonService.GetAllAsync();
+            var teams         = await _teamService.GetAllAsync();
+            var allCategories = await _categoryService.GetAllAsync();
+
+            // ── Filtrar por departamento para Supervisor ─────────────────
+            var isSupervisor = User.IsInRole("Supervisor");
+            var teamIdClaim  = User.FindFirstValue("TeamId");
+            var supervisorTeamId = isSupervisor && Guid.TryParse(teamIdClaim, out var tid) ? tid : (Guid?)null;
+
+            var visibleCatIds = supervisorTeamId.HasValue
+                ? allCategories.Where(c => c.TeamId == supervisorTeamId.Value).Select(c => c.Id).ToHashSet()
+                : null;
+
+            var list       = supervisorTeamId.HasValue
+                ? allCourses.Where(c => visibleCatIds!.Contains(c.CategoryId)).ToList()
+                : allCourses;
+
+            var categories = supervisorTeamId.HasValue
+                ? allCategories.Where(c => c.TeamId == supervisorTeamId.Value).ToList()
+                : allCategories;
+
+            // Equipas visíveis: Supervisor vê só a sua; Admin vê todas
+            var visibleTeams = supervisorTeamId.HasValue
+                ? teams.Where(t => t.Id == supervisorTeamId.Value).ToList()
+                : teams.Where(t => t.IsActived).ToList();
+
+            ViewBag.IsSupervisor = isSupervisor;
+            ViewBag.SupervisorTeamId = supervisorTeamId?.ToString() ?? "";
 
             ViewBag.CourseDurations = lessons
                 .Where(l => l.IsActived && l.TimeLesson.HasValue)
@@ -54,6 +85,17 @@ namespace JAPLearning.Mvc.Controllers
                 .ToDictionary(
                     g => g.Key,
                     g => g.Aggregate(TimeSpan.Zero, (sum, l) => sum + l.TimeLesson!.Value));
+
+            ViewBag.FilterTeams = visibleTeams
+                .OrderBy(t => t.Name)
+                .Select(t => new { id = t.Id, name = t.Name })
+                .ToList();
+
+            ViewBag.FilterCategories = categories
+                .Where(c => c.IsActived)
+                .OrderBy(c => c.Name)
+                .Select(c => new { id = c.Id, name = c.Name, teamId = c.TeamId })
+                .ToList();
 
             return View(_mapper.Map<List<CourseViewModel>>(list));
         }
@@ -68,7 +110,10 @@ namespace JAPLearning.Mvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CourseViewModel vm, IFormFile? thumbnail)
+        [RequestSizeLimit(256 * 1024 * 1024)]           // 256 MB
+        [RequestFormLimits(MultipartBodyLengthLimit = 256 * 1024 * 1024)]
+        public async Task<IActionResult> Create(CourseViewModel vm, IFormFile? thumbnail,
+            IFormFile? snapshotFile, IFormFile? pdfFile)
         {
             ViewData["ActiveMenu"] = "courses";
             if (!ModelState.IsValid) { await PopulateDropdownsAsync(); return View(vm); }
@@ -77,6 +122,10 @@ namespace JAPLearning.Mvc.Controllers
             entity.CreatedDate = DateTime.UtcNow;
             if (thumbnail != null && thumbnail.Length > 0)
                 entity.Thumbnail = await _cloudinary.UploadImageAsync(thumbnail, "courses");
+            // ZIP → local (sem limite de tamanho, pode ultrapassar 100 MB)
+            entity.SnapshotUrl = await SaveSnapshotLocalAsync(snapshotFile, entity.Id);
+            // PDF → local (sem limite de tamanho)
+            entity.PdfFileUrl = await SavePdfLocalAsync(pdfFile, entity.Id);
             if (!await _service.AddAsync(entity)) { AddErrors(); await PopulateDropdownsAsync(); return View(vm); }
             TempData["Success"] = "Curso criado com sucesso.";
             return RedirectToAction(nameof(Index));
@@ -99,7 +148,10 @@ namespace JAPLearning.Mvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, CourseViewModel vm, IFormFile? thumbnail)
+        [RequestSizeLimit(256 * 1024 * 1024)]           // 256 MB
+        [RequestFormLimits(MultipartBodyLengthLimit = 256 * 1024 * 1024)]
+        public async Task<IActionResult> Edit(Guid id, CourseViewModel vm, IFormFile? thumbnail,
+            IFormFile? snapshotFile, IFormFile? pdfFile)
         {
             ViewData["ActiveMenu"] = "courses";
             if (!ModelState.IsValid) { await PopulateDropdownsAsync(); return View(vm); }
@@ -115,6 +167,14 @@ namespace JAPLearning.Mvc.Controllers
                 }
                 entity.Thumbnail = await _cloudinary.UploadImageAsync(thumbnail, "courses");
             }
+            // ZIP → local: substitui ficheiro se novo enviado, mantém existente caso contrário
+            var newSnapshot = await SaveSnapshotLocalAsync(snapshotFile, id);
+            entity.SnapshotUrl = newSnapshot ?? vm.SnapshotUrl;
+
+            // PDF → local: substitui ficheiro se novo enviado, mantém existente caso contrário
+            var newPdf = await SavePdfLocalAsync(pdfFile, id);
+            entity.PdfFileUrl = newPdf ?? vm.PdfFileUrl;
+
             if (!await _service.UpdateAsync(entity)) { AddErrors(); await PopulateDropdownsAsync(); return View(vm); }
             TempData["Success"] = "Curso actualizado com sucesso.";
             return RedirectToAction(nameof(Index));
@@ -161,15 +221,70 @@ namespace JAPLearning.Mvc.Controllers
 
         // ── Helpers ─────────────────────────────────────────────────────────
 
+        /// <summary>
+        /// Guarda o ficheiro ZIP do snapshot em PrivateFiles/snapshots/ (fora do wwwroot).
+        /// Sem limite de tamanho — suporta ficheiros acima de 100 MB.
+        /// Devolve o caminho relativo gravado na BD, ou null se não houver ficheiro.
+        /// </summary>
+        private async Task<string?> SavePdfLocalAsync(IFormFile? file, Guid courseId)
+        {
+            if (file == null || file.Length == 0) return null;
+
+            var folder = Path.Combine(_env.ContentRootPath, "PrivateFiles", "pdfs");
+            Directory.CreateDirectory(folder);
+
+            var fileName = $"{courseId}.pdf";
+            var fullPath = Path.Combine(folder, fileName);
+
+            await using var stream = new FileStream(fullPath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            return $"pdfs/{fileName}";
+        }
+
+        private async Task<string?> SaveSnapshotLocalAsync(IFormFile? file, Guid courseId)
+        {
+            if (file == null || file.Length == 0) return null;
+
+            var folder = Path.Combine(_env.ContentRootPath, "PrivateFiles", "snapshots");
+            Directory.CreateDirectory(folder);
+
+            // Um ficheiro por formação — {courseId}.zip sobrescreve o anterior automaticamente
+            var fileName = $"{courseId}.zip";
+            var fullPath = Path.Combine(folder, fileName);
+
+            await using var stream = new FileStream(fullPath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            return $"snapshots/{fileName}";
+        }
+
+        private Guid? GetSupervisorTeamId()
+        {
+            if (!User.IsInRole("Supervisor")) return null;
+            return Guid.TryParse(User.FindFirstValue("TeamId"), out var tid) ? tid : (Guid?)null;
+        }
+
         private async Task PopulateDropdownsAsync(Guid? selectedCategoryId = null)
         {
-            var categories = await _categoryService.GetAllAsync();
-            ViewBag.CategoriesFull = categories.Where(c => c.IsActived)
-                                               .OrderBy(c => c.Name).ToList();
-            ViewBag.Categories     = new SelectList(categories.Where(c => c.IsActived).OrderBy(c => c.Name), "Id", "Name", selectedCategoryId);
-            ViewBag.Teachers       = new SelectList(await _teacherService.GetAllAsync(), "Id", "Name");
-            ViewBag.Levels         = new SelectList(await _levelService.GetAllAsync(), "Id", "Name");
-            ViewBag.Teams          = new SelectList((await _teamService.GetAllAsync()).Where(t => t.IsActived).OrderBy(t => t.Name), "Id", "Name");
+            var supervisorTeamId = GetSupervisorTeamId();
+
+            var allCategories = await _categoryService.GetAllAsync();
+            var categories    = supervisorTeamId.HasValue
+                ? allCategories.Where(c => c.IsActived && c.TeamId == supervisorTeamId.Value)
+                : allCategories.Where(c => c.IsActived);
+
+            ViewBag.CategoriesFull   = categories.OrderBy(c => c.Name).ToList();
+            ViewBag.Categories       = new SelectList(categories.OrderBy(c => c.Name), "Id", "Name", selectedCategoryId);
+            ViewBag.Teachers         = new SelectList(await _teacherService.GetAllAsync(), "Id", "Name");
+            ViewBag.Levels           = new SelectList(await _levelService.GetAllAsync(), "Id", "Name");
+
+            var allTeams = await _teamService.GetAllAsync();
+            var teams    = supervisorTeamId.HasValue
+                ? allTeams.Where(t => t.Id == supervisorTeamId.Value)
+                : allTeams.Where(t => t.IsActived).OrderBy(t => t.Name);
+            ViewBag.Teams            = new SelectList(teams, "Id", "Name");
+            ViewBag.SupervisorTeamId = supervisorTeamId?.ToString() ?? "";
         }
 
         private async Task PopulateRequirementsAsync(Guid courseId)

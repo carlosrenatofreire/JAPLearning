@@ -1,10 +1,12 @@
-@inject Microsoft.Extensions.Configuration.IConfiguration _config
+@inject JAPLearning.Business.Interfaces.Services.Auxiliaries.IAppVersionService _versionSvc
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] — JAPLearning</title>
+    <title>JL | @(ViewData["Title"] ?? "JAPLearning")</title>
+    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" />
+    <link rel="shortcut icon" href="~/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -85,21 +87,7 @@
         }
         .sidebar-item.active i { color: var(--md-accent); }
 
-        .sidebar-footer {
-            height: 32px;
-            padding: 0 12px;
-            border-top: 1px solid var(--md-border);
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .sidebar-version {
-            font-size: 11px;
-            color: var(--md-text-muted);
-            opacity: 0.6;
-            margin: 0;
-        }
+        .sidebar-footer { display: none; }
 
         /* ── Topbar ─────────────────────────────────────────── */
         .topbar-right { display: flex; align-items: center; gap: 4px; }
@@ -206,9 +194,7 @@
             <nav class="sidebar-nav">
                 @await Html.PartialAsync("_Sidebar")
             </nav>
-            <div class="sidebar-footer">
-                <p class="sidebar-version">v@(_config["AppVersion"] ?? "1.0.0")</p>
-            </div>
+            <div class="sidebar-footer"></div>
         </aside>
 
         <!-- Main -->
@@ -226,6 +212,22 @@
                         var roleName   = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
                         var subLabel   = ViewBag.PlanName as string ?? roleName;
                         var photoUrl   = User.FindFirst("PhotoUrl")?.Value;
+                    }
+                    @{
+                        var _latest   = await _versionSvc.GetLatestPublishedAsync();
+                        var latestVer = _latest?.VersionNumber ?? string.Empty;
+                    }
+                    @if (!string.IsNullOrWhiteSpace(latestVer))
+                    {
+                        <a asp-controller="AppVersions" asp-action="Changelog"
+                           title="Ver novidades — v@(latestVer)"
+                           style="display:inline-flex; align-items:center; gap:5px; padding:4px 10px;
+                                  background:rgba(232,80,26,0.1); border:1px solid rgba(232,80,26,0.25);
+                                  border-radius:20px; text-decoration:none; font-size:11px;
+                                  font-weight:700; color:var(--md-accent); flex-shrink:0;">
+                            <i class="bi bi-stars" style="font-size:11px;"></i>
+                            v@(latestVer)
+                        </a>
                     }
                     <a asp-controller="Student" asp-action="PersonalData" class="topbar-user" style="text-decoration:none;">
                         @if (!string.IsNullOrWhiteSpace(photoUrl))

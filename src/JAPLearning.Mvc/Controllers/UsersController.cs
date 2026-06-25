@@ -59,8 +59,9 @@ namespace JAPLearning.Mvc.Controllers
 
             var entity = _mapper.Map<User>(vm);
             entity.Id = Guid.NewGuid();
-            entity.Password = BCrypt.Net.BCrypt.HashPassword(vm.Password);
-            entity.CreatedDate = DateTime.UtcNow;
+            entity.Password           = BCrypt.Net.BCrypt.HashPassword(vm.Password);
+            entity.CreatedDate        = DateTime.UtcNow;
+            entity.MustChangePassword = true;   // obriga troca de senha no primeiro acesso
 
             if (!await _service.AddAsync(entity)) { AddErrors(); await PopulateDropdownsAsync(); return View(vm); }
             TempData["Success"] = "Utilizador criado com sucesso.";

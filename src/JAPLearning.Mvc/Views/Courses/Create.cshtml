@@ -6,127 +6,277 @@
 }
 @await Html.PartialAsync("_CrudStyles")
 
+<style>
+    .tab-bar {
+        display: flex;
+        gap: 0;
+        border-bottom: 2px solid var(--md-border);
+        margin-bottom: 28px;
+    }
+    .tab-btn {
+        padding: 11px 22px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--md-text-muted);
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        transition: color .15s, border-color .15s;
+    }
+    .tab-btn:hover { color: var(--md-text-primary); }
+    .tab-btn.active {
+        color: var(--md-accent);
+        border-bottom-color: var(--md-accent);
+    }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+</style>
+
 <div class="page-header">
     <div>
         <h4 class="page-header-title">Nova Formação</h4>
-        <p class="page-header-sub"><a asp-action="Index" style="color:var(--md-text-muted);">Formações</a> <i class="bi bi-chevron-right" style="font-size:10px;"></i> Novo</p>
+        <p class="page-header-sub">
+            <a asp-action="Index" style="color:var(--md-text-muted);">Formações</a>
+            <i class="bi bi-chevron-right" style="font-size:10px;"></i> Novo
+        </p>
     </div>
 </div>
 
 <div class="md-card">
-    <form asp-action="Create" method="post" enctype="multipart/form-data">
+
+    <!-- ── Tabs ──────────────────────────────────────────────────────── -->
+    <div class="tab-bar">
+        <button type="button" class="tab-btn active" onclick="switchTab('dados', this)">
+            <i class="bi bi-card-text"></i> Dados
+        </button>
+        <button type="button" class="tab-btn" onclick="switchTab('uploads', this)">
+            <i class="bi bi-cloud-upload"></i> Uploads
+        </button>
+    </div>
+
+    <form asp-action="Create" method="post" enctype="multipart/form-data" id="courseForm">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="ModelOnly" class="md-alert md-alert-danger mb-3"></div>
 
-        <div class="row g-3">
+        <!-- ══ TAB: DADOS ══════════════════════════════════════════════ -->
+        <div id="tab-dados" class="tab-pane active">
+            <div class="row g-3">
 
-            <!-- Título + Nota de Aprovação -->
-            <div class="col-md-8">
-                <div class="md-form-row">
-                    <label asp-for="Title" class="md-label">Título</label>
-                    <input asp-for="Title" class="md-input" placeholder="Título da formação" />
-                    <span asp-validation-for="Title" class="text-danger" style="font-size:12px;"></span>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="md-form-row">
-                    <label asp-for="PassingScore" class="md-label">Nota de Aprovação (%)</label>
-                    <input asp-for="PassingScore" class="md-input" type="number" min="0" max="100" />
-                </div>
-            </div>
-
-            <!-- Subtítulo + Nível -->
-            <div class="col-md-8">
-                <div class="md-form-row">
-                    <label asp-for="Subtitle" class="md-label">Subtítulo</label>
-                    <input asp-for="Subtitle" class="md-input" placeholder="Subtítulo opcional" />
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="md-form-row">
-                    <label asp-for="LevelId" class="md-label">Nível</label>
-                    <select asp-for="LevelId" asp-items="ViewBag.Levels" class="md-select">
-                        <option value="">Seleccionar...</option>
-                    </select>
-                    <span asp-validation-for="LevelId" class="text-danger" style="font-size:12px;"></span>
-                </div>
-            </div>
-
-            <!-- Descrição -->
-            <div class="col-12">
-                <div class="md-form-row">
-                    <label asp-for="Description" class="md-label">Descrição</label>
-                    <textarea asp-for="Description" class="md-input" rows="3" placeholder="Descrição da formação"></textarea>
-                </div>
-            </div>
-
-            <!-- Equipa | Categoria | Professor -->
-            <div class="col-md-4">
-                <div class="md-form-row">
-                    <label class="md-label">Equipa</label>
-                    <select id="teamFilter" asp-items="ViewBag.Teams" class="md-select">
-                        <option value="">Seleccionar equipa...</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="md-form-row">
-                    <label asp-for="CategoryId" class="md-label">Categoria</label>
-                    <select asp-for="CategoryId" id="categorySelect" class="md-select">
-                        <option value="">Seleccionar categoria...</option>
-                        @foreach (var cat in categoriesFull)
-                        {
-                            <option value="@cat.Id" data-team="@cat.TeamId">@cat.Name</option>
-                        }
-                    </select>
-                    <span asp-validation-for="CategoryId" class="text-danger" style="font-size:12px;"></span>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="md-form-row">
-                    <label asp-for="TeacherId" class="md-label">Professor</label>
-                    <select asp-for="TeacherId" asp-items="ViewBag.Teachers" class="md-select">
-                        <option value="">Seleccionar...</option>
-                    </select>
-                    <span asp-validation-for="TeacherId" class="text-danger" style="font-size:12px;"></span>
-                </div>
-            </div>
-
-            <!-- Thumbnail + Activo -->
-            <div class="col-md-6">
-                <div class="md-form-row">
-                    <label class="md-label">Thumbnail da Formação</label>
-                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
-                        <img id="thumbPreview" src="" alt="Preview"
-                             style="width:80px; height:54px; object-fit:cover; border-radius:6px; border:2px solid var(--md-border); flex-shrink:0; display:none;" />
-                        <small id="thumbLabel" style="color:var(--md-text-muted); font-size:11px;"></small>
+                <!-- Título + Nota de Aprovação -->
+                <div class="col-md-8">
+                    <div class="md-form-row">
+                        <label asp-for="Title" class="md-label">Título</label>
+                        <input asp-for="Title" class="md-input" placeholder="Título da formação" />
+                        <span asp-validation-for="Title" class="text-danger" style="font-size:12px;"></span>
                     </div>
-                    <input type="file" id="thumbnailInput" name="thumbnail" accept="image/jpeg,image/png,image/webp" class="md-input" style="padding:6px;" />
-                    <small style="color:var(--md-text-muted); font-size:11px;">JPG, PNG, WebP — 1200×800 px recomendado</small>
                 </div>
-            </div>
-            <div class="col-md-6" style="display:flex; align-items:flex-end; gap:24px; padding-bottom:4px;">
-                <div class="md-form-check">
-                    <input asp-for="IsActived" type="checkbox" />
-                    <label asp-for="IsActived">Activo</label>
+                <div class="col-md-4">
+                    <div class="md-form-row">
+                        <label asp-for="PassingScore" class="md-label">Nota de Aprovação (%)</label>
+                        <input asp-for="PassingScore" class="md-input" type="number" min="0" max="100" />
+                    </div>
                 </div>
-                <div class="md-form-check">
-                    <input asp-for="IsBrief" type="checkbox" />
-                    <label asp-for="IsBrief" title="Mostra a formação como 'Em breve' — os utilizadores não conseguem aceder ao detalhe">Em breve</label>
-                </div>
-            </div>
 
+                <!-- Subtítulo + Nível -->
+                <div class="col-md-8">
+                    <div class="md-form-row">
+                        <label asp-for="Subtitle" class="md-label">Subtítulo</label>
+                        <input asp-for="Subtitle" class="md-input" placeholder="Subtítulo opcional" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="md-form-row">
+                        <label asp-for="LevelId" class="md-label">Nível</label>
+                        <select asp-for="LevelId" asp-items="ViewBag.Levels" class="md-select">
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <span asp-validation-for="LevelId" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                </div>
+
+                <!-- Descrição -->
+                <div class="col-12">
+                    <div class="md-form-row">
+                        <label asp-for="Description" class="md-label">Descrição</label>
+                        <textarea asp-for="Description" class="md-input" rows="3" placeholder="Descrição da formação"></textarea>
+                    </div>
+                </div>
+
+                <!-- Equipa | Categoria | Professor -->
+                <div class="col-md-4">
+                    <div class="md-form-row">
+                        <label class="md-label">Equipa</label>
+                        <select id="teamFilter" asp-items="ViewBag.Teams" class="md-select">
+                            <option value="">Seleccionar equipa...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="md-form-row">
+                        <label asp-for="CategoryId" class="md-label">Categoria</label>
+                        <select asp-for="CategoryId" id="categorySelect" class="md-select">
+                            <option value="">Seleccionar categoria...</option>
+                            @foreach (var cat in categoriesFull)
+                            {
+                                <option value="@cat.Id" data-team="@cat.TeamId">@cat.Name</option>
+                            }
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="md-form-row">
+                        <label asp-for="TeacherId" class="md-label">Professor</label>
+                        <select asp-for="TeacherId" asp-items="ViewBag.Teachers" class="md-select">
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <span asp-validation-for="TeacherId" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                </div>
+
+                <!-- Estado -->
+                <div class="col-12" style="display:flex; align-items:center; gap:28px; padding-top:4px;">
+                    <div class="md-form-check">
+                        <input asp-for="IsActived" type="checkbox" />
+                        <label asp-for="IsActived">Activo</label>
+                    </div>
+                    <div class="md-form-check">
+                        <input asp-for="IsBrief" type="checkbox" />
+                        <label asp-for="IsBrief" title="Mostra a formação como 'Em breve'">Em breve</label>
+                    </div>
+                </div>
+
+            </div>
         </div>
+        <!-- ══ /TAB: DADOS ═════════════════════════════════════════════ -->
 
-        <div style="display:flex; gap:12px; margin-top:24px;">
+        <!-- ══ TAB: UPLOADS ════════════════════════════════════════════ -->
+        <div id="tab-uploads" class="tab-pane">
+            <div class="row g-4">
+
+                <!-- Thumbnail -->
+                <div class="col-12">
+                    <p class="md-label" style="font-size:11px; text-transform:uppercase; letter-spacing:.05em;
+                                               color:var(--md-text-muted); margin-bottom:12px;">
+                        Imagem
+                    </p>
+                    <div style="display:flex; align-items:flex-start; gap:20px; flex-wrap:wrap;">
+                        <div style="flex-shrink:0;">
+                            <div id="thumbPreviewEmpty"
+                                 style="width:140px; height:96px; border-radius:8px; border:2px dashed var(--md-border);
+                                        display:flex; align-items:center; justify-content:center;
+                                        color:var(--md-text-muted); font-size:28px;">
+                                <i class="bi bi-image"></i>
+                            </div>
+                            <img id="thumbPreview" src="" alt="Preview"
+                                 style="width:140px; height:96px; object-fit:cover; border-radius:8px;
+                                        border:2px solid var(--md-border); display:none;" />
+                        </div>
+                        <div style="flex:1; min-width:220px;">
+                            <label class="md-label">Thumbnail da Formação</label>
+                            <input type="file" id="thumbnailInput" name="thumbnail"
+                                   accept="image/jpeg,image/png,image/webp" class="md-input" style="padding:6px;" />
+                            <small style="color:var(--md-text-muted); font-size:11px;">
+                                JPG, PNG, WebP — 1200×800 px recomendado
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12" style="border-top:1px solid var(--md-border); padding-top:20px; margin-top:4px;">
+                    <p class="md-label" style="font-size:11px; text-transform:uppercase; letter-spacing:.05em;
+                                               color:var(--md-text-muted); margin-bottom:16px;">
+                        Ficheiros de Apoio
+                    </p>
+                    <div class="row g-3">
+
+                        <!-- Snapshot ZIP -->
+                        <div class="col-md-6">
+                            <div style="padding:20px; border:1px solid var(--md-border); border-radius:var(--md-radius);
+                                        background:var(--md-bg-secondary); height:100%;">
+                                <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+                                    <div style="width:38px; height:38px; border-radius:8px;
+                                                background:rgba(99,102,241,0.12); display:flex;
+                                                align-items:center; justify-content:center;
+                                                font-size:18px; color:#818CF8; flex-shrink:0;">
+                                        <i class="bi bi-file-earmark-zip-fill"></i>
+                                    </div>
+                                    <div>
+                                        <p style="font-weight:700; font-size:13px; margin:0; color:var(--md-text-primary);">
+                                            Snapshot da Formação
+                                        </p>
+                                        <small style="color:var(--md-text-muted); font-size:11px;">
+                                            Código-fonte por aula (.zip)
+                                        </small>
+                                    </div>
+                                </div>
+                                <input type="file" name="snapshotFile" accept=".zip"
+                                       class="md-input" style="padding:6px; font-size:12px;" />
+                                <small style="color:var(--md-text-muted); font-size:11px; margin-top:6px; display:block;">
+                                    Disponibilizado para download no Player após guardar.
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- PDF -->
+                        <div class="col-md-6">
+                            <div style="padding:20px; border:1px solid var(--md-border); border-radius:var(--md-radius);
+                                        background:var(--md-bg-secondary); height:100%;">
+                                <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+                                    <div style="width:38px; height:38px; border-radius:8px;
+                                                background:rgba(239,68,68,0.1); display:flex;
+                                                align-items:center; justify-content:center;
+                                                font-size:18px; color:#F87171; flex-shrink:0;">
+                                        <i class="bi bi-file-earmark-pdf-fill"></i>
+                                    </div>
+                                    <div>
+                                        <p style="font-weight:700; font-size:13px; margin:0; color:var(--md-text-primary);">
+                                            Ficheiro PDF
+                                        </p>
+                                        <small style="color:var(--md-text-muted); font-size:11px;">
+                                            Slides, guias ou material de apoio
+                                        </small>
+                                    </div>
+                                </div>
+                                <input type="file" name="pdfFile" accept=".pdf"
+                                       class="md-input" style="padding:6px; font-size:12px;" />
+                                <small style="color:var(--md-text-muted); font-size:11px; margin-top:6px; display:block;">
+                                    Disponibilizado para download no Player após guardar.
+                                </small>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- ══ /TAB: UPLOADS ═══════════════════════════════════════════ -->
+
+        <!-- Botões -->
+        <div style="display:flex; gap:12px; margin-top:28px; padding-top:20px; border-top:1px solid var(--md-border);">
             <button type="submit" class="btn-md-primary"><i class="bi bi-check-lg"></i> Guardar</button>
             <a asp-action="Index" class="btn-md-ghost">Cancelar</a>
         </div>
+
     </form>
+
 </div>
 
 @section Scripts {
 <script>
+    function switchTab(name, btn) {
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        btn.classList.add('active');
+    }
+
     // Filtro cascata Equipa → Categoria
     (function () {
         const teamSel = document.getElementById('teamFilter');
@@ -147,7 +297,7 @@
     })();
 
     // Loading overlay no submit
-    document.querySelector('form').addEventListener('submit', function () {
+    document.getElementById('courseForm').addEventListener('submit', function () {
         if (!this.checkValidity()) return;
         document.getElementById('globalLoadingOverlay').style.display = 'flex';
     });
@@ -157,10 +307,16 @@
         const file  = this.files[0];
         if (!file) return;
         const img   = document.getElementById('thumbPreview');
-        const label = document.getElementById('thumbLabel');
+        const empty = document.getElementById('thumbPreviewEmpty');
         img.src = URL.createObjectURL(file);
         img.style.display = 'block';
-        label.textContent = 'Nova thumbnail seleccionada';
+        if (empty) empty.style.display = 'none';
     });
+
+    // Se houver erros de validação, abrir tab Dados
+    const hasErrors = document.querySelector('.md-alert-danger');
+    if (hasErrors && hasErrors.children.length > 0) {
+        switchTab('dados', document.querySelector('.tab-btn'));
+    }
 </script>
 }

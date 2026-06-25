@@ -5,5 +5,6 @@ namespace JAPLearning.Business.Interfaces.Internals.Entities
 {
     public interface ILessonRepository : IRepository<Lesson>
     {
+        Task<bool> HasProgressRecordsAsync(Guid lessonId);
     }
 }

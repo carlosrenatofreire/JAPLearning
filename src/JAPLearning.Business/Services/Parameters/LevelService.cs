@@ -4,6 +4,7 @@ using JAPLearning.Business.Interfaces.Internals.Shareds;
 using JAPLearning.Business.Interfaces.Services.Auxiliaries;
 using JAPLearning.Business.Interfaces.Services.Parameters;
 using JAPLearning.Business.Models.Domains.Parameters;
+using JAPLearning.Business.Validations.Internals.Parameters;
 
 namespace JAPLearning.Business.Services.Parameters
 {
@@ -16,5 +17,17 @@ namespace JAPLearning.Business.Services.Parameters
             IHttpContextAccessor httpContextAccessor,
             IAuditLogService auditLog)
             : base(uow, repository, notificator, httpContextAccessor, auditLog) { }
+
+        public override async Task<bool> AddAsync(Level entity)
+        {
+            if (!await ValidateAsync(new LevelValidation(), entity)) return false;
+            return await base.AddAsync(entity);
+        }
+
+        public override async Task<bool> UpdateAsync(Level entity)
+        {
+            if (!await ValidateAsync(new LevelValidation(), entity)) return false;
+            return await base.UpdateAsync(entity);
+        }
     }
 }

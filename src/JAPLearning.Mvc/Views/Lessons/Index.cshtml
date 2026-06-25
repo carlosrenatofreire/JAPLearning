@@ -1,12 +1,97 @@
 @model List<JAPLearning.Mvc.ViewModels.Entities.LessonViewModel>
+@using System.Text.Json
 @{
     ViewData["Title"] = "Lições";
+
+    var teamsJson        = JsonSerializer.Serialize(ViewBag.FilterTeams);
+    var coursesJson      = JsonSerializer.Serialize(ViewBag.FilterCourses);
+    var topicsJson       = JsonSerializer.Serialize(ViewBag.FilterTopics);
+    var supervisorTeamId = ViewBag.SupervisorTeamId as string ?? "";
 }
 @await Html.PartialAsync("_CrudStyles")
+
+<style>
+    .filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--md-border);
+        flex-wrap: wrap;
+    }
+    .filter-bar label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--md-text-muted);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        white-space: nowrap;
+    }
+    .filter-select {
+        height: 36px;
+        padding: 0 10px;
+        font-size: 13px;
+        background: var(--md-bg-secondary);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius-sm);
+        color: var(--md-text-primary);
+        min-width: 160px;
+        flex: 1;
+        max-width: 240px;
+        cursor: pointer;
+        transition: border-color .15s;
+    }
+    .filter-select:focus { outline: none; border-color: var(--md-accent); }
+    .filter-select:disabled { opacity: .4; cursor: not-allowed; }
+    .filter-divider {
+        width: 1px; height: 24px;
+        background: var(--md-border);
+        flex-shrink: 0;
+    }
+    .filter-search {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    #lessonSearch {
+        height: 36px;
+        padding: 0 12px;
+        font-size: 13px;
+        background: var(--md-bg-secondary);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius-sm);
+        color: var(--md-text-primary);
+        width: 200px;
+    }
+    #lessonSearch:focus { outline: none; border-color: var(--md-accent); }
+    .filter-clear {
+        height: 36px; padding: 0 12px;
+        font-size: 12px; font-weight: 600;
+        background: none; border: 1px solid var(--md-border);
+        border-radius: var(--md-radius-sm);
+        color: var(--md-text-muted); cursor: pointer;
+        white-space: nowrap; transition: .15s;
+    }
+    .filter-clear:hover { border-color: var(--md-accent); color: var(--md-accent); }
+    .results-count {
+        font-size: 12px;
+        color: var(--md-text-muted);
+        padding: 8px 16px;
+        border-top: 1px solid var(--md-border);
+    }
+</style>
 
 @if (TempData["Success"] != null)
 {
     <div class="alert-success-md"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
+}
+@if (TempData["ValidationWarnings"] is string warnings)
+{
+    foreach (var w in warnings.Split("||"))
+    {
+        <div class="md-alert md-alert-danger mb-3"><i class="bi bi-exclamation-triangle-fill"></i> @w</div>
+    }
 }
 
 <div class="page-header">
@@ -14,11 +99,48 @@
         <h4 class="page-header-title">Lições</h4>
         <p class="page-header-sub">Aulas e conteúdos das formações</p>
     </div>
-    <a asp-action="Create" class="btn-md-primary"><i class="bi bi-plus-lg"></i> Nova Lição</a>
+    <a asp-action="Create" class="btn-md-primary">
+        <i class="bi bi-plus-lg"></i> Nova Lição
+    </a>
 </div>
 
 <div class="md-card" style="padding:0; overflow:hidden;">
-    <table class="crud-table">
+
+    <!-- ── Barra de filtros em cascata ───────────────────────────────── -->
+    <div class="filter-bar">
+
+        <label>Equipa</label>
+        <select id="filterTeam" class="filter-select">
+            <option value="">Todas as equipas</option>
+        </select>
+
+        <i class="bi bi-chevron-right" style="color:var(--md-border); font-size:11px; flex-shrink:0;"></i>
+
+        <label>Formação</label>
+        <select id="filterCourse" class="filter-select" disabled title="Seleccione primeiro uma equipa">
+            <option value="">— seleccione equipa —</option>
+        </select>
+
+        <i class="bi bi-chevron-right" style="color:var(--md-border); font-size:11px; flex-shrink:0;"></i>
+
+        <label>Tópico</label>
+        <select id="filterTopic" class="filter-select" disabled>
+            <option value="">Todos os tópicos</option>
+        </select>
+
+        <div class="filter-divider"></div>
+
+        <div class="filter-search">
+            <i class="bi bi-search" style="color:var(--md-text-muted); font-size:13px;"></i>
+            <input type="text" id="lessonSearch" placeholder="Pesquisar lição..." />
+            <button type="button" class="filter-clear" id="btnClearFilters" title="Limpar filtros">
+                <i class="bi bi-x-lg" style="margin-right:4px;"></i> Limpar
+            </button>
+        </div>
+    </div>
+
+    <!-- ── Tabela ─────────────────────────────────────────────────────── -->
+    <table id="lessonsTable" class="crud-table" style="margin:0;">
         <thead>
             <tr>
                 <th>Nome</th>
@@ -33,16 +155,24 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.OrderBy(l => l.CourseTitle).ThenBy(l => l.Order))
+            @foreach (var item in Model.OrderBy(l => l.TeamName).ThenBy(l => l.CourseTitle).ThenBy(l => l.Order))
             {
                 <tr>
                     <td style="color:var(--md-text-primary); font-weight:600;">@item.Name</td>
                     <td style="text-align:center; font-size:12px; color:var(--md-text-muted); font-variant-numeric:tabular-nums;">
                         @(item.TimeLesson.HasValue ? item.TimeLesson.Value.ToString(@"hh\:mm\:ss") : "—")
                     </td>
-                    <td><span class="md-badge md-badge-secondary">@item.TeamName</span></td>
-                    <td><span class="md-badge md-badge-info" style="font-size:11px;">@item.CourseTitle</span></td>
-                    <td style="font-size:13px; color:var(--md-text-muted);">@item.TopicName</td>
+                    <td>
+                        <span class="md-badge md-badge-secondary" data-team="@item.TeamName">@item.TeamName</span>
+                    </td>
+                    <td>
+                        <span class="md-badge md-badge-info" style="font-size:11px;" data-course="@item.CourseTitle">
+                            @item.CourseTitle
+                        </span>
+                    </td>
+                    <td style="font-size:13px; color:var(--md-text-muted);" data-topic="@item.TopicName">
+                        @item.TopicName
+                    </td>
                     <td style="text-align:center;">@item.Order</td>
                     <td>
                         @if (item.IsTest) { <span class="md-badge md-badge-warning">Teste</span> }
@@ -50,16 +180,26 @@
                         else { <span style="font-size:12px; color:var(--md-text-muted);">Aula</span> }
                     </td>
                     <td>
-                        @if (item.IsActived) { <span class="badge-active"><i class="bi bi-circle-fill" style="font-size:7px;"></i> Activo</span> }
-                        else { <span class="badge-inactive"><i class="bi bi-circle-fill" style="font-size:7px;"></i> Inactivo</span> }
+                        @if (item.IsActived)
+                        {
+                            <span class="badge-active"><i class="bi bi-circle-fill" style="font-size:7px;"></i> Activo</span>
+                        }
+                        else
+                        {
+                            <span class="badge-inactive"><i class="bi bi-circle-fill" style="font-size:7px;"></i> Inactivo</span>
+                        }
                     </td>
                     <td style="text-align:center;">
                         <div style="display:flex; gap:6px; justify-content:center;">
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn" title="Editar"><i class="bi bi-pencil"></i></a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </a>
                             <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="margin:0;"
                                   onsubmit="return confirm('Eliminar esta lição?')">
                                 @Html.AntiForgeryToken()
-                                <button type="submit" class="action-btn danger" title="Eliminar"><i class="bi bi-trash"></i></button>
+                                <button type="submit" class="action-btn danger" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </form>
                         </div>
                     </td>
@@ -67,11 +207,146 @@
             }
             @if (!Model.Any())
             {
-                <tr><td colspan="9" style="text-align:center; padding:40px; color:var(--md-text-muted);">
-                    <i class="bi bi-play-circle" style="font-size:32px; display:block; margin-bottom:8px;"></i>
-                    Nenhuma lição encontrada.
-                </td></tr>
+                <tr>
+                    <td colspan="9" style="text-align:center; padding:40px; color:var(--md-text-muted);">
+                        <i class="bi bi-play-circle" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+                        Nenhuma lição encontrada.
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
+
+    <!-- ── Contador de resultados ─────────────────────────────────────── -->
+    <div class="results-count" id="resultsCount"></div>
 </div>
+
+@section Scripts {
+<script>
+$(document).ready(function () {
+
+    const ALL_TEAMS      = @Html.Raw(teamsJson);
+    const ALL_COURSES    = @Html.Raw(coursesJson);
+    const ALL_TOPICS     = @Html.Raw(topicsJson);
+    const SUPERVISOR_TID = '@Html.Raw(supervisorTeamId)';
+
+    const selTeam   = document.getElementById('filterTeam');
+    const selCourse = document.getElementById('filterCourse');
+    const selTopic  = document.getElementById('filterTopic');
+    const txtSearch = document.getElementById('lessonSearch');
+    const btnClear  = document.getElementById('btnClearFilters');
+    const countEl   = document.getElementById('resultsCount');
+
+    // ── DataTables ────────────────────────────────────────────────────
+    let dt = null;
+    setTimeout(() => {
+        dt = $('#lessonsTable').DataTable();
+        $('#lessonsTable').closest('.dataTables_wrapper').find('.dt-header').remove();
+        $('.dataTables_info').hide();
+        updateCount();
+    }, 50);
+
+    // ── Filtro: data[2]=Equipa, data[3]=Formação, data[4]=Tópico ─────
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        if (settings.nTable.id !== 'lessonsTable') return true;
+        const teamFilter   = selTeam.value
+            ? selTeam.options[selTeam.selectedIndex].text : '';
+        const courseObj    = selCourse.value
+            ? ALL_COURSES.find(c => c.id === selCourse.value) : null;
+        const courseFilter = courseObj ? courseObj.name : '';
+        const topicFilter  = selTopic.value
+            ? selTopic.options[selTopic.selectedIndex].text : '';
+        const search       = txtSearch.value.trim().toLowerCase();
+
+        const matchTeam   = !teamFilter   || (data[2] || '').includes(teamFilter);
+        const matchCourse = !courseFilter || (data[3] || '').includes(courseFilter);
+        const matchTopic  = !topicFilter  || (data[4] || '').includes(topicFilter);
+        const matchSearch = !search       || (data[0] || '').toLowerCase().includes(search)
+                                          || (data[3] || '').toLowerCase().includes(search);
+        return matchTeam && matchCourse && matchTopic && matchSearch;
+    });
+
+    // ── Popular Equipas ───────────────────────────────────────────────
+    ALL_TEAMS.forEach(t => selTeam.add(new Option(t.name, t.id)));
+
+    // ── Cascata: Equipa → Formação ────────────────────────────────────
+    function populateCourses(teamId) {
+        const current = selCourse.value;
+        selCourse.innerHTML = '<option value="">Todas as formações</option>';
+        if (!teamId) {
+            selCourse.disabled = true;
+            selTopic.innerHTML = '<option value="">Todos os tópicos</option>';
+            selTopic.disabled  = true;
+            redraw();
+            return;
+        }
+        const filtered = ALL_COURSES.filter(c => c.teamId === teamId);
+        filtered.forEach(c => selCourse.add(new Option(c.label, c.id)));
+        selCourse.disabled = false;
+        if (current && filtered.some(c => c.id === current)) selCourse.value = current;
+        populateTopics(selCourse.value);
+    }
+
+    // Supervisor: auto-seleccionar a sua equipa
+    if (SUPERVISOR_TID) {
+        selTeam.value = SUPERVISOR_TID;
+        populateCourses(SUPERVISOR_TID);
+    }
+
+    // ── Cascata: Formação → Tópico ────────────────────────────────────
+    function populateTopics(courseId) {
+        const current = selTopic.value;
+        selTopic.innerHTML = '<option value="">Todos os tópicos</option>';
+        if (!courseId) {
+            selTopic.disabled = true;
+        } else {
+            const filtered = ALL_TOPICS.filter(t => t.courseId === courseId);
+            filtered.forEach(t => selTopic.add(new Option(t.name, t.id)));
+            selTopic.disabled = filtered.length === 0;
+            if (current && filtered.some(t => t.id === current)) selTopic.value = current;
+        }
+        redraw();
+    }
+
+    // ── Redesenhar + contador ─────────────────────────────────────────
+    function redraw() {
+        if (dt) { dt.draw(); updateCount(); }
+    }
+
+    function updateCount() {
+        if (!dt) return;
+        const info  = dt.page.info();
+        const shown = info.recordsDisplay;
+        const total = info.recordsTotal;
+        countEl.textContent = shown === total
+            ? `Mostrando ${total} lição(ões)`
+            : `Mostrando ${shown} de ${total} lição(ões)`;
+    }
+
+    // ── Limpar ────────────────────────────────────────────────────────
+    function clearAll() {
+        selCourse.innerHTML = '<option value="">— seleccione equipa —</option>';
+        selCourse.disabled  = true;
+        selTopic.innerHTML  = '<option value="">Todos os tópicos</option>';
+        selTopic.disabled   = true;
+        txtSearch.value     = '';
+        if (SUPERVISOR_TID) {
+            selTeam.value = SUPERVISOR_TID;
+            populateCourses(SUPERVISOR_TID);
+        } else {
+            selTeam.value = '';
+            redraw();
+        }
+    }
+
+    // ── Eventos ───────────────────────────────────────────────────────
+    selTeam.addEventListener('change',   () => populateCourses(selTeam.value));
+    selCourse.addEventListener('change',  () => populateTopics(selCourse.value));
+    selTopic.addEventListener('change',   redraw);
+    txtSearch.addEventListener('input',   redraw);
+    btnClear.addEventListener('click',    clearAll);
+
+    $('#lessonsTable').on('draw.dt', updateCount);
+});
+</script>
+}

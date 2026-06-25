@@ -1,0 +1,14 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    ViewData["ActiveMenu"] = "dashboard";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+}
+
+@if (User.IsInRole("Administrador") || User.IsInRole("Supervisor"))
+{
+    @await Html.PartialAsync("_DashboardAdmin")
+}
+else
+{
+    @await Html.PartialAsync("_DashboardAluno")
+}

@@ -1,0 +1,58 @@
+@model JAPLearning.Mvc.ViewModels.Auxiliaries.AppVersionViewModel
+@{
+    ViewData["Title"] = "Nova Versão";
+}
+@await Html.PartialAsync("_CrudStyles")
+
+<div class="page-header">
+    <div>
+        <h4 class="page-header-title">Nova Versão</h4>
+        <p class="page-header-sub">
+            <a asp-action="Index" style="color:var(--md-text-muted);">Versões</a>
+            <i class="bi bi-chevron-right" style="font-size:10px;"></i> Nova
+        </p>
+    </div>
+</div>
+
+<div class="md-card">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="md-alert md-alert-danger mb-3"></div>
+
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="md-form-row">
+                    <label class="md-label">Número de Versão</label>
+                    <input asp-for="VersionNumber" class="md-input" placeholder="ex: 0.18" />
+                    <span asp-validation-for="VersionNumber" class="text-danger" style="font-size:12px;"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="md-form-row">
+                    <label class="md-label">Título / Período</label>
+                    <input asp-for="Title" class="md-input" placeholder="ex: Junho 2026" />
+                    <span asp-validation-for="Title" class="text-danger" style="font-size:12px;"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="md-form-row">
+                    <label class="md-label">Data de Lançamento</label>
+                    <input asp-for="ReleaseDate" type="date" class="md-input" />
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="md-form-check">
+                    <input asp-for="IsPublished" type="checkbox" />
+                    <label asp-for="IsPublished">Publicar imediatamente (visível para os utilizadores)</label>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-top:24px;">
+            <button type="submit" class="btn-md-primary">
+                <i class="bi bi-check-lg"></i> Guardar e Adicionar Itens
+            </button>
+            <a asp-action="Index" class="btn-md-ghost">Cancelar</a>
+        </div>
+    </form>
+</div>

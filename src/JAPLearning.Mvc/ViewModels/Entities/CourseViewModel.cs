@@ -14,6 +14,8 @@ namespace JAPLearning.Mvc.ViewModels.Entities
         public string? Subtitle { get; set; }
         public string? Description { get; set; }
         public string? Thumbnail { get; set; }
+        public string? SnapshotUrl { get; set; }
+        public string? PdfFileUrl { get; set; }
         public int PassingScore { get; set; }
         public bool IsBrief { get; set; }
         public bool IsFree { get; set; }

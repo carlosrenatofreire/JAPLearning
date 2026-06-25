@@ -7,6 +7,16 @@
 <h2 class="auth-form-title">Bem-vindo de volta</h2>
 <p class="auth-form-subtitle">A sua conta está à sua espera.</p>
 
+@if (TempData["RateLimitError"] is string rateLimitMsg)
+{
+    <div class="md-alert md-alert-danger mb-4" style="display:flex; align-items:flex-start; gap:10px;">
+        <i class="bi bi-shield-lock-fill" style="flex-shrink:0; margin-top:2px; font-size:16px;"></i>
+        <div>
+            <strong style="display:block; margin-bottom:2px;">Acesso temporariamente bloqueado</strong>
+            <span style="font-size:13px;">@rateLimitMsg</span>
+        </div>
+    </div>
+}
 @if (!ViewData.ModelState.IsValid)
 {
     <div class="md-alert md-alert-danger mb-4" style="display:flex; align-items:flex-start; gap:10px;">

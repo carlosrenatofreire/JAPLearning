@@ -3,7 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] — JAPLearning</title>
+    <title>JL | @(ViewData["Title"] ?? "JAPLearning")</title>
+    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" />
+    <link rel="shortcut icon" href="~/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -58,39 +60,66 @@
         }
         .auth-brand .brand-name span { color: var(--md-accent); }
 
-        /* ── 4-window cascade ───────────────────────────────── */
+        /* ── Carrossel auth ── */
         .auth-panel-tagline {
             flex: 1; display: flex; flex-direction: column;
             justify-content: center;
             position: relative; z-index: 1;
+            padding: 24px 0 0;
+            gap: 28px;
         }
         .auth-panel-tagline h2 { font-size: 26px; font-weight: 800; line-height: 1.25; margin-bottom: 10px; }
         .auth-panel-tagline p  { font-size: 14px; color: var(--md-text-secondary); line-height: 1.7; margin: 0; }
-        .auth-cascade-wrap { display: flex; justify-content: center; margin-bottom: 22px; }
-        .auth-cascade { position: relative; width: 513px; height: 421px; flex-shrink: 0; }
 
-        /* Base de cada janela */
-        .ahw { position: absolute; width: 286px; height: 339px; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
-        .ahw-bar { display: flex; align-items: center; gap: 6px; padding: 6px 10px; font-size: 9px; color: #94a3b8; flex-shrink: 0; }
+        .auth-carousel-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+        .auth-window {
+            width: 100%; max-width: 506px;
+            height: 380px;
+            border-radius: 10px; overflow: hidden;
+            display: flex; flex-direction: column;
+            background: #0c1220;
+            border: 1px solid rgba(232,80,26,0.3);
+            box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+        }
+        .ahw-bar { display: flex; align-items: center; gap: 6px; padding: 7px 12px; font-size: 9px; color: #94a3b8; background:#101828; border-bottom:1px solid rgba(255,255,255,0.07); flex-shrink:0; }
         .ahw-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-        .ahw-body { flex: 1; overflow: hidden; }
 
-        /* 4 janelas em cascata */
-        .ahw-admin   { top:0;    right:171px; z-index:1; background:#0f1824; border:1px solid rgba(232,80,26,0.38); box-shadow:0 6px 28px rgba(0,0,0,0.6); }
-        .ahw-admin   .ahw-bar { background:#141e2e; border-bottom:1px solid rgba(232,80,26,0.3); }
-        .ahw-catalog { top:28px; right:113px; z-index:2; background:#0c1220; border:1px solid rgba(99,102,241,0.4);  box-shadow:0 6px 28px rgba(0,0,0,0.52); }
-        .ahw-catalog .ahw-bar { background:#111827; border-bottom:1px solid rgba(99,102,241,0.3); }
-        .ahw-detail  { top:56px; right:57px;  z-index:3; background:#0d1520; border:1px solid rgba(232,80,26,0.32); box-shadow:0 6px 28px rgba(0,0,0,0.48); }
-        .ahw-detail  .ahw-bar { background:#121a2a; border-bottom:1px solid rgba(232,80,26,0.25); }
-        .ahw-player  { top:84px; right:0;     z-index:4; background:#080e18; border:1px solid rgba(255,255,255,0.12); box-shadow:0 6px 28px rgba(0,0,0,0.45); }
-        .ahw-player  .ahw-bar { background:#0d1320; border-bottom:1px solid rgba(255,255,255,0.1); }
+        /* Slides */
+        .ahc-slides { position: relative; flex: 1; overflow: hidden; }
+        .ahc-slide {
+            position: absolute; inset: 0;
+            opacity: 0; transform: translateX(24px);
+            transition: opacity .4s ease, transform .4s ease;
+            pointer-events: none; overflow: hidden;
+        }
+        .ahc-slide.active  { opacity: 1; transform: translateX(0); pointer-events: auto; }
+        .ahc-slide.exit    { opacity: 0; transform: translateX(-24px); }
+
+        /* Paginação */
+        .ahc-nav { display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .ahc-nav-btn {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: transparent; border: 1px solid rgba(255,255,255,0.1);
+            color: #64748b; cursor: pointer; font-size: 12px;
+            display: flex; align-items: center; justify-content: center;
+            transition: border-color .2s, color .2s;
+        }
+        .ahc-nav-btn:hover { border-color: var(--md-accent); color: var(--md-accent); }
+        .ahc-nav-btn:disabled { opacity: .3; cursor: not-allowed; }
+        .ahc-dots { display: flex; gap: 7px; align-items: center; }
+        .ahc-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: rgba(255,255,255,0.15); border: none; padding: 0; cursor: pointer;
+            transition: background .2s, transform .2s;
+        }
+        .ahc-dot.active { background: var(--md-accent); transform: scale(1.3); }
 
         /* Mini components */
-        .kpi-mini { display: grid; grid-template-columns: repeat(4,1fr); gap: 4px; margin-bottom: 8px; }
-        .kpi-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 4px 3px; text-align: center; }
-        .kpi-val  { font-size: 11px; font-weight: 800; color: #e2e8f0; display: block; }
-        .kpi-lbl  { font-size: 6px; color: #64748b; line-height: 1.2; }
-        .dash-row { display: flex; justify-content: space-between; font-size: 8px; color: #64748b; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .kpi-mini { display: grid; gap: 4px; margin-bottom: 7px; }
+        .kpi-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 5px; padding: 5px 4px; }
+        .kpi-val  { font-size: 12px; font-weight: 900; color: #e2e8f0; display: block; margin-bottom: 1px; }
+        .kpi-lbl  { font-size: 6.5px; color: #64748b; line-height: 1.2; }
+        .kpi-ico  { width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; margin-bottom: 4px; }
         .mod-row  { display: flex; align-items: center; gap: 5px; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
         .course-card-a { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; margin-bottom: 5px; }
 
@@ -135,10 +164,21 @@
 
         <!-- Left Branding Panel -->
         <div class="auth-panel-left">
-            <a class="auth-brand" asp-controller="Home" asp-action="Index">
-                <div class="brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
-                <span class="brand-name">JAP<span> Learning</span></span>
-            </a>
+            @if (ViewContext.RouteData.Values["action"]?.ToString() == "ChangePassword")
+            {
+                <!-- Logo sem link na página de primeiro acesso -->
+                <div class="auth-brand" style="cursor:default;">
+                    <div class="brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
+                    <span class="brand-name">JAP<span> Learning</span></span>
+                </div>
+            }
+            else
+            {
+                <a class="auth-brand" asp-controller="Home" asp-action="Index">
+                    <div class="brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
+                    <span class="brand-name">JAP<span> Learning</span></span>
+                </a>
+            }
 
             @if (IsSectionDefined("AuthLeft"))
             {
@@ -148,203 +188,246 @@
             {
             <div class="auth-panel-tagline">
 
-                <!-- 4-window cascade -->
-                <div class="auth-cascade-wrap">
-                    <div class="auth-cascade">
-
-                        <!-- Janela 1 (fundo): Dashboard Admin -->
-                        <div class="ahw ahw-admin">
-                            <div class="ahw-bar">
-                                <span class="ahw-dot" style="background:#ff5f57;"></span>
-                                <span class="ahw-dot" style="background:#ffbd2e;"></span>
-                                <span class="ahw-dot" style="background:#28ca41;"></span>
-                                <span style="margin-left:4px;">Dashboard — Administração</span>
-                            </div>
-                            <div class="ahw-body" style="padding:8px;">
-                                <div class="kpi-mini">
-                                    <div class="kpi-card"><span class="kpi-val" style="color:#4ade80;">48</span><span class="kpi-lbl">Colaboradores</span></div>
-                                    <div class="kpi-card"><span class="kpi-val" style="color:#60a5fa;">12</span><span class="kpi-lbl">Formações</span></div>
-                                    <div class="kpi-card"><span class="kpi-val" style="color:#f59e0b;">27</span><span class="kpi-lbl">Certificados</span></div>
-                                    <div class="kpi-card"><span class="kpi-val" style="color:#a78bfa;">4</span><span class="kpi-lbl">Equipas</span></div>
-                                </div>
-                                <div style="display:flex;gap:3px;margin-bottom:7px;">
-                                    <div style="flex:1;background:rgba(232,80,26,0.1);border:1px solid rgba(232,80,26,0.25);border-radius:4px;padding:4px 3px;text-align:center;">
-                                        <i class="bi bi-person-plus" style="color:#e8501a;font-size:10px;display:block;margin-bottom:1px;"></i>
-                                        <span style="font-size:6px;color:#94a3b8;">Colaborador</span>
-                                    </div>
-                                    <div style="flex:1;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:4px;padding:4px 3px;text-align:center;">
-                                        <i class="bi bi-collection-play" style="color:#818cf8;font-size:10px;display:block;margin-bottom:1px;"></i>
-                                        <span style="font-size:6px;color:#94a3b8;">Formação</span>
-                                    </div>
-                                    <div style="flex:1;background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.2);border-radius:4px;padding:4px 3px;text-align:center;">
-                                        <i class="bi bi-newspaper" style="color:#4ade80;font-size:10px;display:block;margin-bottom:1px;"></i>
-                                        <span style="font-size:6px;color:#94a3b8;">Artigo</span>
-                                    </div>
-                                    <div style="flex:1;background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:4px;padding:4px 3px;text-align:center;">
-                                        <i class="bi bi-people" style="color:#f59e0b;font-size:10px;display:block;margin-bottom:1px;"></i>
-                                        <span style="font-size:6px;color:#94a3b8;">Equipa</span>
-                                    </div>
-                                </div>
-                                <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;margin-bottom:7px;">
-                                    <div class="dash-row" style="padding:3px 7px;background:rgba(255,255,255,0.03);"><span style="font-weight:700;color:#cbd5e1;">Módulo</span><span style="font-weight:700;color:#cbd5e1;">Total</span></div>
-                                    <div class="dash-row" style="padding:3px 7px;"><span>Colaboradores</span><span style="color:#4ade80;">48</span></div>
-                                    <div class="dash-row" style="padding:3px 7px;"><span>Formações</span><span style="color:#60a5fa;">12</span></div>
-                                    <div class="dash-row" style="padding:3px 7px;"><span>Categorias</span><span style="color:#a78bfa;">9</span></div>
-                                    <div class="dash-row" style="padding:3px 7px;border:none;"><span>Certificados</span><span style="color:#f59e0b;">27</span></div>
-                                </div>
-                                <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:4px;padding:5px 7px;">
-                                    <div style="font-size:7px;color:#64748b;margin-bottom:3px;">Progresso por equipa — Mai 2026</div>
-                                    <svg viewBox="0 0 200 30" style="width:100%;height:26px;display:block;">
-                                        <defs><linearGradient id="lag1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8501a" stop-opacity="0.3"/><stop offset="100%" stop-color="#e8501a" stop-opacity="0"/></linearGradient></defs>
-                                        <polygon points="0,30 0,24 33,20 66,15 100,10 133,6 166,3 200,1 200,30" fill="url(#lag1)"/>
-                                        <polyline points="0,24 33,20 66,15 100,10 133,6 166,3 200,1" fill="none" stroke="#e8501a" stroke-width="1.5" stroke-linejoin="round"/>
-                                        <circle cx="200" cy="1" r="2" fill="#4ade80"/>
-                                    </svg>
-                                </div>
-                            </div>
+                <!-- Carrossel -->
+                <div class="auth-carousel-wrap">
+                    <div class="auth-window">
+                        <div class="ahw-bar">
+                            <span class="ahw-dot" style="background:#ff5f57;"></span>
+                            <span class="ahw-dot" style="background:#ffbd2e;"></span>
+                            <span class="ahw-dot" style="background:#28ca41;"></span>
+                            <span id="ahc-title" style="margin-left:6px;">Catálogo de Formações — JAP Learning</span>
                         </div>
+                        <div class="ahc-slides">
 
-                        <!-- Janela 2: Lista de Formações -->
-                        <div class="ahw ahw-catalog">
-                            <div class="ahw-bar">
-                                <span class="ahw-dot" style="background:#ff5f57;"></span>
-                                <span class="ahw-dot" style="background:#ffbd2e;"></span>
-                                <span class="ahw-dot" style="background:#28ca41;"></span>
-                                <span style="margin-left:4px;">Formações — JAP Learning</span>
-                            </div>
-                            <div class="ahw-body" style="padding:8px;">
-                                <div style="display:flex;gap:3px;margin-bottom:7px;flex-wrap:wrap;">
-                                    <span style="font-size:7px;background:rgba(232,80,26,0.15);border:1px solid rgba(232,80,26,0.4);color:#fb923c;padding:2px 6px;border-radius:8px;">Todas</span>
-                                    <span style="font-size:7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;padding:2px 6px;border-radius:8px;">DevOps</span>
-                                    <span style="font-size:7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;padding:2px 6px;border-radius:8px;">BI & Dados</span>
-                                    <span style="font-size:7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;padding:2px 6px;border-radius:8px;">RH</span>
-                                </div>
-                                <div class="course-card-a">
-                                    <div style="height:30px;background:linear-gradient(135deg,rgba(99,102,241,0.2),rgba(139,92,246,0.1));display:flex;align-items:center;justify-content:center;">
-                                        <i class="bi bi-bar-chart-fill" style="color:#818cf8;font-size:13px;"></i>
+                            <!-- Slide 1: Catálogo -->
+                            <div class="ahc-slide active" data-title="Catálogo de Formações — JAP Learning">
+                                <div style="padding:10px;height:100%;display:flex;flex-direction:column;gap:7px;overflow:hidden;">
+                                    <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                                        <span style="font-size:7.5px;background:rgba(232,80,26,0.15);border:1px solid rgba(232,80,26,0.4);color:#fb923c;padding:2px 8px;border-radius:10px;font-weight:600;">Todas</span>
+                                        <span style="font-size:7.5px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;padding:2px 8px;border-radius:10px;">Onboarding</span>
+                                        <span style="font-size:7.5px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;padding:2px 8px;border-radius:10px;">Arquitectura</span>
+                                        <span style="font-size:7.5px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;padding:2px 8px;border-radius:10px;">Dev</span>
                                     </div>
-                                    <div style="padding:5px 6px;">
-                                        <div style="display:flex;gap:3px;margin-bottom:2px;">
-                                            <span style="font-size:6px;background:rgba(99,102,241,0.15);color:#818cf8;padding:1px 4px;border-radius:3px;">BI & Dados</span>
-                                            <span style="font-size:6px;background:rgba(245,158,11,0.12);color:#f59e0b;padding:1px 4px;border-radius:3px;">Intermédio</span>
-                                        </div>
-                                        <div style="font-size:8px;font-weight:700;color:#e2e8f0;">Power BI Essencial</div>
-                                        <div style="font-size:7px;color:#64748b;">João Silva · 8 aulas</div>
-                                    </div>
-                                </div>
-                                <div class="course-card-a">
-                                    <div style="height:30px;background:linear-gradient(135deg,rgba(232,80,26,0.18),rgba(160,31,58,0.1));display:flex;align-items:center;justify-content:center;">
-                                        <i class="bi bi-gear-fill" style="color:#fb923c;font-size:13px;"></i>
-                                    </div>
-                                    <div style="padding:5px 6px;">
-                                        <div style="display:flex;gap:3px;margin-bottom:2px;">
-                                            <span style="font-size:6px;background:rgba(232,80,26,0.15);color:#fb923c;padding:1px 4px;border-radius:3px;">DevOps</span>
-                                            <span style="font-size:6px;background:rgba(34,197,94,0.1);color:#4ade80;padding:1px 4px;border-radius:3px;">Avançado</span>
-                                        </div>
-                                        <div style="font-size:8px;font-weight:700;color:#e2e8f0;">CI/CD com GitHub Actions</div>
-                                        <div style="font-size:7px;color:#64748b;">Ana Pereira · 12 aulas</div>
-                                    </div>
-                                </div>
-                                <div class="course-card-a" style="opacity:.55;">
-                                    <div style="padding:5px 6px;">
-                                        <div style="font-size:8px;font-weight:700;color:#94a3b8;">Gestão de Projectos Ágeis</div>
-                                        <div style="font-size:7px;color:#475569;">RH · 6 aulas</div>
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1;overflow:hidden;">
+                                        @foreach (var (icon, color, bg, cat, title, meta) in new[]{
+                                            ("bi-code-slash","#818cf8","rgba(99,102,241,0.18)","Onboarding","1 - Fundamentos em .NET","16 aulas · 1h 17m"),
+                                            ("bi-grid-1x2-fill","#fb923c","rgba(232,80,26,0.18)","Onboarding","2 - ASP.NET Core MVC","22 aulas · 1h 50m"),
+                                            ("bi-diagram-3-fill","#60a5fa","rgba(96,165,250,0.12)","Onboarding","3 - ASP.NET WebAPI","34 aulas · 2h 50m"),
+                                            ("bi-layers-fill","#a78bfa","rgba(167,139,250,0.12)","Onboarding","4 - MVC Avançado","31 aulas · 6h 8m"),
+                                            ("bi-award-fill","#4ade80","rgba(34,197,94,0.1)","Onboarding","5 - POO + SOLID","26 aulas · 4h"),
+                                            ("bi-boxes","#f59e0b","rgba(245,158,11,0.1)","Arquitectura","6 - Arq. em Camadas","8 aulas · 2h"),
+                                        })
+                                        {
+                                            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:6px;overflow:hidden;">
+                                                <div style="height:26px;background:@bg;display:flex;align-items:center;justify-content:center;">
+                                                    <i class="bi @icon" style="color:@color;font-size:12px;"></i>
+                                                </div>
+                                                <div style="padding:4px 5px;">
+                                                    <div style="font-size:6px;background:rgba(232,80,26,0.12);color:#fb923c;padding:1px 4px;border-radius:3px;display:inline-block;margin-bottom:2px;">@cat</div>
+                                                    <div style="font-size:7.5px;font-weight:700;color:#e2e8f0;line-height:1.2;margin-bottom:1px;">@title</div>
+                                                    <div style="font-size:6.5px;color:#475569;">@meta</div>
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Slide 2: Detalhe da Formação -->
+                            <div class="ahc-slide" data-title="4 - ASP.NET Core MVC Avançado — JAP Learning">
+                                <div style="display:flex;height:100%;overflow:hidden;">
+                                    <div style="flex:1;padding:10px;overflow:hidden;display:flex;flex-direction:column;gap:6px;border-right:1px solid rgba(255,255,255,0.05);">
+                                        <div style="height:44px;background:linear-gradient(135deg,rgba(232,80,26,0.18),rgba(167,139,250,0.08));border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                            <i class="bi bi-grid-1x2-fill" style="color:#fb923c;font-size:18px;"></i>
+                                        </div>
+                                        <div><div style="font-size:9px;font-weight:800;color:#e2e8f0;margin-bottom:1px;">ASP.NET Core MVC Avançado</div><div style="font-size:7px;color:#64748b;">Carlos Freire · Intermédio</div></div>
+                                        <div style="display:flex;gap:6px;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:4px;">
+                                            <span style="font-size:7.5px;color:#fb923c;border-bottom:1.5px solid #fb923c;padding-bottom:3px;font-weight:700;">Ementa</span>
+                                            <span style="font-size:7.5px;color:#475569;">Apresentação</span>
+                                            <span style="font-size:7.5px;color:#475569;">Instrutor</span>
+                                        </div>
+                                        <div style="overflow:hidden;flex:1;">
+                                            <div style="font-size:6.5px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">INTRODUÇÃO</div>
+                                            <div class="mod-row"><i class="bi bi-play-circle-fill" style="color:#fb923c;font-size:9px;flex-shrink:0;"></i><span style="font-size:7px;color:#94a3b8;flex:1;">Apresentação e pré-requisitos</span><span style="font-size:6px;color:#475569;">7m</span></div>
+                                            <div style="font-size:6.5px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin:4px 0 3px;">MÓDULO 1</div>
+                                            <div class="mod-row"><i class="bi bi-circle" style="color:#334155;font-size:9px;flex-shrink:0;"></i><span style="font-size:7px;color:#475569;flex:1;">Pipeline do ASP.NET</span><span style="font-size:6px;color:#334155;">43m</span></div>
+                                            <div class="mod-row"><i class="bi bi-circle" style="color:#334155;font-size:9px;flex-shrink:0;"></i><span style="font-size:7px;color:#475569;flex:1;">Ferramentas de Front-end</span><span style="font-size:6px;color:#334155;">26m</span></div>
+                                            <div class="mod-row" style="border:none;"><i class="bi bi-circle" style="color:#334155;font-size:9px;flex-shrink:0;"></i><span style="font-size:7px;color:#475569;flex:1;">Bundling e Minication</span><span style="font-size:6px;color:#334155;">26m</span></div>
+                                        </div>
+                                    </div>
+                                    <div style="width:110px;padding:8px;display:flex;flex-direction:column;gap:6px;">
+                                        <div style="background:rgba(232,80,26,0.1);border:1px solid rgba(232,80,26,0.3);border-radius:5px;padding:5px 7px;">
+                                            <div style="font-size:6.5px;font-weight:700;color:#fb923c;margin-bottom:2px;">FORMAÇÃO</div>
+                                            <div style="font-size:7px;color:#e2e8f0;font-weight:600;line-height:1.3;margin-bottom:4px;">ASP.NET Core MVC Avançado</div>
+                                            <div style="background:rgba(232,80,26,0.8);border-radius:3px;padding:3px;text-align:center;font-size:6.5px;color:#fff;font-weight:700;">▶ Continuar</div>
+                                        </div>
+                                        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:5px;padding:5px 7px;">
+                                            <div style="font-size:6.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Info</div>
+                                            <div style="display:flex;align-items:center;gap:3px;margin-bottom:2px;"><i class="bi bi-clock" style="color:#64748b;font-size:7px;"></i><span style="font-size:7px;color:#64748b;">6h 8m</span></div>
+                                            <div style="display:flex;align-items:center;gap:3px;margin-bottom:2px;"><i class="bi bi-collection-play" style="color:#64748b;font-size:7px;"></i><span style="font-size:7px;color:#64748b;">8 módulos</span></div>
+                                            <div style="display:flex;align-items:center;gap:3px;"><i class="bi bi-play-btn" style="color:#64748b;font-size:7px;"></i><span style="font-size:7px;color:#64748b;">31 aulas</span></div>
+                                        </div>
+                                        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:5px;padding:5px 7px;">
+                                            <div style="font-size:6.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Pré-Requisitos</div>
+                                            <div style="display:flex;align-items:center;gap:3px;margin-bottom:3px;"><i class="bi bi-check-circle-fill" style="color:#4ade80;font-size:7px;"></i><span style="font-size:6.5px;color:#64748b;">Fundamentos .NET</span></div>
+                                            <div style="display:flex;align-items:center;gap:3px;"><i class="bi bi-check-circle-fill" style="color:#4ade80;font-size:7px;"></i><span style="font-size:6.5px;color:#64748b;">ASP.NET Core MVC</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slide 3: Player -->
+                            <div class="ahc-slide" data-title="Protecção contra CSRF — JAP Learning">
+                                <div style="display:flex;height:100%;overflow:hidden;">
+                                    <div style="width:120px;border-right:1px solid rgba(255,255,255,0.06);padding:7px;overflow:hidden;display:flex;flex-direction:column;gap:4px;">
+                                        <div style="margin-bottom:2px;">
+                                            <div style="display:flex;justify-content:space-between;font-size:6px;color:#64748b;margin-bottom:2px;"><span>PROGRESSO</span><span style="color:#fb923c;font-weight:700;">81%</span></div>
+                                            <div style="background:rgba(255,255,255,0.06);border-radius:2px;height:3px;"><div style="background:linear-gradient(90deg,#e8501a,#fb923c);width:81%;height:100%;border-radius:2px;"></div></div>
+                                        </div>
+                                        <div style="font-size:6px;color:#64748b;font-weight:700;text-transform:uppercase;">INTRODUÇÃO</div>
+                                        <div class="mod-row" style="border:none;"><i class="bi bi-check-circle-fill" style="color:#4ade80;font-size:8px;flex-shrink:0;"></i><span style="font-size:7px;color:#64748b;flex:1;">Apresentação</span></div>
+                                        <div style="font-size:6px;color:#64748b;font-weight:700;text-transform:uppercase;margin-top:2px;">MÓDULO 1</div>
+                                        @foreach (var n in new[]{"Pipeline","Front-end","Bundling","Layouts","Tag Helper","View Component","Roteamento"})
+                                        {
+                                            <div class="mod-row" style="border:none;"><i class="bi bi-check-circle-fill" style="color:#4ade80;font-size:8px;flex-shrink:0;"></i><span style="font-size:6.5px;color:#64748b;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@n</span></div>
+                                        }
+                                    </div>
+                                    <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+                                        <div style="padding:5px 8px;font-size:6px;color:#475569;border-bottom:1px solid rgba(255,255,255,0.05);">MVC Avançado / <span style="color:#94a3b8;">Protecção CSRF</span></div>
+                                        <div style="background:#000;height:110px;position:relative;flex-shrink:0;">
+                                            <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,80,26,0.1),rgba(0,0,0,0.85));"></div>
+                                            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;">
+                                                <div style="width:28px;height:28px;background:rgba(232,80,26,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;"><i class="bi bi-play-fill" style="color:#fff;font-size:12px;margin-left:2px;"></i></div>
+                                                <span style="font-size:7px;color:rgba(255,255,255,0.6);">Protecção CSRF · 9:14</span>
+                                            </div>
+                                            <div style="position:absolute;bottom:0;left:0;right:0;padding:3px 7px;background:linear-gradient(transparent,rgba(0,0,0,0.85));">
+                                                <div style="background:rgba(255,255,255,0.15);border-radius:2px;height:3px;"><div style="background:#e8501a;width:55%;height:100%;border-radius:2px;"></div></div>
+                                                <div style="display:flex;justify-content:space-between;font-size:5.5px;color:rgba(255,255,255,0.4);margin-top:1px;"><span>5:02</span><span>9:14</span></div>
+                                            </div>
+                                        </div>
+                                        <div style="padding:5px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.05);">
+                                            <span style="font-size:8px;font-weight:800;color:#e2e8f0;">Protecção contra CSRF</span>
+                                            <span style="font-size:6px;background:rgba(34,197,94,0.1);color:#4ade80;padding:2px 5px;border-radius:3px;">✓ Concluída</span>
+                                        </div>
+                                        <div style="padding:5px 8px;display:flex;gap:5px;">
+                                            <div style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.25);border-radius:4px;padding:3px 6px;display:flex;align-items:center;gap:3px;"><i class="bi bi-file-zip" style="color:#818cf8;font-size:8px;"></i><span style="font-size:6.5px;color:#818cf8;">Snapshot</span></div>
+                                            <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:4px;padding:3px 6px;display:flex;align-items:center;gap:3px;"><i class="bi bi-file-pdf" style="color:#f87171;font-size:8px;"></i><span style="font-size:6.5px;color:#f87171;">PDF</span></div>
+                                        </div>
+                                        <div style="margin-top:auto;padding:5px 8px;display:flex;justify-content:space-between;border-top:1px solid rgba(255,255,255,0.05);">
+                                            <span style="font-size:6.5px;color:#475569;">← Anterior</span>
+                                            <div style="background:rgba(232,80,26,0.85);border-radius:3px;padding:3px 8px;font-size:6.5px;color:#fff;font-weight:700;">Próxima →</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slide 4: Dashboard Aluno -->
+                            <div class="ahc-slide" data-title="Dashboard — Área do Aluno">
+                                <div style="padding:10px;height:100%;display:flex;flex-direction:column;gap:7px;overflow:hidden;">
+                                    <div style="background:linear-gradient(135deg,rgba(232,80,26,0.12),rgba(139,92,246,0.06));border:1px solid rgba(232,80,26,0.2);border-radius:7px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+                                        <div><div style="font-size:10px;font-weight:800;color:#e2e8f0;margin-bottom:1px;">Olá, Carlos! 👋</div><div style="font-size:7px;color:#64748b;">2 formação(ões) em progresso.</div></div>
+                                        <div style="background:rgba(232,80,26,0.8);border-radius:4px;padding:3px 7px;font-size:6.5px;color:#fff;font-weight:700;">Minhas Formações →</div>
+                                    </div>
+                                    <div class="kpi-mini" style="grid-template-columns:repeat(4,1fr);">
+                                        <div class="kpi-card"><div class="kpi-ico" style="background:rgba(99,102,241,0.1);"><i class="bi bi-collection-play" style="color:#818cf8;"></i></div><span class="kpi-val">2</span><span class="kpi-lbl">Em Progresso</span></div>
+                                        <div class="kpi-card"><div class="kpi-ico" style="background:rgba(34,197,94,0.1);"><i class="bi bi-check-circle" style="color:#4ade80;"></i></div><span class="kpi-val">0</span><span class="kpi-lbl">Concluídas</span></div>
+                                        <div class="kpi-card"><div class="kpi-ico" style="background:rgba(245,158,11,0.1);"><i class="bi bi-award" style="color:#f59e0b;"></i></div><span class="kpi-val">0</span><span class="kpi-lbl">Certificados</span></div>
+                                        <div class="kpi-card"><div class="kpi-ico" style="background:rgba(232,80,26,0.1);"><i class="bi bi-clock" style="color:#fb923c;"></i></div><span class="kpi-val">5h</span><span class="kpi-lbl">Assistidas</span></div>
+                                    </div>
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;flex:1;overflow:hidden;">
+                                        <div>
+                                            <div style="font-size:7px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;display:flex;align-items:center;gap:3px;"><i class="bi bi-collection-play" style="color:#818cf8;font-size:8px;"></i> Em Progresso</div>
+                                            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:5px;padding:6px;margin-bottom:4px;">
+                                                <div style="font-size:7.5px;font-weight:700;color:#e2e8f0;margin-bottom:1px;">1 - Fundamentos em .NET</div>
+                                                <div style="font-size:6.5px;color:#475569;margin-bottom:4px;">1 de 16 aulas</div>
+                                                <div style="background:rgba(255,255,255,0.06);border-radius:2px;height:3px;overflow:hidden;"><div style="background:linear-gradient(90deg,#e8501a,#fb923c);width:6%;height:100%;border-radius:2px;"></div></div>
+                                                <div style="text-align:right;font-size:6px;color:#fb923c;margin-top:1px;font-weight:700;">6%</div>
+                                            </div>
+                                            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:5px;padding:6px;">
+                                                <div style="font-size:7.5px;font-weight:700;color:#e2e8f0;margin-bottom:1px;">4 - MVC Avançado</div>
+                                                <div style="font-size:6.5px;color:#475569;margin-bottom:4px;">25 de 31 aulas</div>
+                                                <div style="background:rgba(255,255,255,0.06);border-radius:2px;height:3px;overflow:hidden;"><div style="background:linear-gradient(90deg,#e8501a,#fb923c);width:81%;height:100%;border-radius:2px;"></div></div>
+                                                <div style="text-align:right;font-size:6px;color:#fb923c;margin-top:1px;font-weight:700;">81%</div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div style="font-size:7px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;display:flex;align-items:center;gap:3px;"><i class="bi bi-check-circle" style="color:#4ade80;font-size:8px;"></i> Concluídas</div>
+                                            <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:5px;padding:14px 8px;text-align:center;">
+                                                <i class="bi bi-trophy" style="color:#334155;font-size:16px;display:block;margin-bottom:4px;"></i>
+                                                <div style="font-size:7px;color:#334155;">Ainda sem formações<br>concluídas.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slide 5: Dashboard Admin -->
+                            <div class="ahc-slide" data-title="Dashboard — Administração — JAP Learning">
+                                <div style="padding:10px;height:100%;display:flex;flex-direction:column;gap:7px;overflow:hidden;">
+                                    <div style="background:linear-gradient(135deg,rgba(139,92,246,0.1),rgba(232,80,26,0.06));border:1px solid rgba(139,92,246,0.2);border-radius:7px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+                                        <div><div style="font-size:10px;font-weight:800;color:#e2e8f0;margin-bottom:1px;">Olá, Jesus! 👋</div><div style="font-size:7px;color:#64748b;">Painel de gestão JAP Learning.</div></div>
+                                        <div style="background:rgba(232,80,26,0.8);border-radius:4px;padding:3px 7px;font-size:6.5px;color:#fff;font-weight:700;">+ Nova Formação</div>
+                                    </div>
+                                    <div class="kpi-mini" style="grid-template-columns:repeat(5,1fr);">
+                                        <div class="kpi-card"><div class="kpi-ico" style="background:rgba(34,197,94,0.1);"><i class="bi bi-people" style="color:#4ade80;font-size:8px;"></i></div><span class="kpi-val" style="font-size:11px;">12</span><span class="kpi-lbl">Alunos</span></div>
+                                        <div class="kpi-card"><div class="kpi-ico" style="background:rgba(96,165,250,0.1);"><i class="bi bi-collection-play" style="color:#60a5fa;font-size:8px;"></i></div><span class="kpi-val" style="font-size:11px;">7</span><span class="kpi-lbl">Dispon.</span></div>
+                                        <div class="kpi-card"><div class="kpi-ico" style="background:rgba(245,158,11,0.1);"><i class="bi bi-hourglass-split" style="color:#f59e0b;font-size:8px;"></i></div><span class="kpi-val" style="font-size:11px;">5</span><span class="kpi-lbl">Prep.</span></div>
+                                        <div class="kpi-card"><div class="kpi-ico" style="background:rgba(232,80,26,0.1);"><i class="bi bi-award" style="color:#fb923c;font-size:8px;"></i></div><span class="kpi-val" style="font-size:11px;">0</span><span class="kpi-lbl">Certif.</span></div>
+                                        <div class="kpi-card"><div class="kpi-ico" style="background:rgba(167,139,250,0.1);"><i class="bi bi-diagram-3" style="color:#a78bfa;font-size:8px;"></i></div><span class="kpi-val" style="font-size:11px;">5</span><span class="kpi-lbl">Equip.</span></div>
+                                    </div>
+                                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;flex:1;overflow:hidden;">
+                                        @foreach (var (icon, color, label, rows) in new[]{
+                                            ("bi-trophy","#f59e0b","TOP ALUNOS", new[]{("1","Carlos Freire","26"),("2","Vítor Leal","4"),("3","Jesus","2")}),
+                                            ("bi-people-fill","#818cf8","TOP EQUIPAS", new[]{("1","DMC Devs","30"),("2","Admins","2"),("","",""),}),
+                                            ("bi-collection-play","#60a5fa","TOP FORMAÇÕES", new[]{("1","MVC Avançado","3"),("2","Fund. .NET","2"),("","",""),}),
+                                        })
+                                        {
+                                            <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:5px;overflow:hidden;display:flex;flex-direction:column;">
+                                                <div style="padding:4px 7px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;gap:3px;flex-shrink:0;"><i class="bi @icon" style="color:@color;font-size:8px;"></i><span style="font-size:6px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;">@label</span></div>
+                                                @foreach (var (n, name, count) in rows.Where(r => r.Item2 != ""))
+                                                {
+                                                    <div style="padding:3px 7px;border-bottom:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;gap:4px;">
+                                                        <span style="font-size:6.5px;color:#475569;width:7px;">@n</span>
+                                                        <span style="font-size:7px;color:#94a3b8;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@name</span>
+                                                        <span style="font-size:7px;color:@color;font-weight:700;">@count</span>
+                                                    </div>
+                                                }
+                                                <div style="padding:3px 7px;text-align:right;margin-top:auto;"><span style="font-size:6.5px;color:#334155;">Ver todos →</span></div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
+                    </div>
 
-                        <!-- Janela 3: Detalhe da Formação -->
-                        <div class="ahw ahw-detail">
-                            <div class="ahw-bar">
-                                <span class="ahw-dot" style="background:#ff5f57;"></span>
-                                <span class="ahw-dot" style="background:#ffbd2e;"></span>
-                                <span class="ahw-dot" style="background:#28ca41;"></span>
-                                <span style="margin-left:4px;">Power BI Essencial — JAP Learning</span>
-                            </div>
-                            <div class="ahw-body" style="padding:8px;">
-                                <div style="height:38px;background:linear-gradient(135deg,rgba(99,102,241,0.2),rgba(139,92,246,0.1));border-radius:4px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;">
-                                    <i class="bi bi-bar-chart-fill" style="color:#818cf8;font-size:18px;"></i>
-                                </div>
-                                <div style="font-size:10px;font-weight:800;color:#e2e8f0;margin-bottom:2px;">Power BI Essencial</div>
-                                <div style="display:flex;gap:3px;margin-bottom:5px;">
-                                    <span style="font-size:6px;background:rgba(99,102,241,0.15);color:#818cf8;padding:1px 4px;border-radius:3px;">BI & Dados</span>
-                                    <span style="font-size:6px;background:rgba(245,158,11,0.12);color:#f59e0b;padding:1px 4px;border-radius:3px;">Intermédio</span>
-                                </div>
-                                <div style="margin-bottom:6px;">
-                                    <div style="display:flex;justify-content:space-between;font-size:7px;color:#64748b;margin-bottom:2px;"><span>Progresso</span><span style="color:#60a5fa;">3 / 8 aulas</span></div>
-                                    <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:4px;overflow:hidden;">
-                                        <div style="background:linear-gradient(90deg,#e8501a,#fb923c);width:37%;height:100%;border-radius:3px;"></div>
-                                    </div>
-                                </div>
-                                <div style="font-size:6px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Módulo 1 — Introdução</div>
-                                <div class="mod-row"><i class="bi bi-check-circle-fill" style="color:#4ade80;font-size:9px;flex-shrink:0;"></i><span style="font-size:7px;color:#94a3b8;flex:1;">O que é o Power BI</span><span style="font-size:6px;color:#475569;">18m</span></div>
-                                <div class="mod-row"><i class="bi bi-check-circle-fill" style="color:#4ade80;font-size:9px;flex-shrink:0;"></i><span style="font-size:7px;color:#94a3b8;flex:1;">Interface e navegação</span><span style="font-size:6px;color:#475569;">22m</span></div>
-                                <div class="mod-row" style="background:rgba(232,80,26,0.06);border-radius:3px;padding:3px 4px;border:none;">
-                                    <i class="bi bi-play-circle-fill" style="color:#fb923c;font-size:9px;flex-shrink:0;"></i>
-                                    <span style="font-size:7px;color:#e2e8f0;font-weight:700;flex:1;">Importar dados</span>
-                                    <span style="font-size:6px;color:#fb923c;">▶ A ver</span>
-                                </div>
-                                <div style="font-size:6px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin:5px 0 3px;">Módulo 2 — Visualizações</div>
-                                <div class="mod-row"><i class="bi bi-circle" style="color:#334155;font-size:9px;flex-shrink:0;"></i><span style="font-size:7px;color:#475569;flex:1;">Gráficos e tabelas</span><span style="font-size:6px;color:#334155;">35m</span></div>
-                                <div class="mod-row" style="border:none;"><i class="bi bi-circle" style="color:#334155;font-size:9px;flex-shrink:0;"></i><span style="font-size:7px;color:#475569;flex:1;">Filtros e segmentação</span><span style="font-size:6px;color:#334155;">28m</span></div>
-                            </div>
+                    <!-- Paginação -->
+                    <div class="ahc-nav">
+                        <button class="ahc-nav-btn" id="ahc-prev" onclick="ahcNav(-1)" disabled><i class="bi bi-chevron-left"></i></button>
+                        <div class="ahc-dots">
+                            <button class="ahc-dot active" onclick="ahcGo(0)"></button>
+                            <button class="ahc-dot" onclick="ahcGo(1)"></button>
+                            <button class="ahc-dot" onclick="ahcGo(2)"></button>
+                            <button class="ahc-dot" onclick="ahcGo(3)"></button>
+                            <button class="ahc-dot" onclick="ahcGo(4)"></button>
                         </div>
-
-                        <!-- Janela 4 (frente): Player de Aula -->
-                        <div class="ahw ahw-player">
-                            <div class="ahw-bar">
-                                <span class="ahw-dot" style="background:#ff5f57;"></span>
-                                <span class="ahw-dot" style="background:#ffbd2e;"></span>
-                                <span class="ahw-dot" style="background:#28ca41;"></span>
-                                <span style="margin-left:4px;">Aula: Importar dados — JAP Learning</span>
-                            </div>
-                            <div class="ahw-body" style="display:flex;flex-direction:column;">
-                                <div style="background:#000;height:90px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;">
-                                    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(0,0,0,0.8));"></div>
-                                    <div style="position:relative;z-index:1;text-align:center;">
-                                        <div style="width:26px;height:26px;background:rgba(232,80,26,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 4px;">
-                                            <i class="bi bi-play-fill" style="color:#fff;font-size:11px;margin-left:2px;"></i>
-                                        </div>
-                                        <span style="font-size:7px;color:rgba(255,255,255,0.6);">Importar dados · 25m</span>
-                                    </div>
-                                    <div style="position:absolute;bottom:0;left:0;right:0;padding:3px 7px;background:linear-gradient(transparent,rgba(0,0,0,0.8));">
-                                        <div style="background:rgba(255,255,255,0.15);border-radius:2px;height:3px;">
-                                            <div style="background:#e8501a;width:42%;height:100%;border-radius:2px;"></div>
-                                        </div>
-                                        <div style="display:flex;justify-content:space-between;font-size:6px;color:rgba(255,255,255,0.4);margin-top:1px;"><span>10:30</span><span>25:00</span></div>
-                                    </div>
-                                </div>
-                                <div style="flex:1;overflow:hidden;padding:7px;">
-                                    <div style="font-size:6px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">Conteúdo da Formação</div>
-                                    <div style="background:rgba(232,80,26,0.1);border:1px solid rgba(232,80,26,0.25);border-radius:3px;padding:4px 5px;margin-bottom:3px;display:flex;align-items:center;gap:4px;">
-                                        <i class="bi bi-play-circle-fill" style="color:#fb923c;font-size:9px;flex-shrink:0;"></i>
-                                        <span style="font-size:7px;font-weight:600;color:#e2e8f0;flex:1;">Importar dados</span>
-                                        <span style="font-size:6px;color:#fb923c;">▶</span>
-                                    </div>
-                                    <div class="mod-row"><i class="bi bi-check-circle-fill" style="color:#4ade80;font-size:9px;flex-shrink:0;"></i><span style="font-size:7px;color:#64748b;flex:1;">O que é o Power BI</span><i class="bi bi-check" style="color:#4ade80;font-size:8px;"></i></div>
-                                    <div class="mod-row"><i class="bi bi-check-circle-fill" style="color:#4ade80;font-size:9px;flex-shrink:0;"></i><span style="font-size:7px;color:#64748b;flex:1;">Interface e navegação</span><i class="bi bi-check" style="color:#4ade80;font-size:8px;"></i></div>
-                                    <div class="mod-row"><i class="bi bi-circle" style="color:#334155;font-size:9px;flex-shrink:0;"></i><span style="font-size:7px;color:#475569;flex:1;">Gráficos e tabelas</span><span style="font-size:6px;color:#334155;">35m</span></div>
-                                    <div class="mod-row" style="border:none;"><i class="bi bi-circle" style="color:#334155;font-size:9px;flex-shrink:0;"></i><span style="font-size:7px;color:#475569;flex:1;">Filtros e segmentação</span><span style="font-size:6px;color:#334155;">28m</span></div>
-                                    <div style="margin-top:6px;background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:3px;padding:4px 5px;display:flex;align-items:center;gap:4px;">
-                                        <i class="bi bi-trophy" style="color:#f59e0b;font-size:9px;flex-shrink:0;"></i>
-                                        <span style="font-size:6px;color:#94a3b8;">Nota de aprovação: <strong style="color:#f59e0b;">70%</strong></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
+                        <button class="ahc-nav-btn" id="ahc-next" onclick="ahcNav(1)"><i class="bi bi-chevron-right"></i></button>
                     </div>
                 </div>
 
-                <h2>
-                    Desenvolve as competências<br />
-                    <span class="md-gradient-text">da tua equipa.</span>
-                </h2>
-                <p>
-                    Formações práticas organizadas por equipa, acompanhamento
-                    de progresso e certificados digitais — tudo numa só plataforma.
-                </p>
+                <!-- Texto (logo > carrossel > texto) -->
+                <div style="padding-top:24px;">
+                    <h2>
+                        Desenvolve as competências<br />
+                        <span class="md-gradient-text">da tua equipa.</span>
+                    </h2>
+                    <p>
+                        Formações práticas organizadas por equipa, acompanhamento
+                        de progresso e certificados digitais — tudo numa só plataforma.
+                    </p>
+                </div>
+
             </div>
             }
         </div>
@@ -362,6 +445,43 @@
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    (function () {
+        var slides  = Array.from(document.querySelectorAll('.ahc-slide'));
+        var dots    = Array.from(document.querySelectorAll('.ahc-dot'));
+        var titleEl = document.getElementById('ahc-title');
+        var btnPrev = document.getElementById('ahc-prev');
+        var btnNext = document.getElementById('ahc-next');
+        if (!slides.length) return;
+        var current = 0, total = slides.length, timer;
+
+        function goTo(idx) {
+            slides[current].classList.remove('active');
+            slides[current].classList.add('exit');
+            dots[current].classList.remove('active');
+            var prev = current;
+            current = (idx + total) % total;
+            slides[current].classList.add('active');
+            dots[current].classList.add('active');
+            if (titleEl) titleEl.textContent = slides[current].dataset.title;
+            btnPrev.disabled = current === 0;
+            btnNext.disabled = current === total - 1;
+            setTimeout(function () { slides[prev].classList.remove('exit'); }, 420);
+        }
+        function startAuto() { timer = setInterval(function () { goTo(current < total - 1 ? current + 1 : 0); }, 4000); }
+        function stopAuto()  { clearInterval(timer); }
+
+        window.ahcNav = function (d) { stopAuto(); goTo(current + d); };
+        window.ahcGo  = function (i) { stopAuto(); goTo(i); };
+
+        startAuto();
+        var wrap = document.querySelector('.auth-carousel-wrap');
+        if (wrap) {
+            wrap.addEventListener('mouseenter', stopAuto);
+            wrap.addEventListener('mouseleave', startAuto);
+        }
+    })();
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

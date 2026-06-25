@@ -26,6 +26,11 @@ namespace JAPLearning.Business.Models.Domains.Entities
         public bool IsActived { get; set; } = true;
         public bool IsDeleted { get; set; }
 
+        // ── Login tracking (apenas Alunos) ──────────────────────
+        public int LoginCount { get; set; }
+        public DateTime? LastLoginDate { get; set; }
+        public bool MustChangePassword { get; set; }
+
         public Role Role { get; set; } = null!;
         public Team Team { get; set; } = null!;
         public ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();

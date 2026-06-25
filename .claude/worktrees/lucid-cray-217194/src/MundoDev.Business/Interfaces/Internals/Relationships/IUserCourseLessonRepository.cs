@@ -1,0 +1,11 @@
+using MundoDev.Business.Interfaces.Internals.Shareds;
+using MundoDev.Business.Models.Domains.Relationships;
+
+namespace MundoDev.Business.Interfaces.Internals.Relationships
+{
+    public interface IUserCourseLessonRepository : IRepository<UserCourseLesson>
+    {
+        Task<List<UserCourseLesson>> GetByUserAsync(Guid userId);
+        Task<UserCourseLesson?> GetByUserAndLessonAsync(Guid userId, Guid lessonId);
+    }
+}

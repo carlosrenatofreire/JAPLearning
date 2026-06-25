@@ -1,0 +1,104 @@
+@{
+    ViewData["Title"] = "Ranking de Formações";
+    var courses = ViewBag.Courses as List<dynamic> ?? new List<dynamic>();
+}
+@await Html.PartialAsync("_CrudStyles")
+
+<div class="page-header">
+    <div>
+        <h4 class="page-header-title">Ranking de Formações</h4>
+        <p class="page-header-sub">
+            <a asp-controller="Home" asp-action="Index" style="color:var(--md-text-muted);">Dashboard</a>
+            <i class="bi bi-chevron-right" style="font-size:10px;"></i> Formações
+        </p>
+    </div>
+</div>
+
+<div class="md-card" style="padding:0; overflow:hidden;">
+    @if (!courses.Any())
+    {
+        <div style="text-align:center; padding:60px; color:var(--md-text-muted);">
+            <i class="bi bi-collection-play" style="font-size:40px; display:block; margin-bottom:12px;"></i>
+            <p style="margin:0;">Sem dados ainda.</p>
+        </div>
+    }
+    else
+    {
+        <table class="crud-table" style="margin:0;">
+            <thead>
+                <tr>
+                    <th style="width:42px; text-align:center;">#</th>
+                    <th>Formação</th>
+                    <th>Categoria</th>
+                    <th>Nível</th>
+                    <th style="width:110px; text-align:center;">Alunos</th>
+                    <th style="width:130px; text-align:center;">Aulas Completadas</th>
+                    <th style="width:100px; text-align:center;">Total Aulas</th>
+                    <th style="width:110px; text-align:center;">Certificados</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < courses.Count; i++)
+                {
+                    var c        = courses[i];
+                    var title    = (string)c.Title;
+                    var category = (string)c.Category;
+                    var level    = (string)c.Level;
+                    var students = (int)c.Students;
+                    var lessons  = (int)c.Lessons;
+                    var total    = (int)c.TotalLess;
+                    var certs    = (int)c.Certs;
+                    var medal    = i == 0 ? "#F59E0B" : i == 1 ? "#9CA3AF" : i == 2 ? "#D97706" : "var(--md-text-muted)";
+                    <tr>
+                        <td style="text-align:center; font-weight:700; font-size:13px; color:@medal;">@(i + 1)</td>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div style="width:30px;height:30px;border-radius:8px;background:rgba(34,197,94,0.12);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--md-success);flex-shrink:0;">
+                                    <i class="bi bi-play-circle-fill"></i>
+                                </div>
+                                <span style="font-weight:600; font-size:13px;">@title</span>
+                            </div>
+                        </td>
+                        <td style="font-size:13px; color:var(--md-text-secondary);">@category</td>
+                        <td style="font-size:13px; color:var(--md-text-muted);">@level</td>
+                        <td style="text-align:center;">
+                            @if (students > 0)
+                            {
+                                <span style="font-weight:700; font-size:13px; color:var(--md-success);">@students</span>
+                            }
+                            else
+                            {
+                                <span style="color:var(--md-text-muted); font-size:12px;">—</span>
+                            }
+                        </td>
+                        <td style="text-align:center;">
+                            @if (lessons > 0)
+                            {
+                                <span style="font-size:13px; color:var(--md-text-secondary);">@lessons</span>
+                            }
+                            else
+                            {
+                                <span style="color:var(--md-text-muted); font-size:12px;">—</span>
+                            }
+                        </td>
+                        <td style="text-align:center; font-size:13px; color:var(--md-text-muted);">
+                            @(total > 0 ? total.ToString() : "—")
+                        </td>
+                        <td style="text-align:center;">
+                            @if (certs > 0)
+                            {
+                                <span style="font-weight:700; font-size:13px; color:var(--md-warning);">
+                                    <i class="bi bi-patch-check-fill" style="margin-right:3px;"></i>@certs
+                                </span>
+                            }
+                            else
+                            {
+                                <span style="color:var(--md-text-muted); font-size:12px;">—</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

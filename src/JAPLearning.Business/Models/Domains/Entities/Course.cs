@@ -13,6 +13,8 @@ namespace JAPLearning.Business.Models.Domains.Entities
         public string? Subtitle { get; set; }
         public string? Description { get; set; }
         public string? Thumbnail { get; set; }
+        public string? SnapshotUrl { get; set; }
+        public string? PdfFileUrl { get; set; }
         public int PassingScore { get; set; } = 60;
         public DateTime CreatedDate { get; set; }
         public DateTime? ChangedDate { get; set; }

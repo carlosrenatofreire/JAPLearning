@@ -4,7 +4,7 @@ using JAPLearning.Business.Interfaces.Internals.Shareds;
 using JAPLearning.Business.Interfaces.Services.Auxiliaries;
 using JAPLearning.Business.Interfaces.Services.Entities;
 using JAPLearning.Business.Models.Domains.Entities;
-using JAPLearning.Business.Validators;
+using JAPLearning.Business.Validations.Internals.Entities;
 
 namespace JAPLearning.Business.Services.Entities
 {
@@ -20,14 +20,24 @@ namespace JAPLearning.Business.Services.Entities
 
         public override async Task<bool> AddAsync(Lesson entity)
         {
-            if (!Validate(new LessonValidator(), entity)) return false;
+            if (!await ValidateAsync(new LessonValidation(), entity)) return false;
             return await base.AddAsync(entity);
         }
 
         public override async Task<bool> UpdateAsync(Lesson entity)
         {
-            if (!Validate(new LessonValidator(), entity)) return false;
+            if (!await ValidateAsync(new LessonValidation(), entity)) return false;
             return await base.UpdateAsync(entity);
+        }
+
+        public override async Task<bool> DeleteAsync(Guid id)
+        {
+            if (await _repository.HasProgressRecordsAsync(id))
+            {
+                _notificator.AddNotification("Não é possível eliminar esta lição porque está associada a registos de progresso de formandos.");
+                return false;
+            }
+            return await base.DeleteAsync(id);
         }
     }
 }

@@ -25,6 +25,12 @@ namespace JAPLearning.Data.Mappings.Entities
             builder.Property(e => e.Thumbnail)
                 .HasColumnType("varchar(500)");
 
+            builder.Property(e => e.SnapshotUrl)
+                .HasColumnType("varchar(500)");
+
+            builder.Property(e => e.PdfFileUrl)
+                .HasColumnType("varchar(500)");
+
             builder.HasOne(e => e.Category)
                 .WithMany(e => e.Courses)
                 .HasForeignKey(e => e.CategoryId);

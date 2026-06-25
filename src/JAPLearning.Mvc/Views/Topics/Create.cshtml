@@ -16,6 +16,19 @@
         @Html.AntiForgeryToken()
         <div asp-validation-summary="ModelOnly" class="md-alert md-alert-danger mb-3"></div>
 
+        @if (TempData["ValidationWarnings"] is string rawWarnings)
+        {
+            <div class="md-alert md-alert-warning mb-3">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <ul style="margin:0; padding-left:18px;">
+                    @foreach (var msg in rawWarnings.Split("||"))
+                    {
+                        <li>@msg</li>
+                    }
+                </ul>
+            </div>
+        }
+
         <div class="row g-3">
 
             <!-- Equipa | Formação -->

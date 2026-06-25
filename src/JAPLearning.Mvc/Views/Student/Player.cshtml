@@ -36,7 +36,7 @@
                             <p class="player-lesson-title">@lesson.Name</p>
                             @if (lesson.TimeLesson.HasValue)
                             {
-                                <p class="player-lesson-duration">@lesson.TimeLesson.Value.ToString(@"mm\:ss")</p>
+                                <p class="player-lesson-duration">@(lesson.TimeLesson.Value.TotalHours >= 1 ? lesson.TimeLesson.Value.ToString(@"h\:mm\:ss") : lesson.TimeLesson.Value.ToString(@"mm\:ss"))</p>
                             }
                         </div>
                     </a>
@@ -151,6 +151,39 @@ else
                 Consulte o administrador ou aguarde a publicação do conteúdo.
             </p>
         </div>
+    </div>
+}
+
+<!-- Download Buttons (Snapshot + PDF) — visíveis apenas se preenchidos -->
+@if (!string.IsNullOrWhiteSpace(Model.Course.SnapshotUrl) || !string.IsNullOrWhiteSpace(Model.Course.PdfFileUrl))
+{
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:4px; margin-top:16px;">
+        @if (!string.IsNullOrWhiteSpace(Model.Course.SnapshotUrl))
+        {
+            <a asp-action="DownloadSnapshot" asp-route-courseId="@Model.Course.Id"
+               style="display:inline-flex; align-items:center; gap:8px; padding:9px 18px;
+                      background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.3);
+                      border-radius:var(--md-radius-sm); color:#818CF8; font-size:13px;
+                      font-weight:600; text-decoration:none; transition:var(--md-transition);"
+               onmouseover="this.style.background='rgba(99,102,241,0.2)'"
+               onmouseout="this.style.background='rgba(99,102,241,0.1)'">
+                <i class="bi bi-file-earmark-zip-fill"></i>
+                Download Snapshot
+            </a>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Course.PdfFileUrl))
+        {
+            <a asp-action="DownloadPdf" asp-route-courseId="@Model.Course.Id"
+               style="display:inline-flex; align-items:center; gap:8px; padding:9px 18px;
+                      background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3);
+                      border-radius:var(--md-radius-sm); color:#F87171; font-size:13px;
+                      font-weight:600; text-decoration:none; transition:var(--md-transition);"
+               onmouseover="this.style.background='rgba(239,68,68,0.2)'"
+               onmouseout="this.style.background='rgba(239,68,68,0.1)'">
+                <i class="bi bi-file-earmark-pdf-fill"></i>
+                Download PDF
+            </a>
+        }
     </div>
 }
 

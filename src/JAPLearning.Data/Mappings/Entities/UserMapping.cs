@@ -55,6 +55,15 @@ namespace JAPLearning.Data.Mappings.Entities
             builder.Property(e => e.ResetToken)
                 .HasColumnType("varchar(500)");
 
+            builder.Property(e => e.LoginCount)
+                .HasDefaultValue(0);
+
+            builder.Property(e => e.LastLoginDate)
+                .HasColumnType("datetime2");
+
+            builder.Property(e => e.MustChangePassword)
+                .HasDefaultValue(false);
+
             builder.HasOne(e => e.Role)
                 .WithMany(e => e.Users)
                 .HasForeignKey(e => e.RoleId);

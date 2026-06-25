@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using JAPLearning.Business.Interfaces.Internals.Shareds;
 using JAPLearning.Business.Interfaces.Services.Entities;
 using JAPLearning.Mvc.ViewModels.Entities;
+using System.Security.Claims;
 
 namespace JAPLearning.Mvc.Controllers
 {
@@ -20,10 +21,22 @@ namespace JAPLearning.Mvc.Controllers
             _mapper = mapper;
         }
 
+        private Guid? GetSupervisorTeamId()
+        {
+            if (!User.IsInRole("Supervisor")) return null;
+            return Guid.TryParse(User.FindFirstValue("TeamId"), out var tid) ? tid : (Guid?)null;
+        }
+
         public async Task<IActionResult> Index()
         {
             ViewData["ActiveMenu"] = "certificates";
-            var list = await _service.GetAllAsync();
+            var supervisorTeamId = GetSupervisorTeamId();
+
+            var all = await _service.GetAllAsync();
+            var list = supervisorTeamId.HasValue
+                ? all.Where(c => c.Course?.Category?.TeamId == supervisorTeamId.Value).ToList()
+                : all;
+
             return View(_mapper.Map<List<CertificateViewModel>>(list));
         }
 
@@ -33,6 +46,11 @@ namespace JAPLearning.Mvc.Controllers
             ViewData["ActiveMenu"] = "certificates";
             var entity = await _service.GetByIdAsync(id);
             if (entity == null) return NotFound();
+
+            var supervisorTeamId = GetSupervisorTeamId();
+            if (supervisorTeamId.HasValue && entity.Course?.Category?.TeamId != supervisorTeamId.Value)
+                return Forbid();
+
             return View(_mapper.Map<CertificateViewModel>(entity));
         }
     }

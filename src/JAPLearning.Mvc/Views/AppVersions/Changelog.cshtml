@@ -1,0 +1,276 @@
+@model List<JAPLearning.Business.Models.Domains.Auxiliaries.AppVersion>
+@using JAPLearning.Business.Models.Domains.Auxiliaries
+@{
+    ViewData["Title"] = "Novidades";
+    ViewData["ActiveMenu"] = "changelog";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+}
+
+<style>
+    /* ── Layout ── */
+    .changelog-layout {
+        display: grid;
+        grid-template-columns: 1fr 390px;
+        gap: 40px;
+        align-items: start;
+    }
+    @@media (max-width: 900px) {
+        .changelog-layout { grid-template-columns: 1fr; }
+        .changelog-timeline-col { display: none; }
+    }
+
+    /* ── Lista de versões ── */
+    .changelog-version {
+        border-left: 3px solid var(--md-accent);
+        padding-left: 20px;
+        margin-bottom: 40px;
+        scroll-margin-top: 80px;
+    }
+    .changelog-version-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+    }
+    .changelog-version-number {
+        font-size: 20px;
+        font-weight: 900;
+        color: var(--md-accent);
+    }
+    .changelog-version-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--md-text-primary);
+    }
+    .changelog-version-date {
+        font-size: 12px;
+        color: var(--md-text-muted);
+        margin-left: auto;
+    }
+    .changelog-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--md-border);
+    }
+    .changelog-item:last-child { border-bottom: none; }
+    .item-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        font-size: 11px; font-weight: 700; padding: 3px 9px;
+        border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+        margin-top: 2px;
+    }
+    .badge-feature     { background: rgba(99,102,241,0.12); color: #818CF8; }
+    .badge-improvement { background: rgba(34,197,94,0.12);  color: #4ADE80; }
+    .badge-fix         { background: rgba(239,68,68,0.12);  color: #F87171; }
+
+    /* ── Linha do tempo ── */
+    .changelog-timeline-col {
+        position: sticky;
+        top: 80px;
+    }
+    .timeline-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--md-text-muted);
+        margin-bottom: 18px;
+    }
+    .timeline-track {
+        position: relative;
+        padding-left: 24px;
+    }
+    .timeline-track::before {
+        content: '';
+        position: absolute;
+        left: 7px;
+        top: 10px;
+        bottom: 10px;
+        width: 2px;
+        background: linear-gradient(to bottom, var(--md-accent), rgba(232,80,26,.15));
+        border-radius: 2px;
+    }
+    .timeline-node {
+        position: relative;
+        margin-bottom: 6px;
+    }
+    .timeline-node-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        border-radius: var(--md-radius);
+        text-decoration: none;
+        transition: background .15s, transform .15s;
+        cursor: pointer;
+    }
+    .timeline-node-link:hover {
+        background: rgba(232,80,26,.08);
+        transform: translateX(2px);
+    }
+    .timeline-node-link.tl-active {
+        background: rgba(232,80,26,.12);
+    }
+    .timeline-dot {
+        position: absolute;
+        left: -24px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid var(--md-accent);
+        background: var(--md-bg-card);
+        flex-shrink: 0;
+        transition: background .15s;
+        z-index: 1;
+    }
+    .timeline-node:first-child .timeline-dot {
+        background: var(--md-accent);
+        box-shadow: 0 0 0 4px rgba(232,80,26,.18);
+    }
+    .timeline-node-link:hover .timeline-dot,
+    .timeline-node-link.tl-active .timeline-dot {
+        background: var(--md-accent);
+    }
+    .tl-version {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--md-accent);
+        white-space: nowrap;
+    }
+    .tl-meta {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+    .tl-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--md-text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .tl-date {
+        font-size: 11px;
+        color: var(--md-text-muted);
+        margin-top: 1px;
+    }
+</style>
+
+<div class="changelog-layout">
+
+    <!-- ── Coluna principal ── -->
+    <div>
+        <div style="margin-bottom:32px;">
+            <h3 style="font-weight:800; font-size:22px; margin-bottom:6px;">
+                <i class="bi bi-clock-history" style="color:var(--md-accent); margin-right:10px;"></i>
+                Novidades & Actualizações
+            </h3>
+            <p style="color:var(--md-text-muted); font-size:14px; margin:0;">
+                Histórico de melhorias, correcções e novas funcionalidades da plataforma.
+            </p>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div style="text-align:center; padding:60px; color:var(--md-text-muted);">
+                <i class="bi bi-clock-history" style="font-size:40px; display:block; margin-bottom:12px;"></i>
+                <p style="margin:0;">Ainda não há actualizações publicadas.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var v in Model)
+            {
+                <div class="changelog-version" id="version-@v.Id">
+                    <div class="changelog-version-header">
+                        <span class="changelog-version-number">v@(v.VersionNumber)</span>
+                        <span class="changelog-version-title">@v.Title</span>
+                        <span class="changelog-version-date">
+                            <i class="bi bi-calendar3" style="margin-right:4px;"></i>
+                            @v.ReleaseDate.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-PT"))
+                        </span>
+                    </div>
+
+                    @if (v.Items.Any())
+                    {
+                        <div>
+                            @foreach (var item in v.Items.OrderBy(i => i.Order))
+                            {
+                                var (badgeClass, badgeIcon, badgeLabel) = item.Type switch
+                                {
+                                    VersionItemType.Feature     => ("badge-feature",      "bi-stars",           "Novo"),
+                                    VersionItemType.Improvement => ("badge-improvement",  "bi-arrow-up-circle",  "Melhoria"),
+                                    _                           => ("badge-fix",           "bi-wrench",           "Correcção")
+                                };
+                                <div class="changelog-item">
+                                    <span class="item-badge @badgeClass">
+                                        <i class="bi @badgeIcon"></i> @badgeLabel
+                                    </span>
+                                    <p style="margin:0; font-size:14px; color:var(--md-text-primary); line-height:1.5;">
+                                        @item.Description
+                                    </p>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+
+    <!-- ── Coluna da linha do tempo ── -->
+    @if (Model.Any())
+    {
+        <div class="changelog-timeline-col">
+            <p class="timeline-label"><i class="bi bi-signpost-2 me-1"></i> Versões</p>
+            <div class="timeline-track">
+                @foreach (var v in Model)
+                {
+                    <div class="timeline-node">
+                        <a class="timeline-node-link" href="#version-@v.Id" onclick="tlActivate(this)">
+                            <div class="timeline-dot"></div>
+                            <span class="tl-version">v@(v.VersionNumber)</span>
+                            <div class="tl-meta">
+                                <span class="tl-title">@v.Title</span>
+                                <span class="tl-date">@v.ReleaseDate.ToString("MMM yyyy", new System.Globalization.CultureInfo("pt-PT"))</span>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+</div>
+
+<script>
+    function tlActivate(el) {
+        document.querySelectorAll('.timeline-node-link').forEach(n => n.classList.remove('tl-active'));
+        el.classList.add('tl-active');
+    }
+
+    // Highlight do nó activo conforme o scroll
+    (function () {
+        const nodes = Array.from(document.querySelectorAll('.timeline-node-link'));
+        if (!nodes.length) return;
+
+        nodes[0].classList.add('tl-active');
+
+        const sections = nodes.map(n => document.querySelector(n.getAttribute('href')));
+
+        window.addEventListener('scroll', () => {
+            let current = 0;
+            sections.forEach((sec, i) => {
+                if (sec && sec.getBoundingClientRect().top <= 120) current = i;
+            });
+            nodes.forEach(n => n.classList.remove('tl-active'));
+            nodes[current].classList.add('tl-active');
+        }, { passive: true });
+    })();
+</script>

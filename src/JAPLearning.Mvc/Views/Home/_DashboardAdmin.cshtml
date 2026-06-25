@@ -1,3 +1,4 @@
+@using System.Text.Json
 <style>
     .welcome-banner {
         background: linear-gradient(135deg, rgba(232,80,26,0.12) 0%, rgba(160,31,58,0.06) 100%);
@@ -37,10 +38,65 @@
         font-size: 14px;
     }
     .activity-row:last-child { border-bottom: none; }
+    .dash-tab-nav {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid var(--md-border);
+        padding-bottom: 0;
+    }
+    .dash-tab-btn {
+        padding: 10px 20px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--md-text-muted);
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        cursor: pointer;
+        transition: color .15s, border-color .15s;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+    .dash-tab-btn:hover { color: var(--md-text-secondary); }
+    .dash-tab-btn.active {
+        color: var(--md-accent);
+        border-bottom-color: var(--md-accent);
+    }
+    .chart-card {
+        background: var(--md-bg-card);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius-lg);
+        padding: 24px;
+    }
+    .chart-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--md-text-muted);
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin-bottom: 20px;
+    }
 </style>
 
 @{
-    var firstName = (User.Identity?.Name ?? "").Split(' ')[0];
+    var firstName   = (User.Identity?.Name ?? "").Split(' ')[0];
+    var topStudents = ViewBag.TopStudents as List<dynamic> ?? new List<dynamic>();
+    var topTeams    = ViewBag.TopTeams    as List<dynamic> ?? new List<dynamic>();
+    var topCourses  = ViewBag.TopCourses  as List<dynamic> ?? new List<dynamic>();
+
+    // Dados para Chart.js
+    var pieData = JsonSerializer.Serialize(
+        topStudents.Select(s => new { name = (string)s.Name, count = (int)s.Count }).ToList()
+    );
+    var barData = JsonSerializer.Serialize(
+        topCourses.Select(c => new {
+            title    = ((string)c.Title).Length > 22 ? ((string)c.Title)[..22] + "…" : (string)c.Title,
+            students = (int)c.Students
+        }).ToList()
+    );
 }
 
 <!-- Welcome -->
@@ -56,25 +112,34 @@
 
 <!-- KPIs -->
 <div class="row g-3 mb-4">
-    <div class="col-6 col-lg-3">
+    <div class="col-6 col-lg">
         <div class="kpi-card">
             <div class="kpi-icon" style="background:rgba(99,102,241,0.12); color:#818CF8;">
                 <i class="bi bi-people"></i>
             </div>
             <div class="kpi-value">@ViewBag.TotalUsers</div>
-            <div class="kpi-label">Colaboradores</div>
+            <div class="kpi-label">Alunos</div>
         </div>
     </div>
-    <div class="col-6 col-lg-3">
+    <div class="col-6 col-lg">
         <div class="kpi-card">
             <div class="kpi-icon" style="background:rgba(34,197,94,0.12); color:var(--md-success);">
                 <i class="bi bi-collection-play"></i>
             </div>
             <div class="kpi-value">@ViewBag.ActiveCourses</div>
-            <div class="kpi-label">Formações Activas</div>
+            <div class="kpi-label">Formações Disponíveis</div>
         </div>
     </div>
-    <div class="col-6 col-lg-3">
+    <div class="col-6 col-lg">
+        <div class="kpi-card">
+            <div class="kpi-icon" style="background:rgba(139,92,246,0.12); color:#A78BFA;">
+                <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div class="kpi-value">@(ViewBag.BriefCourses ?? 0)</div>
+            <div class="kpi-label">Formações em Preparação</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg">
         <div class="kpi-card">
             <div class="kpi-icon" style="background:rgba(245,158,11,0.12); color:var(--md-warning);">
                 <i class="bi bi-patch-check"></i>
@@ -83,7 +148,7 @@
             <div class="kpi-label">Certificados Emitidos</div>
         </div>
     </div>
-    <div class="col-6 col-lg-3">
+    <div class="col-6 col-lg">
         <div class="kpi-card">
             <div class="kpi-icon" style="background:rgba(232,80,26,0.12); color:var(--md-accent);">
                 <i class="bi bi-people-fill"></i>
@@ -94,109 +159,318 @@
     </div>
 </div>
 
-@{
-    var topStudents = ViewBag.TopStudents as List<dynamic> ?? new List<dynamic>();
-    var topTeams    = ViewBag.TopTeams    as List<dynamic> ?? new List<dynamic>();
-    var topCourses  = ViewBag.TopCourses  as List<dynamic> ?? new List<dynamic>();
-}
-
-<div class="row g-4">
-
-    <!-- Top 10 Alunos -->
-    <div class="col-lg-4">
-        <h5 style="font-weight:700; margin-bottom:16px; font-size:14px; text-transform:uppercase; letter-spacing:.05em; color:var(--md-text-muted);">
-            <i class="bi bi-trophy" style="color:#F59E0B; margin-right:6px;"></i> Top 10 Alunos
-        </h5>
-        <div class="md-card" style="padding:0; overflow:hidden;">
-            @if (!topStudents.Any())
-            {
-                <p style="padding:20px; font-size:13px; color:var(--md-text-muted); margin:0; font-style:italic;">Sem dados de progresso ainda.</p>
-            }
-            else
-            {
-                @for (int i = 0; i < topStudents.Count; i++)
-                {
-                    var s      = topStudents[i];
-                    var name   = (string)s.Name;
-                    var photo  = s.Photo as string;
-                    var count  = (int)s.Count;
-                    var abbr   = string.Join("", name.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => w[0].ToString().ToUpper()));
-                    var medal  = i == 0 ? "#F59E0B" : i == 1 ? "#9CA3AF" : i == 2 ? "#D97706" : "var(--md-text-muted)";
-                    <div class="activity-row" style="padding:10px 16px;">
-                        <span style="width:18px; font-size:12px; font-weight:700; color:@medal; flex-shrink:0;">@(i+1)</span>
-                        @if (!string.IsNullOrWhiteSpace(photo))
-                        {
-                            <img src="@photo" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
-                        }
-                        else
-                        {
-                            <div style="width:28px;height:28px;border-radius:50%;background:var(--md-gradient);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0;">@abbr</div>
-                        }
-                        <span style="flex:1; font-size:13px; font-weight:500; color:var(--md-text-secondary); overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">@name</span>
-                        <span style="font-size:12px; font-weight:700; color:var(--md-accent); flex-shrink:0;">@count aulas</span>
-                    </div>
-                }
-            }
-        </div>
-    </div>
-
-    <!-- Top 10 Equipas -->
-    <div class="col-lg-4">
-        <h5 style="font-weight:700; margin-bottom:16px; font-size:14px; text-transform:uppercase; letter-spacing:.05em; color:var(--md-text-muted);">
-            <i class="bi bi-people-fill" style="color:#818CF8; margin-right:6px;"></i> Top 10 Equipas
-        </h5>
-        <div class="md-card" style="padding:0; overflow:hidden;">
-            @if (!topTeams.Any())
-            {
-                <p style="padding:20px; font-size:13px; color:var(--md-text-muted); margin:0; font-style:italic;">Sem dados de progresso ainda.</p>
-            }
-            else
-            {
-                @for (int i = 0; i < topTeams.Count; i++)
-                {
-                    var t     = topTeams[i];
-                    var name  = (string)t.Name;
-                    var count = (int)t.Count;
-                    var medal = i == 0 ? "#F59E0B" : i == 1 ? "#9CA3AF" : i == 2 ? "#D97706" : "var(--md-text-muted)";
-                    var abbr  = string.Join("", name.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => w[0].ToString().ToUpper()));
-                    <div class="activity-row" style="padding:10px 16px;">
-                        <span style="width:18px; font-size:12px; font-weight:700; color:@medal; flex-shrink:0;">@(i+1)</span>
-                        <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0;">@abbr</div>
-                        <span style="flex:1; font-size:13px; font-weight:500; color:var(--md-text-secondary); overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">@name</span>
-                        <span style="font-size:12px; font-weight:700; color:#818CF8; flex-shrink:0;">@count aulas</span>
-                    </div>
-                }
-            }
-        </div>
-    </div>
-
-    <!-- Top 5 Cursos mais populares -->
-    <div class="col-lg-4">
-        <h5 style="font-weight:700; margin-bottom:16px; font-size:14px; text-transform:uppercase; letter-spacing:.05em; color:var(--md-text-muted);">
-            <i class="bi bi-collection-play" style="color:var(--md-success); margin-right:6px;"></i> Top 5 Formações
-        </h5>
-        <div class="md-card" style="padding:0; overflow:hidden;">
-            @if (!topCourses.Any())
-            {
-                <p style="padding:20px; font-size:13px; color:var(--md-text-muted); margin:0; font-style:italic;">Sem dados de progresso ainda.</p>
-            }
-            else
-            {
-                @for (int i = 0; i < topCourses.Count; i++)
-                {
-                    var c        = topCourses[i];
-                    var title    = (string)c.Title;
-                    var students = (int)c.Students;
-                    var medal    = i == 0 ? "#F59E0B" : i == 1 ? "#9CA3AF" : i == 2 ? "#D97706" : "var(--md-text-muted)";
-                    <div class="activity-row" style="padding:10px 16px;">
-                        <span style="width:18px; font-size:12px; font-weight:700; color:@medal; flex-shrink:0;">@(i+1)</span>
-                        <div style="width:28px;height:28px;border-radius:8px;background:rgba(34,197,94,0.12);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--md-success);flex-shrink:0;"><i class="bi bi-play-circle-fill"></i></div>
-                        <span style="flex:1; font-size:13px; font-weight:500; color:var(--md-text-secondary); overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">@title</span>
-                        <span style="font-size:12px; font-weight:700; color:var(--md-success); flex-shrink:0;">@students alunos</span>
-                    </div>
-                }
-            }
-        </div>
-    </div>
-
+<!-- Tabs Tops / Gráficos -->
+<div class="dash-tab-nav">
+    <button class="dash-tab-btn active" id="btnTabTops" onclick="switchDashTab('tops')">
+        <i class="bi bi-trophy"></i> Tops
+    </button>
+    <button class="dash-tab-btn" id="btnTabGraficos" onclick="switchDashTab('graficos')">
+        <i class="bi bi-bar-chart-line"></i> Gráficos
+    </button>
 </div>
+
+<!-- ── Painel TOPS ─────────────────────────────────────────────────── -->
+<div id="panelTops">
+    <div class="row g-4">
+
+        <!-- Top 7 Alunos -->
+        <div class="col-lg-4">
+            <h5 style="font-weight:700; margin-bottom:16px; font-size:14px; text-transform:uppercase; letter-spacing:.05em; color:var(--md-text-muted);">
+                <i class="bi bi-trophy" style="color:#F59E0B; margin-right:6px;"></i> Top 7 Alunos
+            </h5>
+            <div class="md-card" style="padding:0; overflow:hidden;">
+                @if (!topStudents.Any())
+                {
+                    <p style="padding:20px; font-size:13px; color:var(--md-text-muted); margin:0; font-style:italic;">Sem dados de progresso ainda.</p>
+                }
+                else
+                {
+                    @for (int i = 0; i < topStudents.Count; i++)
+                    {
+                        var s      = topStudents[i];
+                        var sid    = (Guid)s.Id;
+                        var name   = (string)s.Name;
+                        var photo  = s.Photo as string;
+                        var count  = (int)s.Count;
+                        var abbr   = string.Join("", name.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => w[0].ToString().ToUpper()));
+                        var medal  = i == 0 ? "#F59E0B" : i == 1 ? "#9CA3AF" : i == 2 ? "#D97706" : "var(--md-text-muted)";
+                        <a asp-controller="Reports" asp-action="StudentDetail" asp-route-id="@sid"
+                           class="activity-row" style="padding:10px 16px; text-decoration:none; display:flex; align-items:center; gap:10px; transition:background .15s;"
+                           onmouseover="this.style.background='var(--md-bg-hover)'" onmouseout="this.style.background=''">
+                            <span style="width:18px; font-size:12px; font-weight:700; color:@medal; flex-shrink:0;">@(i+1)</span>
+                            @if (!string.IsNullOrWhiteSpace(photo))
+                            {
+                                <img src="@photo" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+                            }
+                            else
+                            {
+                                <div style="width:28px;height:28px;border-radius:50%;background:var(--md-gradient);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0;">@abbr</div>
+                            }
+                            <span style="flex:1; font-size:13px; font-weight:500; color:var(--md-text-secondary); overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">@name</span>
+                            <span style="font-size:12px; font-weight:700; color:var(--md-accent); flex-shrink:0;">@count aulas</span>
+                            <i class="bi bi-chevron-right" style="font-size:10px; color:var(--md-text-muted); flex-shrink:0;"></i>
+                        </a>
+                    }
+                }
+            </div>
+            <div style="margin-top:10px; text-align:right;">
+                <a asp-controller="Reports" asp-action="Students" class="btn-md-ghost" style="font-size:12px; padding:6px 14px;">
+                    Ver todos <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Top 7 Equipas -->
+        <div class="col-lg-4">
+            <h5 style="font-weight:700; margin-bottom:16px; font-size:14px; text-transform:uppercase; letter-spacing:.05em; color:var(--md-text-muted);">
+                <i class="bi bi-people-fill" style="color:#818CF8; margin-right:6px;"></i> Top 7 Equipas
+            </h5>
+            <div class="md-card" style="padding:0; overflow:hidden;">
+                @if (!topTeams.Any())
+                {
+                    <p style="padding:20px; font-size:13px; color:var(--md-text-muted); margin:0; font-style:italic;">Sem dados de progresso ainda.</p>
+                }
+                else
+                {
+                    @for (int i = 0; i < topTeams.Count; i++)
+                    {
+                        var t     = topTeams[i];
+                        var name  = (string)t.Name;
+                        var count = (int)t.Count;
+                        var medal = i == 0 ? "#F59E0B" : i == 1 ? "#9CA3AF" : i == 2 ? "#D97706" : "var(--md-text-muted)";
+                        var abbr  = string.Join("", name.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => w[0].ToString().ToUpper()));
+                        <div class="activity-row" style="padding:10px 16px;">
+                            <span style="width:18px; font-size:12px; font-weight:700; color:@medal; flex-shrink:0;">@(i+1)</span>
+                            <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0;">@abbr</div>
+                            <span style="flex:1; font-size:13px; font-weight:500; color:var(--md-text-secondary); overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">@name</span>
+                            <span style="font-size:12px; font-weight:700; color:#818CF8; flex-shrink:0;">@count aulas</span>
+                        </div>
+                    }
+                }
+            </div>
+            <div style="margin-top:10px; text-align:right;">
+                <a asp-controller="Reports" asp-action="Teams" class="btn-md-ghost" style="font-size:12px; padding:6px 14px;">
+                    Ver todas <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Top 7 Formações -->
+        <div class="col-lg-4">
+            <h5 style="font-weight:700; margin-bottom:16px; font-size:14px; text-transform:uppercase; letter-spacing:.05em; color:var(--md-text-muted);">
+                <i class="bi bi-collection-play" style="color:var(--md-success); margin-right:6px;"></i> Top 7 Formações
+            </h5>
+            <div class="md-card" style="padding:0; overflow:hidden;">
+                @if (!topCourses.Any())
+                {
+                    <p style="padding:20px; font-size:13px; color:var(--md-text-muted); margin:0; font-style:italic;">Sem dados de progresso ainda.</p>
+                }
+                else
+                {
+                    @for (int i = 0; i < topCourses.Count; i++)
+                    {
+                        var c        = topCourses[i];
+                        var title    = (string)c.Title;
+                        var students = (int)c.Students;
+                        var medal    = i == 0 ? "#F59E0B" : i == 1 ? "#9CA3AF" : i == 2 ? "#D97706" : "var(--md-text-muted)";
+                        <div class="activity-row" style="padding:10px 16px;">
+                            <span style="width:18px; font-size:12px; font-weight:700; color:@medal; flex-shrink:0;">@(i+1)</span>
+                            <div style="width:28px;height:28px;border-radius:8px;background:rgba(34,197,94,0.12);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--md-success);flex-shrink:0;"><i class="bi bi-play-circle-fill"></i></div>
+                            <span style="flex:1; font-size:13px; font-weight:500; color:var(--md-text-secondary); overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">@title</span>
+                            <span style="font-size:12px; font-weight:700; color:var(--md-success); flex-shrink:0;">@students alunos</span>
+                        </div>
+                    }
+                }
+            </div>
+            <div style="margin-top:10px; text-align:right;">
+                <a asp-controller="Reports" asp-action="Courses" class="btn-md-ghost" style="font-size:12px; padding:6px 14px;">
+                    Ver todas <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ── Painel GRÁFICOS ─────────────────────────────────────────────── -->
+<div id="panelGraficos" style="display:none;">
+    <div class="row g-4">
+
+        <!-- Pizza: % aulas por aluno (top 7) -->
+        <div class="col-lg-6">
+            <div class="chart-card">
+                <div class="chart-title">
+                    <i class="bi bi-pie-chart-fill" style="color:var(--md-accent); margin-right:6px;"></i>
+                    Aulas Concluídas por Aluno
+                </div>
+                @if (!topStudents.Any())
+                {
+                    <p style="font-size:13px; color:var(--md-text-muted); font-style:italic; text-align:center; padding:40px 0;">
+                        Sem dados de progresso ainda.
+                    </p>
+                }
+                else
+                {
+                    <div style="position:relative; height:300px; display:flex; align-items:center; justify-content:center;">
+                        <canvas id="chartPieStudents"></canvas>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Barras: top 7 formações por alunos -->
+        <div class="col-lg-6">
+            <div class="chart-card">
+                <div class="chart-title">
+                    <i class="bi bi-bar-chart-fill" style="color:#818CF8; margin-right:6px;"></i>
+                    Top 7 Formações — Alunos
+                </div>
+                @if (!topCourses.Any())
+                {
+                    <p style="font-size:13px; color:var(--md-text-muted); font-style:italic; text-align:center; padding:40px 0;">
+                        Sem dados de progresso ainda.
+                    </p>
+                }
+                else
+                {
+                    <div style="position:relative; height:300px;">
+                        <canvas id="chartBarCourses"></canvas>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    const PIE_DATA = @Html.Raw(pieData);
+    const BAR_DATA = @Html.Raw(barData);
+
+    const PALETTE = [
+        '#E8501A', '#818CF8', '#22C55E', '#F59E0B',
+        '#6366F1', '#EC4899', '#14B8A6'
+    ];
+
+    const GRID_COLOR = 'rgba(42,42,74,0.8)';
+    const TICK_COLOR = '#A0A0C0';
+
+    let chartsInited = false;
+
+    window.switchDashTab = function (tab) {
+        const btnTops     = document.getElementById('btnTabTops');
+        const btnGraficos = document.getElementById('btnTabGraficos');
+        const panelTops   = document.getElementById('panelTops');
+        const panelGraf   = document.getElementById('panelGraficos');
+
+        if (tab === 'tops') {
+            btnTops.classList.add('active');
+            btnGraficos.classList.remove('active');
+            panelTops.style.display = '';
+            panelGraf.style.display = 'none';
+        } else {
+            btnGraficos.classList.add('active');
+            btnTops.classList.remove('active');
+            panelTops.style.display = 'none';
+            panelGraf.style.display = '';
+            if (!chartsInited) { initCharts(); chartsInited = true; }
+        }
+    };
+
+    function initCharts() {
+
+        // ── Pizza ─────────────────────────────────────────────────────
+        const pieCanvas = document.getElementById('chartPieStudents');
+        if (pieCanvas && PIE_DATA.length) {
+            const total = PIE_DATA.reduce((s, d) => s + d.count, 0);
+            new Chart(pieCanvas, {
+                type: 'doughnut',
+                data: {
+                    labels: PIE_DATA.map(d => d.name),
+                    datasets: [{
+                        data:            PIE_DATA.map(d => d.count),
+                        backgroundColor: PALETTE.slice(0, PIE_DATA.length),
+                        borderColor:     '#16162E',
+                        borderWidth:     3,
+                        hoverOffset:     8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '55%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color:     TICK_COLOR,
+                                padding:   14,
+                                font:      { size: 12 },
+                                boxWidth:  12,
+                                boxHeight: 12
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => {
+                                    const pct = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : 0;
+                                    return ` ${ctx.parsed} aulas (${pct}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ── Barras ────────────────────────────────────────────────────
+        const barCanvas = document.getElementById('chartBarCourses');
+        if (barCanvas && BAR_DATA.length) {
+            new Chart(barCanvas, {
+                type: 'bar',
+                data: {
+                    labels: BAR_DATA.map(d => d.title),
+                    datasets: [{
+                        label:           'Alunos',
+                        data:            BAR_DATA.map(d => d.students),
+                        backgroundColor: PALETTE.slice(0, BAR_DATA.length),
+                        borderRadius:    6,
+                        borderSkipped:   false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ` ${ctx.parsed.y} aluno(s)`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid:  { color: GRID_COLOR },
+                            ticks: {
+                                color:       TICK_COLOR,
+                                font:        { size: 11 },
+                                maxRotation: 30,
+                                minRotation: 0
+                            }
+                        },
+                        y: {
+                            grid:        { color: GRID_COLOR },
+                            ticks:       { color: TICK_COLOR, stepSize: 1, precision: 0 },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    }
+})();
+</script>

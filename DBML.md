@@ -4,8 +4,7 @@ Schema completo em formato DBML (Database Markup Language).
 Gerado a partir dos ficheiros de entidades e mappings EF Core.
 Compatível com [dbdiagram.io](https://dbdiagram.io) para visualização gráfica.
 
-> ⚠️ **Atenção:** A coluna `ScorePercent` em `E_Certificates` foi adicionada
-> manualmente via SQL (sem migração EF). Ver secção "Alterações Manuais".
+> ⚠️ **Colunas adicionadas manualmente** (sem migração EF) — ver secção "Alterações Manuais".
 
 ---
 
@@ -15,7 +14,7 @@ Compatível com [dbdiagram.io](https://dbdiagram.io) para visualização gráfic
 // ============================================================
 // JAPLearning — Database Schema
 // Engine: SQL Server
-// Gerado de: EF Core Fluent API Mappings
+// Última actualização: Sessão 10 (2026-06-05)
 // ============================================================
 
 // ── PARÂMETROS (P_) ─────────────────────────────────────────
@@ -24,7 +23,7 @@ Table P_Teams {
   Id           uniqueidentifier [pk, not null]
   Name         varchar(100)     [not null]
   Description  varchar(1000)    [null]
-  Thumbnail    nvarchar(max)    [null]
+  Thumbnail    nvarchar(500)    [null]
   IsActived    bit              [not null, default: 1]
   IsDeleted    bit              [not null, default: 0]
 }
@@ -92,26 +91,29 @@ Table P_Subjects {
 // ── ENTIDADES (E_) ───────────────────────────────────────────
 
 Table E_Users {
-  Id                uniqueidentifier [pk, not null]
-  RoleId            uniqueidentifier [not null, ref: > P_Roles.Id]
-  TeamId            uniqueidentifier [not null, ref: > P_Teams.Id]
-  FirstName         varchar(100)     [not null]
-  LastName          varchar(100)     [not null]
-  Email             varchar(150)     [not null, unique]
-  Password          varchar(500)     [not null]
-  PhoneNumber       varchar(20)      [null]
-  PhotoUrl          varchar(500)     [null]
-  Address           varchar(255)     [null]
-  Number            varchar(20)      [null]
-  City              varchar(100)     [null]
-  State             varchar(100)     [null]
-  Country           varchar(100)     [null]
-  ResetToken        varchar(500)     [null]
-  ResetTokenExpiry  datetime2        [null]
-  CreatedDate       datetime2        [not null]
-  ChangedDate       datetime2        [null]
-  IsActived         bit              [not null, default: 1]
-  IsDeleted         bit              [not null, default: 0]
+  Id                  uniqueidentifier [pk, not null]
+  RoleId              uniqueidentifier [not null, ref: > P_Roles.Id]
+  TeamId              uniqueidentifier [not null, ref: > P_Teams.Id]
+  FirstName           varchar(100)     [not null]
+  LastName            varchar(100)     [not null]
+  Email               varchar(150)     [not null, unique]
+  Password            varchar(500)     [not null]
+  PhoneNumber         varchar(20)      [null]
+  PhotoUrl            varchar(500)     [null]
+  Address             varchar(255)     [null]
+  Number              varchar(20)      [null]
+  City                varchar(100)     [null]
+  State               varchar(100)     [null]
+  Country             varchar(100)     [null]
+  ResetToken          varchar(500)     [null]
+  ResetTokenExpiry    datetime2        [null]
+  CreatedDate         datetime2        [not null]
+  ChangedDate         datetime2        [null]
+  IsActived           bit              [not null, default: 1]
+  IsDeleted           bit              [not null, default: 0]
+  LoginCount          int              [not null, default: 0, note: 'Sessão 10 — via migração EF']
+  LastLoginDate       datetime2        [null, note: 'Sessão 10 — via migração EF']
+  MustChangePassword  bit              [not null, default: 0, note: 'Sessão 10 — via migração EF; true = obriga troca no próximo login']
 
   indexes {
     Email [unique, name: 'IX_E_Users_Email']
@@ -127,6 +129,8 @@ Table E_Courses {
   Subtitle     varchar(255)     [null]
   Description  varchar(2000)    [null]
   Thumbnail    varchar(500)     [null]
+  SnapshotUrl  varchar(500)     [null, note: 'Sessão 9 — caminho relativo: snapshots/{courseId}.zip em PrivateFiles/']
+  PdfFileUrl   varchar(500)     [null, note: 'Sessão 9 — caminho relativo: pdfs/{courseId}.pdf em PrivateFiles/']
   PassingScore int              [not null, default: 60]
   IsBrief      bit              [not null, default: 0]
   IsFree       bit              [not null, default: 0]
@@ -157,7 +161,7 @@ Table E_Lessons {
   Description   varchar(500)     [null]
   TimeLesson    time             [null]
   Video         varchar(500)     [null]
-  IsTest        bit              [not null, default: 0]
+  IsTest        bit              [not null, default: 0, note: 'Não usado na lógica — detecção via Questions.Any(q => q.Options.Any())']
   IsFreePreview bit              [not null, default: 0]
   CreatedDate   datetime2        [not null]
   ChangedDate   datetime2        [null]
@@ -188,9 +192,9 @@ Table E_Certificates {
   Id             uniqueidentifier [pk, not null]
   UserId         uniqueidentifier [not null, ref: > E_Users.Id]
   CourseId       uniqueidentifier [not null, ref: > E_Courses.Id]
-  CertifiedFile  varchar(500)     [not null]
+  CertifiedFile  varchar(500)     [not null, note: 'Habitualmente vazio — certificado gerado on-demand']
   ValidationCode varchar(100)     [null, unique]
-  ScorePercent   int              [not null, default: 0, note: '⚠️ Adicionado manualmente via SQL — sem migração EF']
+  ScorePercent   int              [not null, default: 0, note: '⚠️ Adicionado manualmente via SQL (Sessão 3) — sem migração EF']
   CompletedDate  datetime2        [not null]
 
   indexes {
@@ -236,6 +240,24 @@ Table E_Articles {
   indexes {
     Slug [unique, name: 'IX_E_Articles_Slug']
   }
+}
+
+// ── VERSÕES / CHANGELOG (E_) ─────────────────────────────────
+
+Table E_AppVersions {
+  Id            uniqueidentifier [pk, not null]
+  VersionNumber varchar(20)      [not null, note: 'ex: "0.18"']
+  Title         varchar(150)     [not null, note: 'ex: "Junho 2026"']
+  ReleaseDate   datetime2        [not null]
+  IsPublished   bit              [not null, default: 0, note: 'false = rascunho; true = visível no Changelog']
+}
+
+Table E_AppVersionItems {
+  Id          uniqueidentifier [pk, not null]
+  VersionId   uniqueidentifier [not null, ref: > E_AppVersions.Id]
+  Type        int              [not null, note: '1=Feature (Novo), 2=Improvement (Melhoria), 3=Fix (Correcção)']
+  Description varchar(500)     [not null]
+  Order       int              [not null, default: 0]
 }
 
 // ── RELACIONAMENTOS (R_) ─────────────────────────────────────
@@ -284,13 +306,15 @@ Table R_RolePermissions {
 // ── AUXILIARES (A_) ──────────────────────────────────────────
 
 Table A_AuditLogs {
-  Id          uniqueidentifier [pk, not null]
-  LogLevel    int              [not null, note: 'Enum: LogType (0=Info, 1=Warning, 2=Error)']
-  CreatedBy   varchar(150)     [not null]
-  CreatedDate datetime2        [not null]
-  Message     varchar(1000)    [null]
-  StackTrace  varchar(max)     [null]
-  Json        varchar(max)     [null]
+  Id             uniqueidentifier [pk, not null]
+  UserId         uniqueidentifier [null, note: 'quem fez a acção']
+  Action         varchar(50)      [null, note: '⚠️ Adicionado manualmente (Sessão 7) — ex: Create, Update, Delete']
+  EntityName     varchar(100)     [null, note: '⚠️ Adicionado manualmente (Sessão 7) — nome da entidade afectada']
+  Entity         nvarchar(max)    [null, note: 'campo original — nome da entidade']
+  EntityId       nvarchar(max)    [null, note: 'ID da entidade afectada']
+  Details        nvarchar(max)    [null, note: 'informação adicional / StackTrace']
+  HttpStatusCode int              [null, note: '⚠️ Adicionado manualmente (Sessão 7)']
+  CreatedDate    datetime2        [not null]
 }
 ```
 
@@ -317,6 +341,14 @@ IF NOT EXISTS (
     WHERE object_id = OBJECT_ID('E_Certificates') AND name = 'ScorePercent'
 )
     ALTER TABLE E_Certificates ADD ScorePercent int NOT NULL DEFAULT 0;
+
+-- Sessão 7 — campos adicionais em A_AuditLogs
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('A_AuditLogs') AND name = 'Action')
+    ALTER TABLE A_AuditLogs ADD Action varchar(50) NULL;
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('A_AuditLogs') AND name = 'EntityName')
+    ALTER TABLE A_AuditLogs ADD EntityName varchar(100) NULL;
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('A_AuditLogs') AND name = 'HttpStatusCode')
+    ALTER TABLE A_AuditLogs ADD HttpStatusCode int NULL;
 ```
 
 ---
@@ -350,6 +382,8 @@ P_Roles >──── E_Users >────────────────�
 P_Subjects >──< E_Articles
 
 E_Courses >──< R_CourseRequirements (auto-referência)
+
+E_AppVersions >──< E_AppVersionItems
 ```
 
 ---
@@ -365,3 +399,6 @@ E_Courses >──< R_CourseRequirements (auto-referência)
 | **CertifiedFile** | Campo `NOT NULL varchar(500)` mas habitualmente vazio (`""`). O certificado é gerado on-demand pela view `CertificateView.cshtml`. |
 | **PhotoUrl nulos** | `E_Testimonials.PhotoUrl` é `NOT NULL` mas aceita string vazia. Sempre atribuir `string.Empty` no controller quando não há upload. |
 | **OnDelete Restrict** | Aplicado em `R_CourseRequirements` para evitar cascata circular entre `E_Courses`. |
+| **Login tracking** | `LoginCount` e `LastLoginDate` em `E_Users` — actualizar com `ExecuteUpdateAsync` (não `Repository.Update`). |
+| **MustChangePassword** | `true` em novos utilizadores criados pelo admin. Redireccionamento forçado para `/Account/ChangePassword` após login. |
+| **Ficheiros privados** | `SnapshotUrl` e `PdfFileUrl` em `E_Courses` são caminhos relativos dentro de `PrivateFiles/` — não URLs Cloudinary. Servidos via `PhysicalFile()` com `[Authorize]`. |

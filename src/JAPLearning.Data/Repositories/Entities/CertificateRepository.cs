@@ -14,7 +14,7 @@ namespace JAPLearning.Data.Repositories.Entities
         {
             return await DbSet.AsNoTracking()
                 .Include(c => c.User)
-                .Include(c => c.Course)
+                .Include(c => c.Course).ThenInclude(co => co.Category)
                 .OrderByDescending(c => c.CompletedDate)
                 .ToListAsync();
         }
@@ -23,7 +23,7 @@ namespace JAPLearning.Data.Repositories.Entities
         {
             return await DbSet.AsNoTracking()
                 .Include(c => c.User)
-                .Include(c => c.Course)
+                .Include(c => c.Course).ThenInclude(co => co.Category)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
     }

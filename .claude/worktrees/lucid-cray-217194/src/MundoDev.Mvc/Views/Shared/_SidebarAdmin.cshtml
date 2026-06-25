@@ -1,0 +1,89 @@
+@{
+    var active = ViewData["ActiveMenu"]?.ToString() ?? "";
+}
+
+<div class="sidebar-section">
+    <p class="sidebar-section-title">Principal</p>
+    <a asp-controller="Home" asp-action="Index" class="sidebar-item @(active == "dashboard" ? "active" : "")">
+        <i class="bi bi-grid-1x2"></i> Dashboard
+    </a>
+    <a asp-controller="Users" asp-action="Index" class="sidebar-item @(active == "users" ? "active" : "")">
+        <i class="bi bi-people"></i> Utilizadores
+    </a>
+    <a asp-controller="Courses" asp-action="Index" class="sidebar-item @(active == "courses" ? "active" : "")">
+        <i class="bi bi-collection-play"></i> Cursos
+    </a>
+</div>
+
+<div class="sidebar-section">
+    <p class="sidebar-section-title">Conteúdo</p>
+    <a asp-controller="Topics" asp-action="Index" class="sidebar-item @(active == "topics" ? "active" : "")">
+        <i class="bi bi-folder2-open"></i> Tópicos
+    </a>
+    <a asp-controller="Lessons" asp-action="Index" class="sidebar-item @(active == "lessons" ? "active" : "")">
+        <i class="bi bi-play-circle"></i> Lições
+    </a>
+    <a asp-controller="Articles" asp-action="Index" class="sidebar-item @(active == "articles" ? "active" : "")">
+        <i class="bi bi-file-earmark-text"></i> Artigos
+    </a>
+    <a asp-controller="Questions" asp-action="Index" class="sidebar-item @(active == "questions" ? "active" : "")">
+        <i class="bi bi-question-circle"></i> Questões
+    </a>
+    <a asp-controller="QuestionOptions" asp-action="Index" class="sidebar-item @(active == "questionoptions" ? "active" : "")">
+        <i class="bi bi-ui-radios"></i> Opções de Questão
+    </a>
+    <a asp-controller="Testimonials" asp-action="Index" class="sidebar-item @(active == "testimonials" ? "active" : "")">
+        <i class="bi bi-chat-quote"></i> Testemunhos
+    </a>
+    <a asp-controller="Certificates" asp-action="Index" class="sidebar-item @(active == "certificates" ? "active" : "")">
+        <i class="bi bi-award"></i> Certificados
+    </a>
+</div>
+
+<div class="sidebar-section">
+    <p class="sidebar-section-title">Comercial</p>
+    <a asp-controller="Plans" asp-action="Index" class="sidebar-item @(active == "plans" ? "active" : "")">
+        <i class="bi bi-patch-check"></i> Planos
+    </a>
+    <a asp-controller="Orders" asp-action="Index" class="sidebar-item @(active == "orders" ? "active" : "")">
+        <i class="bi bi-bag-check"></i> Pedidos
+    </a>
+    <a asp-controller="Payments" asp-action="Index" class="sidebar-item @(active == "payments" ? "active" : "")">
+        <i class="bi bi-credit-card"></i> Pagamentos
+    </a>
+</div>
+
+<div class="sidebar-section">
+    <p class="sidebar-section-title">Parâmetros</p>
+    <a asp-controller="Categories" asp-action="Index" class="sidebar-item @(active == "categories" ? "active" : "")">
+        <i class="bi bi-tags"></i> Categorias
+    </a>
+    <a asp-controller="Levels" asp-action="Index" class="sidebar-item @(active == "levels" ? "active" : "")">
+        <i class="bi bi-bar-chart-steps"></i> Níveis
+    </a>
+    <a asp-controller="Subjects" asp-action="Index" class="sidebar-item @(active == "subjects" ? "active" : "")">
+        <i class="bi bi-journal-bookmark"></i> Assuntos
+    </a>
+    <a asp-controller="Teachers" asp-action="Index" class="sidebar-item @(active == "teachers" ? "active" : "")">
+        <i class="bi bi-person-video3"></i> Professores
+    </a>
+    <a asp-controller="OrderStatus" asp-action="Index" class="sidebar-item @(active == "orderstatus" ? "active" : "")">
+        <i class="bi bi-flag"></i> Estados Pedido
+    </a>
+</div>
+
+@if (User.IsInRole("Administrador"))
+{
+    <div class="sidebar-section">
+        <p class="sidebar-section-title">Administração</p>
+        <a asp-controller="Roles" asp-action="Index" class="sidebar-item @(active == "roles" ? "active" : "")">
+            <i class="bi bi-shield-check"></i> Perfis
+        </a>
+        <a asp-controller="Modules" asp-action="Index" class="sidebar-item @(active == "modules" ? "active" : "")">
+            <i class="bi bi-grid-3x3-gap"></i> Módulos
+        </a>
+        <a asp-controller="Permissions" asp-action="Index" class="sidebar-item @(active == "permissions" ? "active" : "")">
+            <i class="bi bi-key"></i> Permissões
+        </a>
+    </div>
+}

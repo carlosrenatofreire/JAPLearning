@@ -36,5 +36,18 @@ namespace JAPLearning.Data.Repositories.Entities
                 .Include(u => u.Team)
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
+
+        /// <summary>
+        /// UPDATE cirúrgico — só toca em LoginCount e LastLoginDate.
+        /// Garante que MustChangePassword não é sobrescrito acidentalmente.
+        /// </summary>
+        public async Task<int> RecordLoginDirect(Guid userId, DateTime loginDate)
+        {
+            return await DbSet
+                .Where(u => u.Id == userId)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(u => u.LoginCount,    u => u.LoginCount + 1)
+                    .SetProperty(u => u.LastLoginDate, loginDate));
+        }
     }
 }

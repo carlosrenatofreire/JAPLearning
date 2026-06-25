@@ -1,0 +1,156 @@
+@{
+    ViewData["Title"] = "Categorias";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+
+    var categories = new[] {
+        new {
+            Key = "arquitetura",
+            Title = "Arquitetura",
+            Subtitle = "Projetos reais corporativos",
+            Description = "Sistemas completos do zero — modelagem, C4 Model, banco de dados, APIs e padrões corporativos com .NET. Projetos de negócio que se transformam em ativos tecnológicos.",
+            Icon = "bi-diagram-3",
+            Projects = 7,
+            Lessons = 326,
+            Hours = "37h",
+            BgColor = "rgba(232,80,26,0.12)",
+            BorderColor = "rgba(232,80,26,0.3)",
+            IconColor = "var(--md-accent)",
+            Badge = "Mais Popular",
+            BadgeClass = "md-badge-accent",
+            Filter = "arquitetura"
+        },
+        new {
+            Key = "fundamentos",
+            Title = "Fundamentos",
+            Subtitle = "A base que todo arquiteto precisa",
+            Description = "Conceitos essenciais antes de desenhar sistemas — princípios de arquitetura, C4 Model e raciocínio técnico de quem lidera. Comece aqui, gratuitamente.",
+            Icon = "bi-mortarboard",
+            Projects = 2,
+            Lessons = 20,
+            Hours = "5h",
+            BgColor = "rgba(99,102,241,0.12)",
+            BorderColor = "rgba(99,102,241,0.3)",
+            IconColor = "#818cf8",
+            Badge = "Grátis",
+            BadgeClass = "md-badge-success",
+            Filter = "fundamentos"
+        },
+        new {
+            Key = "desenvolvimento",
+            Title = "Desenvolvimento",
+            Subtitle = "Técnicas e padrões de código",
+            Description = "Práticas modernas, padrões de design e arquitetura de código que separam um dev de um arquiteto. Foco na qualidade, manutenção e evolução de sistemas reais.",
+            Icon = "bi-code-slash",
+            Projects = 1,
+            Lessons = 18,
+            Hours = "2h 30min",
+            BgColor = "rgba(34,197,94,0.12)",
+            BorderColor = "rgba(34,197,94,0.3)",
+            IconColor = "#4ade80",
+            Badge = "",
+            BadgeClass = "",
+            Filter = "desenvolvimento"
+        }
+    };
+}
+
+<style>
+    .cat-card {
+        display: block;
+        height: 100%;
+        background: var(--md-bg-card);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius-lg);
+        padding: 28px;
+        text-decoration: none;
+        transition: var(--md-transition);
+        position: relative;
+        overflow: hidden;
+    }
+    .cat-card::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 4px;
+        background: var(--cat-accent);
+    }
+    .cat-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--cat-border);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+    }
+    .cat-icon {
+        width: 64px; height: 64px;
+        border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 28px;
+        flex-shrink: 0;
+        margin-bottom: 18px;
+    }
+    .cat-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--md-text-primary);
+        margin: 0 0 4px;
+    }
+    .cat-subtitle {
+        font-size: 13px;
+        font-weight: 600;
+        margin: 0 0 14px;
+    }
+    .cat-desc {
+        font-size: 14px;
+        color: var(--md-text-secondary);
+        line-height: 1.6;
+        margin: 0 0 20px;
+    }
+    .cat-stats {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        font-size: 13px;
+        color: var(--md-text-muted);
+        padding-top: 18px;
+        border-top: 1px solid var(--md-border-light);
+    }
+    .cat-stats span { display: flex; align-items: center; gap: 6px; }
+</style>
+
+<div class="container">
+    <div style="padding: 60px 0 40px; border-bottom: 1px solid var(--md-border); margin-bottom: 48px;">
+        <p style="color:var(--md-accent); font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px;">Catálogo</p>
+        <h1 style="font-size:38px; font-weight:900; margin-bottom:12px;">Categorias</h1>
+        <p style="color:var(--md-text-secondary); font-size:16px; max-width:560px; margin:0;">
+            Três trilhas que organizam o conteúdo: dos fundamentos à arquitetura corporativa, passando pelo desenvolvimento de qualidade.
+        </p>
+    </div>
+
+    <div class="row g-4 mb-5">
+        @foreach (var c in categories)
+        {
+            <div class="col-md-6 col-lg-4">
+                <a asp-controller="Projects" asp-action="Index" asp-fragment="@c.Filter"
+                   class="cat-card"
+                   style="--cat-accent:@c.IconColor; --cat-border:@c.BorderColor;">
+                    <div class="cat-icon" style="background:@c.BgColor; color:@c.IconColor;">
+                        <i class="bi @c.Icon"></i>
+                    </div>
+                    <h5 class="cat-title">@c.Title</h5>
+                    <p class="cat-subtitle" style="color:@c.IconColor;">@c.Subtitle</p>
+                    <p class="cat-desc">@c.Description</p>
+                    @if (!string.IsNullOrEmpty(c.Badge))
+                    {
+                        <div style="margin-bottom:18px;">
+                            <span class="md-badge @c.BadgeClass">@c.Badge</span>
+                        </div>
+                    }
+                    <div class="cat-stats">
+                        <span><i class="bi bi-collection"></i> @c.Projects @(c.Projects == 1 ? "projeto" : "projetos")</span>
+                        <span><i class="bi bi-play-circle"></i> @c.Lessons aulas</span>
+                        <span><i class="bi bi-clock"></i> @c.Hours</span>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>

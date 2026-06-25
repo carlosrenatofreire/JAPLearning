@@ -3,7 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] — JAPLearning</title>
+    <title>JL | @(ViewData["Title"] ?? "JAPLearning")</title>
+    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" />
+    <link rel="shortcut icon" href="~/favicon.svg" />
     <meta name="description" content="@(ViewData["Description"] ?? "A plataforma de aprendizagem interna do Grupo JAP")" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -116,6 +118,7 @@
             <ul class="md-nav-links">
                 <li><a asp-controller="Home" asp-action="Courses">Formações</a></li>
                 <li><a asp-controller="Home" asp-action="Blog">Artigos</a></li>
+                <li><a asp-controller="Home" asp-action="PorqueFormacao">Porquê Formar?</a></li>
                 <li><a asp-controller="Home" asp-action="About">Quem Somos</a></li>
             </ul>
 

@@ -4,9 +4,13 @@
     Layout = "~/Views/Shared/_LayoutApp.cshtml";
 }
 
-@if (User.IsInRole("Administrador") || User.IsInRole("Supervisor"))
+@if (User.IsInRole("Administrador"))
 {
     @await Html.PartialAsync("_DashboardAdmin")
+}
+else if (User.IsInRole("Supervisor"))
+{
+    @await Html.PartialAsync("_DashboardSupervisor")
 }
 else
 {

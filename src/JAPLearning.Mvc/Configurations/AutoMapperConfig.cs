@@ -14,6 +14,12 @@ namespace JAPLearning.Mvc.Configurations
             services.AddAutoMapper(cfg =>
             {
                 // Parameters (bidirectional)
+                cfg.CreateMap<Module, ModuleViewModel>().ReverseMap();
+                cfg.CreateMap<Permission, PermissionViewModel>()
+                    .ForMember(d => d.ModuleName, o => o.MapFrom(s => s.Module != null ? s.Module.Name : string.Empty))
+                    .ReverseMap()
+                    .ForMember(d => d.Module, o => o.Ignore())
+                    .ForMember(d => d.RolePermissions, o => o.Ignore());
                 cfg.CreateMap<Role, RoleViewModel>().ReverseMap();
                 cfg.CreateMap<Category, CategoryViewModel>()
                     .ForMember(d => d.TeamName, o => o.MapFrom(s => s.Team != null ? s.Team.Name : string.Empty))

@@ -1,0 +1,376 @@
+@using JAPLearning.Business.Models.Domains.Entities
+@{
+    ViewData["Title"] = "Detalhe do Aluno";
+    var user            = (User)ViewBag.User;
+    var teamName        = (string)ViewBag.TeamName;
+    var totalLess       = (int)ViewBag.TotalLessons;
+    var hoursLabel      = (string)ViewBag.HoursLabel;
+    var totalCerts      = (int)ViewBag.TotalCerts;
+    var coursesCount    = (int)ViewBag.CoursesCount;
+    var courseRows      = ViewBag.CourseRows      as List<dynamic> ?? new();
+    var lessonsByCourse = ViewBag.LessonsByCourse as Dictionary<Guid, List<dynamic>> ?? new Dictionary<Guid, List<dynamic>>();
+    var certs           = ViewBag.Certs           as List<dynamic> ?? new();
+
+    var fullName = $"{user.FirstName} {user.LastName}".Trim();
+    var abbr     = string.Join("", fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                       .Take(2).Select(w => w[0].ToString().ToUpper()));
+}
+@await Html.PartialAsync("_CrudStyles")
+
+<style>
+    .sd-header {
+        background: var(--md-bg-card);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius-lg);
+        padding: 28px 32px;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+    .sd-avatar {
+        width: 72px; height: 72px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    .sd-avatar-abbr {
+        width: 72px; height: 72px;
+        border-radius: 50%;
+        background: var(--md-gradient);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 24px; font-weight: 800; color: #fff;
+        flex-shrink: 0;
+    }
+    .sd-name    { font-size: 20px; font-weight: 800; color: var(--md-text-primary); margin: 0 0 4px; }
+    .sd-meta    { font-size: 13px; color: var(--md-text-muted); display: flex; flex-wrap: wrap; gap: 16px; margin-top: 6px; }
+    .sd-meta span { display: flex; align-items: center; gap: 5px; }
+    .sd-badge   {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+    }
+    .sd-badge.active   { background: rgba(34,197,94,0.12);  color: var(--md-success); }
+    .sd-badge.inactive { background: rgba(239,68,68,0.10);  color: var(--md-danger); }
+    .sd-kpi-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+    @@media (max-width: 768px) { .sd-kpi-row { grid-template-columns: repeat(2,1fr); } }
+    .sd-kpi {
+        background: var(--md-bg-card);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius);
+        padding: 18px 20px;
+    }
+    .sd-kpi-icon  { font-size: 20px; margin-bottom: 10px; }
+    .sd-kpi-val   { font-size: 26px; font-weight: 800; color: var(--md-text-primary); line-height: 1; }
+    .sd-kpi-label { font-size: 12px; color: var(--md-text-muted); margin-top: 4px; }
+    .sd-section-title {
+        font-size: 13px; font-weight: 700; color: var(--md-text-muted);
+        text-transform: uppercase; letter-spacing: .05em;
+        margin-bottom: 14px; display: flex; align-items: center; gap: 7px;
+    }
+    .sd-course-card {
+        background: var(--md-bg-card);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius);
+        padding: 14px 16px;
+        display: flex; align-items: center; gap: 14px;
+        margin-bottom: 10px;
+    }
+    .sd-course-thumb {
+        width: 52px; height: 52px; border-radius: var(--md-radius-sm);
+        background: var(--md-bg-secondary);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px; color: var(--md-border); flex-shrink: 0; overflow: hidden;
+    }
+    .sd-course-thumb img { width:100%; height:100%; object-fit:cover; border-radius: var(--md-radius-sm); }
+    .sd-cert-row {
+        display: flex; align-items: center; gap: 14px;
+        padding: 12px 16px;
+        background: var(--md-bg-card);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius);
+        margin-bottom: 8px;
+    }
+    .sd-toggle-btn {
+        background: none; border: none; cursor: pointer;
+        display: flex; align-items: center; gap: 5px;
+        font-size: 12px; color: var(--md-text-muted); padding: 0;
+        transition: color .15s;
+    }
+    .sd-toggle-btn:hover { color: var(--md-accent); }
+    .sd-toggle-btn .bi { transition: transform .2s; }
+    .sd-toggle-btn.open .bi { transform: rotate(180deg); }
+    .sd-lessons-panel {
+        display: none;
+        border-top: 1px solid var(--md-border);
+        margin-top: 12px; padding-top: 10px;
+    }
+    .sd-lesson-row {
+        display: flex; align-items: center; gap: 10px;
+        padding: 7px 0;
+        border-bottom: 1px solid var(--md-border);
+        font-size: 13px;
+    }
+    .sd-lesson-row:last-child { border-bottom: none; }
+    .sd-lesson-num {
+        width: 22px; font-size: 11px; font-weight: 700;
+        color: var(--md-text-muted); flex-shrink: 0; text-align: center;
+    }
+    .sd-lesson-icon { font-size: 14px; flex-shrink: 0; }
+    .sd-lesson-name { flex: 1; color: var(--md-text-secondary); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .sd-lesson-dur  { font-size: 11px; color: var(--md-text-muted); flex-shrink: 0; }
+    .sd-lesson-date { font-size: 11px; color: var(--md-text-muted); flex-shrink: 0; min-width: 90px; text-align: right; }
+</style>
+
+<!-- Cabeçalho da página -->
+<div class="page-header">
+    <div>
+        <h4 class="page-header-title">Detalhe do Aluno</h4>
+        <p class="page-header-sub">
+            <a asp-controller="Home" asp-action="Index" style="color:var(--md-text-muted);">Dashboard</a>
+            <i class="bi bi-chevron-right" style="font-size:10px;"></i>
+            <a asp-action="Students" style="color:var(--md-text-muted);">Alunos</a>
+            <i class="bi bi-chevron-right" style="font-size:10px;"></i>
+            @fullName
+        </p>
+    </div>
+    <a asp-action="Students" class="btn-md-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+</div>
+
+<!-- Header card -->
+<div class="sd-header">
+    @if (!string.IsNullOrWhiteSpace(user.PhotoUrl))
+    {
+        <img src="@user.PhotoUrl" class="sd-avatar" alt="@fullName" />
+    }
+    else
+    {
+        <div class="sd-avatar-abbr">@abbr</div>
+    }
+
+    <div style="flex:1; min-width:0;">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <h5 class="sd-name">@fullName</h5>
+            @if (user.IsActived)
+            {
+                <span class="sd-badge active"><i class="bi bi-check-circle-fill"></i> Activo</span>
+            }
+            else
+            {
+                <span class="sd-badge inactive"><i class="bi bi-x-circle-fill"></i> Inactivo</span>
+            }
+        </div>
+        <div class="sd-meta">
+            <span><i class="bi bi-envelope"></i> @user.Email</span>
+            <span><i class="bi bi-people"></i> @teamName</span>
+            @if (user.LastLoginDate.HasValue)
+            {
+                <span><i class="bi bi-box-arrow-in-right"></i> Último login: @user.LastLoginDate.Value.ToString("dd MMM yyyy, HH:mm")</span>
+                <span><i class="bi bi-arrow-repeat"></i> @user.LoginCount login(s)</span>
+            }
+            else
+            {
+                <span style="color:var(--md-text-muted); font-style:italic;"><i class="bi bi-dash-circle"></i> Nunca fez login</span>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- KPIs -->
+<div class="sd-kpi-row">
+    <div class="sd-kpi">
+        <div class="sd-kpi-icon" style="color:#818CF8;"><i class="bi bi-collection-play-fill"></i></div>
+        <div class="sd-kpi-val">@coursesCount</div>
+        <div class="sd-kpi-label">Formações Iniciadas</div>
+    </div>
+    <div class="sd-kpi">
+        <div class="sd-kpi-icon" style="color:var(--md-accent);"><i class="bi bi-journal-check"></i></div>
+        <div class="sd-kpi-val">@totalLess</div>
+        <div class="sd-kpi-label">Aulas Concluídas</div>
+    </div>
+    <div class="sd-kpi">
+        <div class="sd-kpi-icon" style="color:var(--md-warning);"><i class="bi bi-clock-history"></i></div>
+        <div class="sd-kpi-val" style="font-size:@(hoursLabel.Length > 5 ? "20px" : "26px");">@hoursLabel</div>
+        <div class="sd-kpi-label">Horas Assistidas</div>
+    </div>
+    <div class="sd-kpi">
+        <div class="sd-kpi-icon" style="color:var(--md-success);"><i class="bi bi-patch-check-fill"></i></div>
+        <div class="sd-kpi-val">@totalCerts</div>
+        <div class="sd-kpi-label">Certificados</div>
+    </div>
+</div>
+
+<!-- Progresso por Formação -->
+<div class="sd-section-title">
+    <i class="bi bi-bar-chart-steps" style="color:var(--md-accent);"></i> Progresso por Formação
+</div>
+
+@if (!courseRows.Any())
+{
+    <div style="text-align:center; padding:40px; color:var(--md-text-muted); background:var(--md-bg-card); border:1px solid var(--md-border); border-radius:var(--md-radius); margin-bottom:24px;">
+        <i class="bi bi-play-circle" style="font-size:36px; display:block; margin-bottom:10px;"></i>
+        <p style="margin:0;">Este aluno ainda não iniciou nenhuma formação.</p>
+    </div>
+}
+else
+{
+    <div style="margin-bottom: 28px;">
+        @{ int courseIdx = 0; }
+        @foreach (var row in courseRows)
+        {
+            var hasCert    = (bool)row.HasCert;
+            var pct        = (int)row.Pct;
+            var barColor   = pct >= 100 ? "var(--md-success)" : pct >= 60 ? "var(--md-warning)" : "var(--md-accent)";
+            var courseId   = (Guid)row.CourseId;
+            var panelId    = $"lp-{courseIdx}";
+            var btnId      = $"lb-{courseIdx}";
+            lessonsByCourse.TryGetValue(courseId, out var courseLessons);
+            courseLessons ??= new();
+            courseIdx++;
+
+            <div class="sd-course-card" style="flex-direction:column; align-items:stretch; padding:14px 16px;">
+                <!-- linha principal -->
+                <div style="display:flex; align-items:center; gap:14px;">
+                    <div class="sd-course-thumb">
+                        @if (!string.IsNullOrWhiteSpace((string?)row.Thumbnail))
+                        {
+                            <img src="@row.Thumbnail" alt="@row.Title" />
+                        }
+                        else
+                        {
+                            <i class="bi bi-code-square"></i>
+                        }
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <p style="font-weight:600; font-size:14px; color:var(--md-text-primary); margin:0 0 3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            @row.Title
+                        </p>
+                        <p style="font-size:12px; color:var(--md-text-muted); margin:0 0 8px;">
+                            @row.Done de @row.Total aulas concluídas
+                        </p>
+                        <div class="md-progress">
+                            <div class="md-progress-bar" style="width:@(pct)%; background:@barColor;"></div>
+                        </div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0; min-width:80px;">
+                        @if (hasCert)
+                        {
+                            <span style="font-size:12px; font-weight:700; color:var(--md-success);">
+                                <i class="bi bi-patch-check-fill"></i> Concluído
+                            </span>
+                            <span style="font-size:11px; color:var(--md-text-muted);">Nota: @(row.ScorePct)%</span>
+                        }
+                        else
+                        {
+                            <span style="font-size:13px; font-weight:700; color:@barColor;">@pct%</span>
+                        }
+                        @if (courseLessons.Any())
+                        {
+                            <button id="@btnId" class="sd-toggle-btn" onclick="toggleLessons('@panelId','@btnId')">
+                                Ver aulas <i class="bi bi-chevron-down"></i>
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- painel de tópicos + lições (colapsável) -->
+                @if (courseLessons.Any())
+                {
+                    <div id="@panelId" class="sd-lessons-panel">
+                        @{ int lessonGlobalIdx = 1; }
+                        @foreach (var topicGroup in courseLessons)
+                        {
+                            var topicName    = (string)topicGroup.TopicName;
+                            var topicLessons = topicGroup.Lessons as List<dynamic> ?? new();
+                            <!-- cabeçalho de módulo -->
+                            <div style="font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+                                        color:var(--md-text-muted); padding:10px 0 6px;
+                                        border-bottom:1px solid var(--md-border); margin-bottom:2px;">
+                                @topicName
+                            </div>
+                            @foreach (var lesson in topicLessons)
+                            {
+                                var isDone   = (bool)lesson.IsDone;
+                                var iconCol  = isDone ? "var(--md-success)" : "var(--md-border)";
+                                var icon     = isDone ? "bi-check-circle-fill" : "bi-circle";
+                                var nameCol  = isDone ? "var(--md-text-primary)" : "var(--md-text-muted)";
+                                var doneDate = lesson.DoneDate as DateTime?;
+                                <div class="sd-lesson-row">
+                                    <span class="sd-lesson-num">@(lessonGlobalIdx++)</span>
+                                    <i class="bi @icon sd-lesson-icon" style="color:@iconCol;"></i>
+                                    <span class="sd-lesson-name" style="color:@nameCol;">@lesson.Name</span>
+                                    @if (lesson.Duration != null)
+                                    {
+                                        <span class="sd-lesson-dur"><i class="bi bi-clock" style="margin-right:2px;"></i>@lesson.Duration</span>
+                                    }
+                                    <span class="sd-lesson-date">
+                                        @if (doneDate.HasValue)
+                                        {
+                                            @doneDate.Value.ToString("dd MMM yyyy")
+                                        }
+                                        else
+                                        {
+                                            <span style="font-style:italic;">Por concluir</span>
+                                        }
+                                    </span>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+
+<!-- Certificados -->
+@if (certs.Any())
+{
+    <div class="sd-section-title" style="margin-top:8px;">
+        <i class="bi bi-award-fill" style="color:var(--md-warning);"></i> Certificados Obtidos
+    </div>
+    <div style="margin-bottom: 28px;">
+        @foreach (var cert in certs)
+        {
+            var score      = (int)cert.ScorePercent;
+            var scoreColor = score >= 80 ? "var(--md-success)" : score >= 60 ? "var(--md-warning)" : "var(--md-danger)";
+            <div class="sd-cert-row">
+                <div style="width:40px; height:40px; border-radius:10px; background:rgba(245,158,11,0.12); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <i class="bi bi-patch-check-fill" style="color:var(--md-warning); font-size:18px;"></i>
+                </div>
+                <div style="flex:1; min-width:0;">
+                    <p style="font-weight:600; font-size:14px; color:var(--md-text-primary); margin:0 0 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        @cert.CourseTitle
+                    </p>
+                    <p style="font-size:12px; color:var(--md-text-muted); margin:0;">
+                        Emitido em @(((DateTime)cert.CompletedDate).ToString("dd MMM yyyy"))
+                        &nbsp;·&nbsp;
+                        Código: <code style="font-size:11px; color:var(--md-text-muted);">@cert.ValidationCode</code>
+                    </p>
+                </div>
+                <div style="text-align:right; flex-shrink:0;">
+                    <span style="font-size:18px; font-weight:800; color:@scoreColor;">@score%</span>
+                    <br/>
+                    <span style="font-size:10px; color:var(--md-text-muted);">nota final</span>
+                </div>
+                <a asp-controller="Certificates" asp-action="Details" asp-route-id="@cert.Id"
+                   class="action-btn" title="Ver certificado" style="margin-left:8px;">
+                    <i class="bi bi-eye"></i>
+                </a>
+            </div>
+        }
+    </div>
+}
+
+<script>
+    function toggleLessons(panelId, btnId) {
+        var panel = document.getElementById(panelId);
+        var btn   = document.getElementById(btnId);
+        var open  = panel.style.display === 'block';
+        panel.style.display = open ? 'none' : 'block';
+        btn.classList.toggle('open', !open);
+        btn.innerHTML = (!open ? 'Ocultar aulas' : 'Ver aulas') + ' <i class="bi bi-chevron-down"></i>';
+    }
+</script>

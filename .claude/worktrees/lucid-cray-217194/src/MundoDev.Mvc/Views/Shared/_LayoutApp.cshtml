@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — MundoDev</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/mundodev.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+    <style>
+        body { margin: 0; }
+
+        /* ── App Shell ──────────────────────────────────────── */
+        .app-shell { display: flex; min-height: 100vh; }
+
+        /* ── Sidebar ────────────────────────────────────────── */
+        .app-sidebar {
+            width: 240px;
+            background: var(--md-bg-sidebar);
+            border-right: 1px solid var(--md-border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            z-index: 100;
+            overflow-y: auto;
+        }
+        .sidebar-brand {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid var(--md-border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+        .sidebar-brand .brand-icon {
+            width: 30px; height: 30px;
+            background: var(--md-gradient);
+            border-radius: 7px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 13px; color: #fff;
+        }
+        .sidebar-brand .brand-name {
+            font-size: 16px; font-weight: 800;
+            color: var(--md-text-primary);
+        }
+        .sidebar-brand .brand-name span { color: var(--md-accent); }
+
+        .sidebar-nav { padding: 16px 12px; flex: 1; }
+        .sidebar-section { margin-bottom: 24px; }
+        .sidebar-section-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--md-text-muted);
+            padding: 0 10px;
+            margin-bottom: 6px;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: var(--md-radius-sm);
+            color: var(--md-text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--md-transition);
+            margin-bottom: 2px;
+        }
+        .sidebar-item i { font-size: 16px; flex-shrink: 0; }
+        .sidebar-item:hover { background: rgba(255,255,255,0.05); color: var(--md-text-primary); }
+        .sidebar-item.active {
+            background: rgba(232,80,26,0.12);
+            color: var(--md-accent);
+        }
+        .sidebar-item.active i { color: var(--md-accent); }
+
+        .sidebar-footer {
+            padding: 16px 12px;
+            border-top: 1px solid var(--md-border);
+        }
+
+        /* ── Topbar ─────────────────────────────────────────── */
+        .topbar-right { display: flex; align-items: center; gap: 4px; }
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: var(--md-radius-sm);
+            transition: var(--md-transition);
+            text-decoration: none;
+            height: 56px;
+        }
+        .topbar-user:hover { background: rgba(255,255,255,0.05); }
+        .topbar-user-info { display: flex; flex-direction: column; justify-content: center; line-height: 1.25; }
+        .topbar-user-name { font-size: 13px; font-weight: 600; color: var(--md-text-primary); white-space: nowrap; }
+        .topbar-user-role { font-size: 11px; color: var(--md-text-muted); }
+        .topbar-logout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px; height: 36px;
+            border-radius: var(--md-radius-sm);
+            color: var(--md-danger);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: var(--md-transition);
+            font-size: 16px;
+        }
+        .topbar-logout:hover { background: rgba(220,53,69,0.12); color: var(--md-danger); }
+
+        /* ── Main ───────────────────────────────────────────── */
+        .app-main {
+            margin-left: 240px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .app-topbar {
+            height: 56px;
+            background: rgba(13,13,26,0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--md-border);
+            display: flex;
+            align-items: center;
+            padding: 0 28px;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .app-topbar-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--md-text-primary);
+            flex: 1;
+        }
+        .app-content { padding: 32px 28px; flex: 1; }
+
+        /* ── Hamburger ──────────────────────────────────────── */
+        .topbar-hamburger {
+            display: none;
+            background: none;
+            border: 1px solid var(--md-border);
+            border-radius: var(--md-radius-sm);
+            padding: 6px 10px;
+            color: var(--md-text-primary);
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            margin-right: 4px;
+        }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+        .sidebar-overlay.show { display: block; }
+
+        @@media (max-width: 768px) {
+            .app-sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+            .app-sidebar.open { transform: translateX(0); }
+            .app-main { margin-left: 0; }
+            .topbar-hamburger { display: inline-flex; align-items: center; justify-content: center; }
+            .topbar-user-info { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <div class="app-shell">
+
+        <!-- Sidebar -->
+        <aside class="app-sidebar" id="appSidebar">
+            <a class="sidebar-brand" asp-controller="Home" asp-action="Index">
+                <div class="brand-icon">&lt;/&gt;</div>
+                <span class="brand-name">Mundo<span>Dev</span></span>
+            </a>
+            <nav class="sidebar-nav">
+                @await Html.PartialAsync("_Sidebar")
+            </nav>
+            <div class="sidebar-footer"></div>
+        </aside>
+
+        <!-- Main -->
+        <div class="app-main">
+            <div class="app-topbar">
+                <button class="topbar-hamburger" onclick="toggleSidebar()">
+                    <i class="bi bi-list" id="sidebarToggleIcon"></i>
+                </button>
+                <span class="app-topbar-title">@(ViewData["Title"] ?? "MundoDev")</span>
+                <div class="topbar-right">
+                    @{
+                        var fullName   = User.Identity?.Name ?? "";
+                        var initials   = string.Join("", fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                              .Take(2).Select(w => w[0].ToString().ToUpper()));
+                        var roleName   = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
+                        var subLabel   = ViewBag.PlanName as string ?? roleName;
+                        var photoUrl   = User.FindFirst("PhotoUrl")?.Value;
+                    }
+                    <a asp-controller="Student" asp-action="PersonalData" class="topbar-user" style="text-decoration:none;">
+                        @if (!string.IsNullOrWhiteSpace(photoUrl))
+                        {
+                            <img src="@photoUrl" alt="@fullName" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+                        }
+                        else
+                        {
+                            <div class="md-avatar" style="width:32px;height:32px;font-size:12px;flex-shrink:0;">@initials</div>
+                        }
+                        <div class="topbar-user-info">
+                            <p class="topbar-user-name" style="margin:0;">@fullName</p>
+                            <p class="topbar-user-role" style="margin:0;">@subLabel</p>
+                        </div>
+                        <i class="bi bi-chevron-down" style="font-size:11px; color:var(--md-text-muted);"></i>
+                    </a>
+                    <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                        <button type="submit" class="topbar-logout" title="Sair">
+                            <i class="bi bi-box-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="app-content">
+                @RenderBody()
+            </div>
+        </div>
+
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('appSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const icon    = document.getElementById('sidebarToggleIcon');
+            const isOpen  = sidebar.classList.toggle('open');
+            overlay.classList.toggle('show', isOpen);
+            icon.className = isOpen ? 'bi bi-x-lg' : 'bi bi-list';
+        }
+        function closeSidebar() {
+            document.getElementById('appSidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('show');
+            document.getElementById('sidebarToggleIcon').className = 'bi bi-list';
+        }
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

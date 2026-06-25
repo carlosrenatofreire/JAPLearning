@@ -1,8 +1,58 @@
 @model List<JAPLearning.Mvc.ViewModels.Entities.TopicViewModel>
+@using System.Text.Json
 @{
     ViewData["Title"] = "Tópicos";
+    var teamsJson        = JsonSerializer.Serialize(ViewBag.FilterTeams);
+    var coursesJson      = JsonSerializer.Serialize(ViewBag.FilterCourses);
+    var supervisorTeamId = ViewBag.SupervisorTeamId as string ?? "";
 }
 @await Html.PartialAsync("_CrudStyles")
+
+<style>
+    .filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--md-border);
+        flex-wrap: wrap;
+    }
+    .filter-bar label {
+        font-size: 11px; font-weight: 700;
+        color: var(--md-text-muted);
+        text-transform: uppercase; letter-spacing: .04em;
+        white-space: nowrap;
+    }
+    .filter-select {
+        height: 36px; padding: 0 10px; font-size: 13px;
+        background: var(--md-bg-secondary);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius-sm);
+        color: var(--md-text-primary);
+        min-width: 160px; flex: 1; max-width: 260px;
+        cursor: pointer; transition: border-color .15s;
+    }
+    .filter-select:focus  { outline: none; border-color: var(--md-accent); }
+    .filter-select:disabled { opacity: .4; cursor: not-allowed; }
+    .filter-divider { width: 1px; height: 24px; background: var(--md-border); flex-shrink: 0; }
+    .filter-search  { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    #topicSearch {
+        height: 36px; padding: 0 12px; font-size: 13px;
+        background: var(--md-bg-secondary);
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius-sm);
+        color: var(--md-text-primary); width: 200px;
+    }
+    #topicSearch:focus { outline: none; border-color: var(--md-accent); }
+    .filter-clear {
+        height: 36px; padding: 0 12px; font-size: 12px; font-weight: 600;
+        background: none; border: 1px solid var(--md-border);
+        border-radius: var(--md-radius-sm);
+        color: var(--md-text-muted); cursor: pointer; white-space: nowrap; transition: .15s;
+    }
+    .filter-clear:hover { border-color: var(--md-accent); color: var(--md-accent); }
+    .results-count { font-size: 12px; color: var(--md-text-muted); padding: 8px 16px; border-top: 1px solid var(--md-border); }
+</style>
 
 @if (TempData["Success"] != null)
 {
@@ -18,7 +68,35 @@
 </div>
 
 <div class="md-card" style="padding:0; overflow:hidden;">
-    <table class="crud-table">
+
+    <!-- ── Filtros em cascata ─────────────────────────────────────────── -->
+    <div class="filter-bar">
+
+        <label>Equipa</label>
+        <select id="filterTeam" class="filter-select">
+            <option value="">Todas as equipas</option>
+        </select>
+
+        <i class="bi bi-chevron-right" style="color:var(--md-border); font-size:11px; flex-shrink:0;"></i>
+
+        <label>Formação</label>
+        <select id="filterCourse" class="filter-select" disabled title="Seleccione primeiro uma equipa">
+            <option value="">— seleccione equipa —</option>
+        </select>
+
+        <div class="filter-divider"></div>
+
+        <div class="filter-search">
+            <i class="bi bi-search" style="color:var(--md-text-muted); font-size:13px;"></i>
+            <input type="text" id="topicSearch" placeholder="Pesquisar tópico..." />
+            <button type="button" class="filter-clear" id="btnClearFilters">
+                <i class="bi bi-x-lg" style="margin-right:4px;"></i> Limpar
+            </button>
+        </div>
+    </div>
+
+    <!-- ── Tabela ─────────────────────────────────────────────────────── -->
+    <table id="topicsTable" class="crud-table" style="margin:0;">
         <thead>
             <tr>
                 <th>Nome</th>
@@ -30,7 +108,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.OrderBy(t => t.CourseName).ThenBy(t => t.Order))
+            @foreach (var item in Model.OrderBy(t => t.TeamName).ThenBy(t => t.CourseName).ThenBy(t => t.Order))
             {
                 <tr>
                     <td style="color:var(--md-text-primary); font-weight:600;">@item.Name</td>
@@ -43,11 +121,15 @@
                     </td>
                     <td style="text-align:center;">
                         <div style="display:flex; gap:6px; justify-content:center;">
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn" title="Editar"><i class="bi bi-pencil"></i></a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </a>
                             <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="margin:0;"
                                   onsubmit="return confirm('Eliminar este tópico?')">
                                 @Html.AntiForgeryToken()
-                                <button type="submit" class="action-btn danger" title="Eliminar"><i class="bi bi-trash"></i></button>
+                                <button type="submit" class="action-btn danger" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </form>
                         </div>
                     </td>
@@ -62,4 +144,110 @@
             }
         </tbody>
     </table>
+
+    <div class="results-count" id="resultsCount"></div>
 </div>
+
+@section Scripts {
+<script>
+$(document).ready(function () {
+
+    const ALL_TEAMS      = @Html.Raw(teamsJson);
+    const ALL_COURSES    = @Html.Raw(coursesJson);
+    const SUPERVISOR_TID = '@Html.Raw(supervisorTeamId)';
+
+    const selTeam   = document.getElementById('filterTeam');
+    const selCourse = document.getElementById('filterCourse');
+    const txtSearch = document.getElementById('topicSearch');
+    const btnClear  = document.getElementById('btnClearFilters');
+    const countEl   = document.getElementById('resultsCount');
+
+    // ── DataTables ────────────────────────────────────────────────────
+    let dt = null;
+    setTimeout(() => {
+        dt = $('#topicsTable').DataTable();
+        $('#topicsTable').closest('.dataTables_wrapper').find('.dt-header').remove();
+        $('.dataTables_info').hide();
+        dt.order([3, 'asc']).draw();
+        updateCount();
+    }, 50);
+
+    // ── Filtro: data[1]=Equipa, data[2]=Formação ──────────────────────
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        if (settings.nTable.id !== 'topicsTable') return true;
+        const teamFilter   = selTeam.value
+            ? selTeam.options[selTeam.selectedIndex].text : '';
+        const courseObj    = selCourse.value
+            ? ALL_COURSES.find(c => c.id === selCourse.value) : null;
+        const courseFilter = courseObj ? courseObj.name : '';
+        const search       = txtSearch.value.trim().toLowerCase();
+
+        const matchTeam   = !teamFilter   || (data[1] || '').includes(teamFilter);
+        const matchCourse = !courseFilter || (data[2] || '').includes(courseFilter);
+        const matchSearch = !search       || (data[0] || '').toLowerCase().includes(search)
+                                          || (data[2] || '').toLowerCase().includes(search);
+        return matchTeam && matchCourse && matchSearch;
+    });
+
+    // ── Popular Equipas ───────────────────────────────────────────────
+    ALL_TEAMS.forEach(t => selTeam.add(new Option(t.name, t.id)));
+
+    // ── Cascata: Equipa → Formação ────────────────────────────────────
+    function populateCourses(teamId) {
+        selCourse.innerHTML = '<option value="">Todas as formações</option>';
+        if (!teamId) {
+            selCourse.disabled = true;
+            redraw();
+            return;
+        }
+        const filtered = ALL_COURSES.filter(c => c.teamId === teamId);
+        filtered.forEach(c => selCourse.add(new Option(c.label, c.id)));
+        selCourse.disabled = false;
+        redraw();
+    }
+
+    // Supervisor: auto-seleccionar a sua equipa
+    if (SUPERVISOR_TID) {
+        selTeam.value = SUPERVISOR_TID;
+        populateCourses(SUPERVISOR_TID);
+    }
+
+    // ── Redesenhar + contador ─────────────────────────────────────────
+    function redraw() {
+        if (dt) { dt.draw(); updateCount(); }
+    }
+
+    function updateCount() {
+        if (!dt) return;
+        const info  = dt.page.info();
+        const shown = info.recordsDisplay;
+        const total = info.recordsTotal;
+        countEl.textContent = shown === total
+            ? `Mostrando ${total} tópico(s)`
+            : `Mostrando ${shown} de ${total} tópico(s)`;
+    }
+
+    // ── Limpar ────────────────────────────────────────────────────────
+    function clearAll() {
+        selCourse.innerHTML = '<option value="">— seleccione equipa —</option>';
+        selCourse.disabled  = true;
+        txtSearch.value     = '';
+        if (SUPERVISOR_TID) {
+            selTeam.value = SUPERVISOR_TID;
+            populateCourses(SUPERVISOR_TID);
+        } else {
+            selTeam.value = '';
+            redraw();
+        }
+    }
+
+    // ── Eventos ───────────────────────────────────────────────────────
+    selTeam.addEventListener('change',   () => populateCourses(selTeam.value));
+    selCourse.addEventListener('change',  redraw);
+    txtSearch.addEventListener('input',   redraw);
+    btnClear.addEventListener('click',    clearAll);
+
+    $('#topicsTable').on('draw.dt', updateCount);
+});
+</script>
+}

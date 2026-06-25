@@ -1,5 +1,6 @@
 @{
     var active = ViewData["ActiveMenu"]?.ToString() ?? "";
+    var isAdmin = User.IsInRole("Administrador");
 }
 
 <div class="sidebar-section">
@@ -7,9 +8,12 @@
     <a asp-controller="Home" asp-action="Index" class="sidebar-item @(active == "dashboard" ? "active" : "")">
         <i class="bi bi-grid-1x2"></i> Dashboard
     </a>
-    <a asp-controller="Users" asp-action="Index" class="sidebar-item @(active == "users" ? "active" : "")">
-        <i class="bi bi-people"></i> Utilizadores
-    </a>
+    @if (isAdmin)
+    {
+        <a asp-controller="Users" asp-action="Index" class="sidebar-item @(active == "users" ? "active" : "")">
+            <i class="bi bi-people"></i> Utilizadores
+        </a>
+    }
     <a asp-controller="Courses" asp-action="Index" class="sidebar-item @(active == "courses" ? "active" : "")">
         <i class="bi bi-collection-play"></i> Formações
     </a>
@@ -32,25 +36,21 @@
     <a asp-controller="QuestionOptions" asp-action="Index" class="sidebar-item @(active == "questionoptions" ? "active" : "")">
         <i class="bi bi-ui-radios"></i> Opções de Questão
     </a>
-    <a asp-controller="Testimonials" asp-action="Index" class="sidebar-item @(active == "testimonials" ? "active" : "")">
-        <i class="bi bi-chat-quote"></i> Testemunhos
-    </a>
+    @if (isAdmin)
+    {
+        <a asp-controller="Testimonials" asp-action="Index" class="sidebar-item @(active == "testimonials" ? "active" : "")">
+            <i class="bi bi-chat-quote"></i> Testemunhos
+        </a>
+    }
     <a asp-controller="Certificates" asp-action="Index" class="sidebar-item @(active == "certificates" ? "active" : "")">
         <i class="bi bi-award"></i> Certificados
     </a>
 </div>
 
-
 <div class="sidebar-section">
     <p class="sidebar-section-title">Parâmetros</p>
-    <a asp-controller="Teams" asp-action="Index" class="sidebar-item @(active == "teams" ? "active" : "")">
-        <i class="bi bi-people"></i> Equipas
-    </a>
     <a asp-controller="Categories" asp-action="Index" class="sidebar-item @(active == "categories" ? "active" : "")">
         <i class="bi bi-tags"></i> Categorias
-    </a>
-    <a asp-controller="Levels" asp-action="Index" class="sidebar-item @(active == "levels" ? "active" : "")">
-        <i class="bi bi-bar-chart-steps"></i> Níveis
     </a>
     <a asp-controller="Subjects" asp-action="Index" class="sidebar-item @(active == "subjects" ? "active" : "")">
         <i class="bi bi-journal-bookmark"></i> Assuntos
@@ -58,9 +58,18 @@
     <a asp-controller="Teachers" asp-action="Index" class="sidebar-item @(active == "teachers" ? "active" : "")">
         <i class="bi bi-person-video3"></i> Professores
     </a>
+    @if (isAdmin)
+    {
+        <a asp-controller="Teams" asp-action="Index" class="sidebar-item @(active == "teams" ? "active" : "")">
+            <i class="bi bi-people"></i> Equipas
+        </a>
+        <a asp-controller="Levels" asp-action="Index" class="sidebar-item @(active == "levels" ? "active" : "")">
+            <i class="bi bi-bar-chart-steps"></i> Níveis
+        </a>
+    }
 </div>
 
-@if (User.IsInRole("Administrador"))
+@if (isAdmin)
 {
     <div class="sidebar-section">
         <p class="sidebar-section-title">Administração</p>
@@ -75,6 +84,9 @@
         </a>
         <a asp-controller="AuditLogs" asp-action="Index" class="sidebar-item @(active == "auditlogs" ? "active" : "")">
             <i class="bi bi-journal-text"></i> Auditoria
+        </a>
+        <a asp-controller="AppVersions" asp-action="Index" class="sidebar-item @(active == "versions" ? "active" : "")">
+            <i class="bi bi-clock-history"></i> Versões
         </a>
     </div>
 }

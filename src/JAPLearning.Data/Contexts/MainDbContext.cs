@@ -37,7 +37,9 @@ namespace JAPLearning.Data.Contexts
         public DbSet<UserLessonQuestion> UserLessonQuestions { get; set; }
 
         // Auxiliaries
-        public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<AuditLog>        AuditLogs       { get; set; }
+        public DbSet<AppVersion>      AppVersions     { get; set; }
+        public DbSet<AppVersionItem>  AppVersionItems { get; set; }
 
         public MainDbContext(DbContextOptions options) : base(options)
         {

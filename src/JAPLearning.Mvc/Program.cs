@@ -10,6 +10,7 @@ builder.Services
     .AddAutoMapperConfiguration()
     .AddDependencyInjectionConfiguration(builder.Configuration)
     .AddAuthConfiguration()
+    .AddRateLimitingConfiguration()
     .AddControllersWithViews();
 
 var app = builder.Build();

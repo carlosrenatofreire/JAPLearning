@@ -1,0 +1,108 @@
+@{
+    Layout = null;
+    var ex = ViewBag.Exception as Exception;
+    var isDev = Context.RequestServices.GetService<IWebHostEnvironment>()?.IsDevelopment() ?? false;
+}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>500 — Erro interno | JAP Learning</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #0d0f14; --card: #161921; --border: rgba(255,255,255,0.07);
+            --accent: #E8501A; --text1: #F1F5F9; --text2: #94A3B8; --text3: #4B5563;
+            --danger: #EF4444; --radius: 16px;
+        }
+        body {
+            background: var(--bg); color: var(--text1);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh; display: flex; align-items: center;
+            justify-content: center; padding: 24px;
+        }
+        .error-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 56px 48px;
+            max-width: 580px; width: 100%; text-align: center;
+        }
+        .error-code {
+            font-size: clamp(72px, 15vw, 120px); font-weight: 900; line-height: 1;
+            background: linear-gradient(135deg, #EF4444, #991B1B);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; margin-bottom: 8px;
+        }
+        .error-icon { font-size: 48px; color: var(--danger); margin-bottom: 20px; display: block; }
+        .error-title { font-size: 22px; font-weight: 700; color: var(--text1); margin-bottom: 12px; }
+        .error-desc { font-size: 14px; color: var(--text2); line-height: 1.7; margin-bottom: 32px; }
+        .btn-primary {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--accent); color: #fff; border: none;
+            border-radius: 10px; padding: 12px 28px; font-size: 14px;
+            font-weight: 600; text-decoration: none; cursor: pointer;
+            transition: opacity .2s, transform .15s; margin-right: 10px;
+        }
+        .btn-primary:hover { opacity: .88; transform: translateY(-1px); color: #fff; }
+        .btn-ghost {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: transparent; color: var(--text2); border: 1px solid var(--border);
+            border-radius: 10px; padding: 12px 24px; font-size: 14px;
+            font-weight: 600; text-decoration: none; cursor: pointer;
+            transition: background .2s, color .2s;
+        }
+        .btn-ghost:hover { background: rgba(255,255,255,0.05); color: var(--text1); }
+        .brand { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:40px; text-decoration:none; }
+        .brand-dot { width:32px; height:32px; background:var(--accent); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; color:#fff; font-weight:900; }
+        .brand-name { font-size:18px; font-weight:700; color:var(--text1); }
+        .brand-name span { color:var(--accent); }
+        .dev-detail {
+            margin-top: 28px; text-align: left;
+            background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.2);
+            border-radius: 10px; padding: 16px;
+        }
+        .dev-detail summary {
+            font-size: 12px; font-weight: 600; color: var(--danger);
+            cursor: pointer; user-select: none; margin-bottom: 8px;
+        }
+        .dev-detail pre {
+            font-size: 11px; color: var(--text2); white-space: pre-wrap;
+            word-break: break-all; line-height: 1.6; margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-card">
+        <a href="/" class="brand">
+            <div class="brand-dot">J</div>
+            <span class="brand-name">JAP <span>Learning</span></span>
+        </a>
+
+        <div class="error-code">500</div>
+        <i class="bi bi-exclamation-triangle error-icon"></i>
+        <h1 class="error-title">Erro interno do servidor</h1>
+        <p class="error-desc">
+            Ocorreu um erro inesperado ao processar o seu pedido.<br />
+            A equipa técnica foi notificada. Tente novamente em breve.
+        </p>
+
+        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <a href="javascript:history.back()" class="btn-ghost">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+            <a href="/" class="btn-primary">
+                <i class="bi bi-house-fill"></i> Ir para o Início
+            </a>
+        </div>
+
+        @if (isDev && ex != null)
+        {
+            <details class="dev-detail">
+                <summary><i class="bi bi-bug"></i> Detalhe do erro (ambiente de desenvolvimento)</summary>
+                <pre>@ex.ToString()</pre>
+            </details>
+        }
+    </div>
+</body>
+</html>

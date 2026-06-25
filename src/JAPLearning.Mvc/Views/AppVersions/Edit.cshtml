@@ -1,0 +1,157 @@
+@model JAPLearning.Mvc.ViewModels.Auxiliaries.AppVersionViewModel
+@using JAPLearning.Business.Models.Domains.Auxiliaries
+@{
+    ViewData["Title"] = $"Versão {Model.VersionNumber}";
+}
+@await Html.PartialAsync("_CrudStyles")
+
+<style>
+    .item-type-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        font-size: 11px; font-weight: 700; padding: 3px 9px;
+        border-radius: 20px; white-space: nowrap;
+    }
+    .badge-feature     { background: rgba(99,102,241,0.12); color: #818CF8; }
+    .badge-improvement { background: rgba(34,197,94,0.12);  color: #4ADE80; }
+    .badge-fix         { background: rgba(239,68,68,0.12);  color: #F87171; }
+</style>
+
+<div class="page-header">
+    <div>
+        <h4 class="page-header-title">v@(Model.VersionNumber) — @Model.Title</h4>
+        <p class="page-header-sub">
+            <a asp-action="Index" style="color:var(--md-text-muted);">Versões</a>
+            <i class="bi bi-chevron-right" style="font-size:10px;"></i> Editar
+        </p>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert-success-md mb-3"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="md-alert md-alert-danger mb-3">@TempData["Error"]</div>
+}
+
+<!-- ── Dados da Versão ────────────────────────────────────────────── -->
+<div class="md-card mb-4">
+    <p class="md-label" style="margin-bottom:16px; font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--md-text-muted);">
+        Dados da Versão
+    </p>
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="md-alert md-alert-danger mb-3"></div>
+
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="md-form-row">
+                    <label class="md-label">Número de Versão</label>
+                    <input asp-for="VersionNumber" class="md-input" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="md-form-row">
+                    <label class="md-label">Título / Período</label>
+                    <input asp-for="Title" class="md-input" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="md-form-row">
+                    <label class="md-label">Data de Lançamento</label>
+                    <input asp-for="ReleaseDate" type="date" class="md-input" />
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="md-form-check">
+                    <input asp-for="IsPublished" type="checkbox" />
+                    <label asp-for="IsPublished">Publicada (visível no Changelog para os utilizadores)</label>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-top:20px;">
+            <button type="submit" class="btn-md-primary">
+                <i class="bi bi-check-lg"></i> Guardar
+            </button>
+            <a asp-action="Index" class="btn-md-ghost">Voltar</a>
+        </div>
+    </form>
+</div>
+
+<!-- ── Itens da Versão ────────────────────────────────────────────── -->
+<div class="md-card">
+    <p class="md-label" style="margin-bottom:16px; font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--md-text-muted);">
+        Itens desta versão — @Model.Items.Count item(ns)
+    </p>
+
+    @if (Model.Items.Any())
+    {
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:24px;">
+            @foreach (var item in Model.Items.OrderBy(i => i.Order))
+            {
+                var (badgeClass, badgeIcon, badgeLabel) = item.Type switch
+                {
+                    VersionItemType.Feature     => ("badge-feature",     "bi-stars",          "Novo"),
+                    VersionItemType.Improvement => ("badge-improvement",  "bi-arrow-up-circle", "Melhoria"),
+                    _                           => ("badge-fix",          "bi-wrench",          "Correcção")
+                };
+
+                <div style="display:flex; align-items:center; gap:12px; padding:12px 14px;
+                            background:var(--md-bg-secondary); border:1px solid var(--md-border);
+                            border-radius:var(--md-radius-sm);">
+                    <span class="item-type-badge @badgeClass">
+                        <i class="bi @badgeIcon"></i> @badgeLabel
+                    </span>
+                    <p style="flex:1; margin:0; font-size:13px; color:var(--md-text-primary);">
+                        @item.Description
+                    </p>
+                    <form asp-action="DeleteItem" method="post" style="margin:0;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="itemId"    value="@item.Id" />
+                        <input type="hidden" name="versionId" value="@Model.Id" />
+                        <button type="submit" class="action-btn danger" title="Remover"
+                                style="width:28px; height:28px; flex-shrink:0;"
+                                onclick="return confirm('Remover este item?')">
+                            <i class="bi bi-trash" style="font-size:12px;"></i>
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div style="text-align:center; padding:24px; border:1px dashed var(--md-border);
+                    border-radius:var(--md-radius); margin-bottom:20px; color:var(--md-text-muted);">
+            <i class="bi bi-list-ul" style="font-size:28px; display:block; margin-bottom:8px;"></i>
+            <p style="margin:0; font-size:13px;">Ainda não há itens. Adicione abaixo.</p>
+        </div>
+    }
+
+    <!-- Adicionar item -->
+    <form asp-action="AddItem" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="versionId" value="@Model.Id" />
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+            <div style="flex-shrink:0; min-width:140px;">
+                <label class="md-label">Tipo</label>
+                <select name="type" class="md-select" style="height:42px;">
+                    <option value="1">🟣 Novo</option>
+                    <option value="2">🟢 Melhoria</option>
+                    <option value="3">🔴 Correcção</option>
+                </select>
+            </div>
+            <div style="flex:1; min-width:260px;">
+                <label class="md-label">Descrição</label>
+                <input type="text" name="description" class="md-input"
+                       placeholder="ex: Adicionado download de Snapshot nas formações"
+                       style="height:42px;" maxlength="500" />
+            </div>
+            <button type="submit" class="btn-md-primary" style="height:42px; white-space:nowrap; flex-shrink:0;">
+                <i class="bi bi-plus-lg"></i> Adicionar Item
+            </button>
+        </div>
+    </form>
+</div>

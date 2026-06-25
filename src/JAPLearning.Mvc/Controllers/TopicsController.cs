@@ -7,6 +7,7 @@ using JAPLearning.Business.Interfaces.Services.Entities;
 using JAPLearning.Business.Interfaces.Services.Parameters;
 using JAPLearning.Business.Models.Domains.Entities;
 using JAPLearning.Mvc.ViewModels.Entities;
+using System.Security.Claims;
 
 namespace JAPLearning.Mvc.Controllers
 {
@@ -30,7 +31,49 @@ namespace JAPLearning.Mvc.Controllers
         public async Task<IActionResult> Index()
         {
             ViewData["ActiveMenu"] = "topics";
-            var list = await _service.GetAllAsync();
+            var allCourses = await _courseService.GetAllAsync();
+            var teams      = await _teamService.GetAllAsync();
+
+            // ── Filtrar por departamento para Supervisor ─────────────────
+            var isSupervisor     = User.IsInRole("Supervisor");
+            var teamIdClaim      = User.FindFirstValue("TeamId");
+            var supervisorTeamId = isSupervisor && Guid.TryParse(teamIdClaim, out var tid) ? tid : (Guid?)null;
+
+            var visibleCourseIds = supervisorTeamId.HasValue
+                ? allCourses.Where(c => c.Category?.TeamId == supervisorTeamId.Value).Select(c => c.Id).ToHashSet()
+                : null;
+
+            var allTopics = await _service.GetAllAsync();
+            var list      = supervisorTeamId.HasValue
+                ? allTopics.Where(t => visibleCourseIds!.Contains(t.CourseId)).ToList()
+                : allTopics;
+
+            var courses = supervisorTeamId.HasValue
+                ? allCourses.Where(c => c.IsActived && c.Category?.TeamId == supervisorTeamId.Value).ToList()
+                : allCourses.Where(c => c.IsActived && c.Category != null).ToList();
+
+            var visibleTeams = supervisorTeamId.HasValue
+                ? teams.Where(t => t.Id == supervisorTeamId.Value).ToList()
+                : teams.Where(t => t.IsActived).ToList();
+
+            ViewBag.SupervisorTeamId = supervisorTeamId?.ToString() ?? "";
+
+            ViewBag.FilterTeams = visibleTeams
+                .OrderBy(t => t.Name)
+                .Select(t => new { id = t.Id, name = t.Name })
+                .ToList();
+
+            ViewBag.FilterCourses = courses
+                .OrderBy(c => c.Title)
+                .Select(c => new
+                {
+                    id     = c.Id,
+                    name   = c.Title,
+                    label  = $"{c.Title} ({c.Category!.Name})",
+                    teamId = c.Category!.TeamId
+                })
+                .ToList();
+
             return View(_mapper.Map<List<TopicViewModel>>(list));
         }
 
@@ -51,7 +94,7 @@ namespace JAPLearning.Mvc.Controllers
             var entity = _mapper.Map<Topic>(vm);
             entity.Id = Guid.NewGuid();
             entity.CreatedDate = DateTime.UtcNow;
-            if (!await _service.AddAsync(entity)) { AddErrors(); await PopulateCoursesAsync(vm.CourseId); return View(vm); }
+            if (!await _service.AddAsync(entity)) { AddWarnings(); await PopulateCoursesAsync(vm.CourseId); return View(vm); }
             TempData["Success"] = "Tópico criado com sucesso.";
             return RedirectToAction(nameof(Index));
         }
@@ -75,7 +118,7 @@ namespace JAPLearning.Mvc.Controllers
             var entity = _mapper.Map<Topic>(vm);
             entity.Id = id;
             entity.ChangedDate = DateTime.UtcNow;
-            if (!await _service.UpdateAsync(entity)) { AddErrors(); await PopulateCoursesAsync(vm.CourseId); return View(vm); }
+            if (!await _service.UpdateAsync(entity)) { AddWarnings(); await PopulateCoursesAsync(vm.CourseId); return View(vm); }
             TempData["Success"] = "Tópico actualizado com sucesso.";
             return RedirectToAction(nameof(Index));
         }
@@ -110,18 +153,32 @@ namespace JAPLearning.Mvc.Controllers
             return Json(filtered);
         }
 
+        private Guid? GetSupervisorTeamId()
+        {
+            if (!User.IsInRole("Supervisor")) return null;
+            return Guid.TryParse(User.FindFirstValue("TeamId"), out var tid) ? tid : (Guid?)null;
+        }
+
         private async Task PopulateCoursesAsync(Guid? selectedCourseId = null)
         {
-            var courses = await _courseService.GetAllAsync();
-            ViewBag.Courses = new SelectList(courses.Where(c => c.IsActived), "Id", "Title", selectedCourseId);
+            var supervisorTeamId = GetSupervisorTeamId();
 
-            var teams = await _teamService.GetAllAsync();
-            ViewBag.Teams = new SelectList(teams.Where(t => t.IsActived), "Id", "Name");
+            var allCourses = await _courseService.GetAllAsync();
+            var courses    = supervisorTeamId.HasValue
+                ? allCourses.Where(c => c.IsActived && c.Category?.TeamId == supervisorTeamId.Value)
+                : allCourses.Where(c => c.IsActived);
+            ViewBag.Courses = new SelectList(courses, "Id", "Title", selectedCourseId);
 
-            // Pass selected team so the view can pre-select it on Edit
+            var allTeams = await _teamService.GetAllAsync();
+            var teams    = supervisorTeamId.HasValue
+                ? allTeams.Where(t => t.Id == supervisorTeamId.Value)
+                : allTeams.Where(t => t.IsActived);
+            ViewBag.Teams            = new SelectList(teams, "Id", "Name");
+            ViewBag.SupervisorTeamId = supervisorTeamId?.ToString() ?? "";
+
             if (selectedCourseId.HasValue)
             {
-                var course = courses.FirstOrDefault(c => c.Id == selectedCourseId.Value);
+                var course = allCourses.FirstOrDefault(c => c.Id == selectedCourseId.Value);
                 ViewBag.SelectedTeamId = course?.Category?.TeamId;
             }
         }

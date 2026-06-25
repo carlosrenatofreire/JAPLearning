@@ -56,7 +56,29 @@
       "Bash(CONNECTIONSTRINGS=\"Server=.;Database=JAPLearning;Trusted_Connection=True;\" dotnet ef migrations add AddAuditLogFields --project src/JAPLearning.Data --startup-project src/JAPLearning.Mvc)",
       "Bash(CONNECTIONSTRINGS=\"Server=.;Database=JAPLearning;Trusted_Connection=True;\" dotnet ef database update --project src/JAPLearning.Data --startup-project src/JAPLearning.Mvc)",
       "PowerShell([System.Environment]::GetEnvironmentVariable\\(\"CONNECTIONSTRINGS\", \"User\"\\))",
-      "PowerShell($env:CONNECTIONSTRINGS = \"Data Source=10.147.20.1\\\\SQLEXPRESS,64500;Initial Catalog=DEV_JAPLEARNING;User ID=sa;Password=Password.123;TrustServerCertificate=True\"; Set-Location C:\\\\JAPLearning; dotnet ef migrations add IncreaseTeacherDescriptionToMax --project src/JAPLearning.Data --startup-project src/JAPLearning.Mvc 2>&1)"
+      "PowerShell($env:CONNECTIONSTRINGS = \"Data Source=10.147.20.1\\\\SQLEXPRESS,64500;Initial Catalog=DEV_JAPLEARNING;User ID=sa;Password=Password.123;TrustServerCertificate=True\"; Set-Location C:\\\\JAPLearning; dotnet ef migrations add IncreaseTeacherDescriptionToMax --project src/JAPLearning.Data --startup-project src/JAPLearning.Mvc 2>&1)",
+      "PowerShell(Set-Location C:\\\\JAPLearning; dotnet build src/JAPLearning.Mvc/JAPLearning.Mvc.csproj 2>&1 | Where-Object { $_ -match \"error CS|Build succeeded|FAILED\" })",
+      "PowerShell(dotnet build \"C:\\\\JAPLearning\\\\src\\\\JAPLearning.sln\" --verbosity quiet 2>&1)",
+      "Bash(cd /mnt/c/JAPLearning && dotnet build src/JAPLearning.sln 2>&1 | tail -20)",
+      "Bash(grep -n \"DataTable\\\\|\\\\.crud-table\\\\|pageLength\\\\|initComplete\\\\|\\\\$\\(\" \"C:/JAPLearning/src/JAPLearning.Mvc/Views/Shared/_CrudStyles.cshtml\")",
+      "Bash(grep -n \"DataTable\\\\|\\\\\\\\.DataTable\\\\|document\\\\\\\\.ready\\\\|jQuery\\\\|\\\\\\\\.on\\(\" \"C:/JAPLearning/src/JAPLearning.Mvc/Views/Shared/_CrudStyles.cshtml\")",
+      "Bash(grep -n \"DataTable\\\\|script\\\\|jQuery\\\\|\\\\$\\(\" \"C:/JAPLearning/src/JAPLearning.Mvc/Views/Shared/_CrudStyles.cshtml\")",
+      "Bash(grep -rn \"DataTable\\\\|\\\\\\\\.DataTable\\\\|crud-table\" \"C:/JAPLearning/src/JAPLearning.Mvc/Views/Shared/_LayoutApp.cshtml\")",
+      "Bash(dir \"C:\\\\JAPLearning\\\\src\\\\\" 2>&1)",
+      "WebFetch(domain:openspec.dev)",
+      "Bash(npm install *)",
+      "WebFetch(domain:agent-skills.techleads.club)",
+      "PowerShell($f=\"C:\\\\Projectos\\\\Copa2026\\\\src\\\\PortalCopa26\\\\PortalCopa26\\\\appsettings.json\"; $json = Get-Content $f -Raw | ConvertFrom-Json; $json | Add-Member -NotePropertyName ConnectionStrings -NotePropertyValue \\(@{ DefaultConnection = \"Data Source=10.147.20.1\\\\SQLEXPRESS,64500;Initial Catalog=COPA-2026;User ID=sa;Password=Password.123;Encrypt=False;TrustServerCertificate=True;MultipleActiveResultSets=True\" }\\) -Force; $json | ConvertTo-Json -Depth 5 | Out-File $f -Encoding utf8)",
+      "PowerShell(dotnet tool update -g dotnet-ef)",
+      "PowerShell(Import-Module WebAdministration -ErrorAction SilentlyContinue; Get-WebBinding | Where-Object { $_.bindingInformation -match \"copa26|:80:\" } | Select-Object protocol, bindingInformation, itemXPath | Format-Table -AutoSize)",
+      "Bash(cd \"C:\\\\Projectos\\\\Copa2026\\\\src\\\\PortalCopa26\" && dotnet build --no-restore -v q 2>&1 | tail -30)",
+      "Bash(ls \"C:\\\\Users\\\\RedIT\\\\.nuget\\\\packages\\\\anthropic\\\\12.29.0\\\\lib\\\\net8.0\\\\\" 2>&1 | head -5)",
+      "Bash(dotnet script *)",
+      "PowerShell(Add-Type -Path 'C:\\\\Users\\\\RedIT\\\\.nuget\\\\packages\\\\anthropic\\\\12.29.0\\\\lib\\\\net8.0\\\\Anthropic.dll'; [Anthropic.AnthropicClient].GetConstructors\\(\\) | ForEach-Object { $_.ToString\\(\\) })",
+      "Bash(powershell -Command \"Add-Type -Path 'C:\\\\\\\\Users\\\\\\\\RedIT\\\\\\\\.nuget\\\\\\\\packages\\\\\\\\anthropic\\\\\\\\12.29.0\\\\\\\\lib\\\\\\\\net9.0\\\\\\\\Anthropic.dll' -ErrorAction SilentlyContinue; [Anthropic.Models.Messages.ContentBlock].GetProperties\\(\\) | Select-Object Name,PropertyType | Format-List\")",
+      "Bash(cd \"C:\\\\Projectos\\\\Copa2026\" && dotnet ef migrations add AddEnqueteVotos --project src/PortalCopa26/PortalCopa26/PortalCopa26.csproj --startup-project src/PortalCopa26/PortalCopa26/PortalCopa26.csproj 2>&1)",
+      "PowerShell(dotnet build \"C:\\\\JAPLearning\\\\JAPLearning.slnx\" --no-restore 2>&1)",
+      "PowerShell(dotnet build \"C:\\\\JAPLearning\\\\JAPLearning.slnx\" --no-restore 2>&1 | Where-Object { $_ -match \"error CS\" })"
     ]
   }
 }

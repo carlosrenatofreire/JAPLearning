@@ -31,9 +31,9 @@
         <h4 class="page-header-title">Auditoria</h4>
         <p class="page-header-sub">Registo de actividades e erros da aplicação</p>
     </div>
-    <form asp-action="Clear" method="post" onsubmit="return confirm('Tem a certeza? Esta acção é irreversível.');">
+    <form asp-action="Clear" method="post" id="clearAuditForm">
         @Html.AntiForgeryToken()
-        <button type="submit" class="btn-md-secondary" style="color:var(--md-danger); border-color:var(--md-danger);">
+        <button type="button" id="btnLimparRegistos" class="btn-md-secondary" style="color:var(--md-danger); border-color:var(--md-danger);">
             <i class="bi bi-trash3"></i> Limpar Registos
         </button>
     </form>
@@ -86,62 +86,57 @@
 </div>
 
 <!-- Filtros -->
-<div class="md-card mb-4" style="padding:16px;">
-    <form method="get" asp-action="Index" class="row g-3 align-items-end">
-        <div class="col-12 col-md-4 col-lg-3">
-            <label class="form-label" style="font-size:12px; color:var(--md-text-muted);">Pesquisar</label>
-            <input type="text" name="search" value="@ViewBag.Search" class="form-control md-input"
-                   placeholder="Mensagem, utilizador…" />
-        </div>
-        <div class="col-6 col-md-2">
-            <label class="form-label" style="font-size:12px; color:var(--md-text-muted);">Nível</label>
-            <select name="level" class="form-select md-input">
-                <option value="">Todos</option>
-                @foreach (var lv in Enum.GetValues<LogType>())
-                {
-                    if (ViewBag.FilterLevel == lv.ToString())
+<div class="md-card mb-4" style="padding:16px 20px;">
+    <form method="get" asp-action="Index">
+        <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end;">
+
+            <div style="flex:2; min-width:180px;">
+                <label style="font-size:11px; color:var(--md-text-muted); display:block; margin-bottom:4px;">Pesquisar</label>
+                <input type="text" name="search" value="@ViewBag.Search" class="md-input"
+                       placeholder="Mensagem, utilizador…" style="width:100%;" />
+            </div>
+
+            <div style="flex:1; min-width:110px;">
+                <label style="font-size:11px; color:var(--md-text-muted); display:block; margin-bottom:4px;">Nível</label>
+                <select name="level" class="md-select" style="width:100%;">
+                    <option value="">Todos</option>
+                    @foreach (var lv in Enum.GetValues<LogType>())
                     {
-                        <option value="@lv" selected>@lv</option>
+                        <option value="@lv" selected="@(ViewBag.FilterLevel == lv.ToString() ? "selected" : null)">@lv</option>
                     }
-                    else
+                </select>
+            </div>
+
+            <div style="flex:1; min-width:120px;">
+                <label style="font-size:11px; color:var(--md-text-muted); display:block; margin-bottom:4px;">Entidade</label>
+                <select name="entity" class="md-select" style="width:100%;">
+                    <option value="">Todas</option>
+                    @foreach (var ent in (ViewBag.Entities as List<string> ?? new()))
                     {
-                        <option value="@lv">@lv</option>
+                        <option value="@ent" selected="@(ViewBag.FilterEntity == ent ? "selected" : null)">@ent</option>
                     }
-                }
-            </select>
-        </div>
-        <div class="col-6 col-md-2">
-            <label class="form-label" style="font-size:12px; color:var(--md-text-muted);">Entidade</label>
-            <select name="entity" class="form-select md-input">
-                <option value="">Todas</option>
-                @foreach (var ent in (ViewBag.Entities as List<string> ?? new()))
-                {
-                    if (ViewBag.FilterEntity == ent)
-                    {
-                        <option value="@ent" selected>@ent</option>
-                    }
-                    else
-                    {
-                        <option value="@ent">@ent</option>
-                    }
-                }
-            </select>
-        </div>
-        <div class="col-6 col-md-2">
-            <label class="form-label" style="font-size:12px; color:var(--md-text-muted);">De</label>
-            <input type="date" name="from" value="@ViewBag.FilterFrom" class="form-control md-input" autocomplete="off" />
-        </div>
-        <div class="col-6 col-md-2">
-            <label class="form-label" style="font-size:12px; color:var(--md-text-muted);">Até</label>
-            <input type="date" name="to" value="@ViewBag.FilterTo" class="form-control md-input" autocomplete="off" />
-        </div>
-        <div class="col-12 col-md-auto d-flex gap-2">
-            <button type="submit" class="btn-md-primary" style="height:40px; padding:0 20px;">
-                <i class="bi bi-funnel"></i> Filtrar
-            </button>
-            <a asp-action="Index" class="btn-md-secondary" style="height:40px; padding:0 16px; display:inline-flex; align-items:center;">
-                <i class="bi bi-x-lg"></i>
-            </a>
+                </select>
+            </div>
+
+            <div style="flex:1; min-width:130px;">
+                <label style="font-size:11px; color:var(--md-text-muted); display:block; margin-bottom:4px;">De</label>
+                <input type="date" name="from" value="@ViewBag.FilterFrom" class="md-input" autocomplete="off" style="width:100%;" />
+            </div>
+
+            <div style="flex:1; min-width:130px;">
+                <label style="font-size:11px; color:var(--md-text-muted); display:block; margin-bottom:4px;">Até</label>
+                <input type="date" name="to" value="@ViewBag.FilterTo" class="md-input" autocomplete="off" style="width:100%;" />
+            </div>
+
+            <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:1px;">
+                <button type="submit" class="btn-md-primary" style="height:40px; padding:0 20px; white-space:nowrap;">
+                    <i class="bi bi-funnel"></i> Filtrar
+                </button>
+                <a asp-action="Index" class="btn-md-secondary" style="height:40px; padding:0 14px; display:inline-flex; align-items:center;">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+            </div>
+
         </div>
     </form>
 </div>
@@ -231,3 +226,17 @@
         </div>
     }
 </div>
+
+@section Scripts {
+<script>
+    document.getElementById('btnLimparRegistos').addEventListener('click', function () {
+        mdModalOpen(
+            'Limpar Registos',
+            'Esta acção é irreversível e eliminará todos os registos de auditoria. Deseja mesmo continuar?',
+            'Sim, limpar',
+            'var(--md-danger,#dc3545)',
+            function () { document.getElementById('clearAuditForm').submit(); }
+        );
+    });
+</script>
+}

@@ -4,7 +4,7 @@ using JAPLearning.Business.Interfaces.Internals.Shareds;
 using JAPLearning.Business.Interfaces.Services.Auxiliaries;
 using JAPLearning.Business.Interfaces.Services.Entities;
 using JAPLearning.Business.Models.Domains.Entities;
-using JAPLearning.Business.Validators;
+using JAPLearning.Business.Validations.Internals.Entities;
 
 namespace JAPLearning.Business.Services.Entities
 {
@@ -20,13 +20,13 @@ namespace JAPLearning.Business.Services.Entities
 
         public override async Task<bool> AddAsync(Course entity)
         {
-            if (!Validate(new CourseValidator(), entity)) return false;
+            if (!await ValidateAsync(new CourseValidation(), entity)) return false;
             return await base.AddAsync(entity);
         }
 
         public override async Task<bool> UpdateAsync(Course entity)
         {
-            if (!Validate(new CourseValidator(), entity)) return false;
+            if (!await ValidateAsync(new CourseValidation(), entity)) return false;
             return await base.UpdateAsync(entity);
         }
 

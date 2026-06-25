@@ -33,10 +33,13 @@ namespace JAPLearning.Business.Services
         {
             _httpContextAccessor = httpContextAccessor;
             _auditLog = auditLog;
+            SetAuditLog(auditLog); // permite que BaseService.Validate() registe avisos
         }
 
         private string GetCurrentUser() =>
             _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email) ?? "system";
+
+        protected override string GetAuditUser() => GetCurrentUser();
 
         private static string SafeSerialize(object obj)
         {

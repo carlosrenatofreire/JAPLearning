@@ -15,6 +15,9 @@ using JAPLearning.Business.Services.Auxiliaries;
 using JAPLearning.Business.Services.Entities;
 using JAPLearning.Business.Services.Parameters;
 using JAPLearning.Business.Services.Relationships;
+using JAPLearning.Business.Interfaces.Internals.Auxiliaries;
+using JAPLearning.Business.Interfaces.Services.Auxiliaries;
+using JAPLearning.Business.Services.Auxiliaries;
 using JAPLearning.Data.Repositories.Auxiliaries;
 using JAPLearning.Data.Repositories.Entities;
 using JAPLearning.Data.Repositories.Parameters;
@@ -67,11 +70,14 @@ namespace JAPLearning.Mvc.Configurations
 
             // Auxiliaries
             services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+            services.AddScoped<IAppVersionRepository, AppVersionRepository>();
 
             // Notificator (Scoped per request)
             services.AddScoped<INotificator, Notificator>();
 
             // Services - Parameters
+            services.AddScoped<IModuleService, ModuleService>();
+            services.AddScoped<IPermissionService, PermissionService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ILevelService, LevelService>();
@@ -97,6 +103,7 @@ namespace JAPLearning.Mvc.Configurations
 
             // Services - Auxiliaries
             services.AddScoped<IAuditLogService, AuditLogService>();
+            services.AddScoped<IAppVersionService, AppVersionService>();
 
             return services;
         }

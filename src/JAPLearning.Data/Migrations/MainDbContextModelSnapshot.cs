@@ -22,6 +22,59 @@ namespace JAPLearning.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("JAPLearning.Business.Models.Domains.Auxiliaries.AppVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("ReleaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<string>("VersionNumber")
+                        .IsRequired()
+                        .HasColumnType("varchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("E_AppVersions", (string)null);
+                });
+
+            modelBuilder.Entity("JAPLearning.Business.Models.Domains.Auxiliaries.AppVersionItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int>("Order")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("VersionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VersionId");
+
+                    b.ToTable("E_AppVersionItems", (string)null);
+                });
+
             modelBuilder.Entity("JAPLearning.Business.Models.Domains.Auxiliaries.AuditLog", b =>
                 {
                     b.Property<Guid>("Id")
@@ -193,6 +246,12 @@ namespace JAPLearning.Data.Migrations
 
                     b.Property<int>("PassingScore")
                         .HasColumnType("int");
+
+                    b.Property<string>("PdfFileUrl")
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("SnapshotUrl")
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("Subtitle")
                         .HasColumnType("varchar(255)");
@@ -471,9 +530,22 @@ namespace JAPLearning.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime?>("LastLoginDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("varchar(100)");
+
+                    b.Property<int>("LoginCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<bool>("MustChangePassword")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Number")
                         .HasColumnType("varchar(20)");
@@ -860,6 +932,16 @@ namespace JAPLearning.Data.Migrations
                     b.ToTable("R_UserLessonTests", (string)null);
                 });
 
+            modelBuilder.Entity("JAPLearning.Business.Models.Domains.Auxiliaries.AppVersionItem", b =>
+                {
+                    b.HasOne("JAPLearning.Business.Models.Domains.Auxiliaries.AppVersion", "Version")
+                        .WithMany("Items")
+                        .HasForeignKey("VersionId")
+                        .IsRequired();
+
+                    b.Navigation("Version");
+                });
+
             modelBuilder.Entity("JAPLearning.Business.Models.Domains.Entities.Article", b =>
                 {
                     b.HasOne("JAPLearning.Business.Models.Domains.Parameters.Subject", "Subject")
@@ -1093,6 +1175,11 @@ namespace JAPLearning.Data.Migrations
                     b.Navigation("Lesson");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("JAPLearning.Business.Models.Domains.Auxiliaries.AppVersion", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("JAPLearning.Business.Models.Domains.Entities.Course", b =>
